@@ -1,0 +1,44 @@
+.lotusFooter {
+    height: 10rem;
+    width: 100%;
+    background-color: white;
+    // background-color: transparent;
+    border-top: 1px solid #eee;
+    // position: fixed;
+    // left:0;
+    // bottom: 0;
+    z-index: 1000; 
+
+    &__content {
+        height: 100%;
+        width: 100%;
+        padding: 0 4rem;
+        display: flex;
+        align-items: center;
+    }
+
+    &__lotus {
+        height: 8rem;
+        width: 8rem;
+        margin-right: 2rem;
+        cursor: pointer;
+    }
+
+    &__expression {
+        height: 3rem;
+        width: 3rem;
+        border-radius: 100px;
+        border: 2px solid #555;
+        margin-right: 2rem;
+        outline: none;
+        cursor: pointer;
+
+        &--story {
+            border: 2px solid $junto-primary;
+        }
+
+        &--shortform {
+            border: 2px solid $junto-secondary;
+        }
+    }
+}

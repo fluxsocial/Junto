@@ -1,0 +1,44 @@
+
+.lotus {
+
+    &__container {
+        position: relative;
+        height: 100vh;
+        max-height: 100vh;
+        width: 100%;
+        // padding: 2rem 22%;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-content: space-between;
+        overflow: hidden;
+    }
+
+    &__post {
+        padding: 2rem 22%;
+        flex: 1;
+        margin-bottom: 2rem;
+        position: relative;
+        overflow-y: hidden;
+
+        @include respond(tab-port) {
+            padding: 2rem 12%;
+        }
+        
+        @include respond(phone) {
+            padding: 2rem; 
+        }
+    }
+
+    &__title {
+        width: 100%;
+        height: 5rem;
+        font-size: 2.4rem;
+        font-weight: 600;
+        color: #333;
+        border: none;
+        outline: none;
+        margin-bottom: 2rem;
+    }
+
+}

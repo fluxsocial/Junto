@@ -1,0 +1,35 @@
+
+.lotusShortform {
+
+    &__backgrounds {
+        display: flex;
+        margin-top: 2rem;
+
+    }
+
+    &__background {
+        height: 3rem;
+        width: 3rem;
+        border: 1px solid #555;
+        margin-right: 1.5rem;
+        outline: none;
+        cursor: pointer;
+    }
+
+    &__canvas {
+        height: 55vh;
+        margin-top: 2rem;
+
+        &--text {
+            height: 100%;
+            width: 100%;
+            background: transparent;
+            outline: none;
+            color: white;
+            font-size: 2.2rem;
+            font-weight: 500;
+            text-align: center;
+            padding: 10rem;
+        }
+    }
+}

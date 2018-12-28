@@ -1,0 +1,146 @@
+
+.canvas {
+    width: 100%;
+    min-height: 100vh;
+
+    display: grid;
+    grid-template-columns: repeat(9, minmax(10rem, 1fr)) repeat(3, 1fr);
+
+    transform: translateY(7rem);
+
+    &__search {
+        padding-left: 2rem;
+        height: 6rem;
+        grid-column: 4/10;
+        grid-row: 1/2;
+        justify-self: center;
+        width: 75%;
+        border-bottom: 1px solid #eee;
+        cursor: pointer;
+
+        &--text {
+            height: 100%;
+            width: 100%;
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: #333;
+            outline: none;
+            border: none;
+
+            &::placeholder {
+                color: #333;
+            }
+        }
+    }
+    &__main {
+        grid-column: 4/10;
+        justify-self: center;
+        width: 100%;
+        min-width: 50rem;
+            }
+
+    &__feed {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+    }
+
+    &__expression {
+        height: 100%;
+        width: 75%;
+        background-color: white;
+        border-bottom: 1px solid #eee;
+        padding: 2rem;
+
+        // expression top
+        &--top {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        &--profile {
+            display: flex;
+            align-items: center;
+
+            &--picture {
+                height: 4rem;
+                width: 4rem;
+                border: 1px solid #333;
+                border-radius: 100px;
+                margin-right: 1rem;
+            }
+
+            &--details {
+                display: flex;
+                flex-direction: column;
+
+            }
+
+            &--name {
+                font-size: 1.4rem;
+                font-weight: 500;
+
+            }
+
+            &--handle {
+                font-size: 1.4rem;
+                font-weight: 500;
+            }
+        }
+
+        &--edit {
+            font-size: 1.4rem;
+        }
+
+
+        // expression bottom
+        &--bottom {
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        &--channels {
+
+        }
+
+        &--channel {
+            padding: .5rem 1.5rem;
+            border: 1px solid #333;
+            border-radius: 2px;
+            margin-right: .5rem;
+        }
+    }
+
+    // expression types
+
+    &__story {
+        &--title {
+            font-size: 2rem;
+            font-weight: 500;
+            color: #333;
+        }
+
+        &--body {
+            font-size: 1.4rem;
+            color: #333;;
+        }
+    }
+
+
+    // photo
+    &__photo {
+
+        &--photo {
+            width: 100%;
+        }
+
+        &--caption {
+            font-size: 1.4rem;
+            color: #333;
+        }
+    }
+}

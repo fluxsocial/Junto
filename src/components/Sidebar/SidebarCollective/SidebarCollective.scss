@@ -1,0 +1,55 @@
+.sidebar {
+    position: fixed;
+    top: 7rem;
+    left: 4rem;
+    // background-color:aqua;
+    height: 100%;
+    width: 30rem;    
+
+    display: flex;
+    flex-direction: column;
+
+    z-index: 200;
+
+    &__header {
+        font-size: 1.4rem;
+        color: #333;
+        font-weight: 500;
+        margin-top: 2rem;
+    }
+
+    &__border {
+        border-bottom: 1px solid #eee;
+        margin-bottom: 1rem;
+    }
+
+    &__spheres {
+        display: flex; 
+        flex-direction: column;
+    }
+
+    &__sphere {
+        padding: 1rem 0;
+        display: flex;
+        align-items: center;
+
+        cursor: pointer;
+
+
+        
+        &--active {
+            border-left: 2px solid $junto-primary;
+            height: 2rem;
+            margin-right: .5rem;
+        }
+
+        &--text {
+            font-size: 1.4rem;
+            color: #333;
+            font-weight: 500;
+
+
+        }
+
+    }
+}

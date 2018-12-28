@@ -1,0 +1,133 @@
+
+.navigation {
+    width: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+
+    &__content {
+        height: 100%;
+        width: 100%;
+
+        display: flex;
+        flex-direction: column;
+    }
+    
+    &__border {
+        width: 100%;
+
+        &--den {
+            border-top: 2px solid $junto-third;
+
+        }
+
+        &--pack {
+            border-top: 2px solid $junto-secondary;
+
+        }
+
+        &--collective {
+            border-top: 2px solid $junto-primary;
+        }
+    }
+
+    &__top {
+        width: 100%;
+        padding: 0 4rem;
+        background-color: white;
+
+        display: grid;
+        grid-template-columns: repeat(12, minmax(100px, 1fr));
+        grid-template-rows: 7rem;
+
+        align-items: center;
+
+        font-size: 1.4rem;
+        font-weight: 500;
+
+        // border-bottom: 2px solid $junto-primary;
+
+        &--icon {
+            height: 2rem;
+            width: 2rem;
+
+            &--text {
+                font-size: .5rem;
+            }
+        }
+        
+        &--den {
+            grid-column: 1/2;
+
+            height: 2rem;
+            width: 2rem;
+
+            display: flex;
+        }
+
+        &--pack {
+            grid-column: 2/3;
+
+            height: 2rem;
+            width: 2rem;
+            transform: rotate(180deg);
+        }
+
+        &--collective {
+            grid-column: 3/4;
+
+            height: 2rem;
+            width: 2rem;
+
+        }
+
+        &--logo {
+            grid-column: 6/8;
+            justify-self: center;
+            height: 3.5rem;
+        }
+
+        &--notifs {
+            grid-column: 12/13;
+            justify-self: end;
+
+            height: 2rem;
+            width: 2rem;
+
+        }
+
+    }
+
+    &__bottom {
+        display: grid;
+        grid-template-columns: repeat(12, minmax(100px, 1fr));
+        grid-template-rows: 5rem;
+        padding: 0 4rem;
+
+        align-items: center;
+
+        width: 100%;
+        background-color: white;
+        border-bottom: 1.25px solid $junto-grey-2;
+
+        &--den {
+            border-top: 2px solid $junto-third;
+        }
+
+        &--pack {
+            border-top: 2px solid $junto-secondary;
+        }
+
+        &--collective {
+            border-top: 2px solid $junto-primary;
+        }
+
+        &--space {
+            color: $junto-grey;
+            font-weight: 500;
+            font-size: 1.4rem;
+        }
+
+    }
+}

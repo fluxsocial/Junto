@@ -1,0 +1,56 @@
+.lotusHeader {
+    height: 6rem;
+    width: 100%;
+    background-color: white;
+    border-bottom: 1px solid #eee;
+
+    z-index: 1000;
+
+    &__content {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    &__expressionType {
+        font-size: 1.7rem;
+        font-weight: 500;
+        color: #555;
+    }
+
+    &__create {
+        display: flex;
+        align-items: center;
+
+        &--channels {
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: #555;
+
+        }
+
+        &--button {
+            background-color: white;
+            color: #555;
+            font-weight: 500;
+            font-size: 1.4rem;
+            padding: .75rem 2rem;
+            border: 2px solid #555;
+            border-radius: 2px;
+
+            margin-left: 1.5rem;
+            cursor: pointer;
+            transition: all .2s;
+
+            &:hover {
+                background-color: #555;
+                color: white;
+                
+            }
+        }
+
+
+    }
+}
