@@ -1,0 +1,17 @@
+[package]
+name = "core"
+version = "0.1.0"
+authors = ["jdeepee <joshuadparkin@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+serde = "1.0"
+serde_json = "1.0"
+serde_derive = "1.0"
+hdk = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.3" }
+holochain_wasm_utils = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.3" }
+holochain_core_types_derive = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.3" }
+
+[lib]
+path = "src/lib.rs"
+crate-type = ["cdylib"]

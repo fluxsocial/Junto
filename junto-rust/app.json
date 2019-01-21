@@ -1,6 +1,6 @@
 {
-  "name": "Holochain App Name",
-  "description": "A Holochain app",
+  "name": "Junto Holochain Application",
+  "description": "Junto Holochain Application providing data layer for a distributed and scalable social network",
   "authors": [
     {
       "identifier": "Joshua Parkin <josh@junto.foundation>",
