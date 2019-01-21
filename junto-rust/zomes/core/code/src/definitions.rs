@@ -67,12 +67,14 @@ pub struct ExpressionLinkDefinition {
 }
 
 pub const USER_EXPRESSION_LINK_DEFINITIONS = ExpressionLinkDefinition {  
+    //Links which user expression can received: UP-LINK -> USER-EXPRESSION-OBJECT
     up_links: vec![&map!{"tag" => "user", "type": "ExpressionPost"},
                    &map!{"tag" => "member", "type": "Group"},
                    &map!{"tag" => "owner", "type": "Group"}, 
                    &map!{"tag" => "user", "type": "Channel"},
                    &map!{"tag" => "user", "type": "Time"},],
    
+    //Links which can attach to user expression as child: USER-EXPRESSION-OBJECT -> DOWN-LINK
     down_links: vec![&map!{"tag" => "expression", "type": "ExpressionPost"}, 
                      &map!{"tag" => "resonation", "type": "Resonation"}, 
                      &map!{"tag" => "*", "type": "Channel"}, 
@@ -80,19 +82,24 @@ pub const USER_EXPRESSION_LINK_DEFINITIONS = ExpressionLinkDefinition {
                      &map!{"tag" => "time", "type" => "Time"},
                      &map!{"tag" => "pack", "type": "Group"}],
 
+    //Links to be made to create searchable trees to object or child object(s) - complex link structures usually consisting of many links
     contextual_links: vec![],
+
+    //Links which have to be made upon user expression object commit - some of the objects to be linked to wont exist - they must be created in accordance with schema - these are basic links with not more than one link - unlike contextual links
     hooks: vec![&map!{"tag" => "user", "type": "Time", "function": "functionToBeExecutedUponCommit", "direction": "reverse"}, //Might need to define some data attribute which explains direction of the link
                 &map!{"tag" => "pack", "type": "Group", "function": "", "direction": "forward"}, //Example is: time goes Time -> User where as pack would go User -> Pack
                 &map!{"tag" => "den", "type": "Channel", "function": "", "direction": "forward"}]
 }
 
 pub const CHANNEL_EXPRESSION_LINK_DEFINITIONS = ExpressionLinkDefinition { 
+    //Links which channel expression can received: UP-LINK -> CHANNEL-EXPRESSION-OBJECT
     up_links: vec![&map!{"tag" => "*", "type": "User"}, 
                    &map!{"tag" => "*", "type": "Channel"}, 
                    &map!{"tag" => "*", "type": "Time"}, 
                    &map!{"tag" => "*", "type": "Group"}, 
                    &map!{"tag" => "*", "type": "Resonation"}],
 
+    //Links which can attach to channel expression as child: CHANNEL-EXPRESSION-OBJECT -> DOWN-LINK
     down_links: vec![&map!{"tag" => "expression", "type": "ExpressionPost"},
                      &map!{"tag" => "*", "type": "ExpressionPost"}, //Option for any tag on link from channel -> expression allows for querying through tree structures
                      &map!{"tag" => "resonation", "type": "Resonation"},
@@ -103,12 +110,9 @@ pub const CHANNEL_EXPRESSION_LINK_DEFINITIONS = ExpressionLinkDefinition {
                      &map!{"tag" => "time", "type": "Time"},
                      &map!{"tag" => "*", "type": "Time"}],
 
-    contextual_links: vec![&map!{"tag" => "*", "type": "Channel", "function": "function to handle contextualy link to channels"},  //Link to any other channels in expression commit and to relevant user den
-                           &map!{"tag" => "*", "type": "Group", "function": "function to contextualy link to relevant groups"},  //Link to any packs "groups" which the expression should be inserted into
-                           &map!{"tag" => "*", "type": "Time", "function": "function to contextualy link to time"},
-                           &map!{"tag" => "*", "type": "Resonation", "function": "function to contextualy link to associated resonations"}], //Link to time of expression
-
-    hooks: vec![&map!{"tag" => "*", "type": "Time", "function": "", "direction": "reverse"}]  //Anytime expression is committed the time of the expression creation should be linked to relevant time object(s)
+    //No contextual links on commit of channel item - contextual links only need to be made if a resonation or expression is being associated with channel
+    contextual_links: vec![],
+    hooks: vec![&map!{"tag" => "channel", "type": "Time", "function": "", "direction": "reverse"}]  //Anytime expression is committed the time of the expression creation should be linked to relevant time object(s)
 }
 
 pub const POST_EXPRESSION_LINK_DEFINITIONS = ExpressionLinkDefinition { 
@@ -125,8 +129,12 @@ pub const POST_EXPRESSION_LINK_DEFINITIONS = ExpressionLinkDefinition {
                      &map!{"tag" => "comment", "type": "ExpressionPost"}, 
                      &map!{"tag" => "resonation", "type": "Resonation"}],
 
-    contextual_links: vec![],
-    hooks: vec![&map!{"tag" => "*", "type": "Channel", "function": "", "direction": "reverse"}, //To any associated channels 
+    contextual_links: vec![[&map!{"tag" => "*", "type": "Channel", "function": "function to handle contextualy link to channels"},  //Link to any other channels in expression commit and to relevant user den
+                           &map!{"tag" => "*", "type": "Group", "function": "function to contextualy link to relevant groups"},  //Link to any packs "groups" which the expression should be inserted into
+                           &map!{"tag" => "*", "type": "Time", "function": "function to contextualy link to time"},
+                           &map!{"tag" => "*", "type": "Resonation", "function": "function to contextualy link to associated resonations"}],
+
+    hooks: vec![&map!{"tag" => "expression", "type": "Channel", "function": "", "direction": "reverse"}, //To any associated channels 
                 &map!{"tag" => "expression", "type": "Channel", "function": "", "direction": "reverse"}, //To den
                 &map!{"tag" => "expression", "type": "Resonation", "function": "", "direction": "reverse"},
                 &map!{"tag" => "expression", "type": "Group", "function": "", "direction": "reverse"}, //To pack
@@ -168,7 +176,7 @@ pub const RESONATION_EXPRESSION_LINK_DEFINITIONS = ExpressionLinkDefinition {
                            &map!{"tag" => "*", "type": "Group", "function": "function to contextualy link to relevant groups"},  //Link to any packs "groups" which the expression should be inserted into
                            &map!{"tag" => "*", "type": "Time", "function": "function to contextualy link to time"}],
 
-    hooks: vec![&map!{"tag" => "*", "type": "Channel", "function": "", "direction": "both"}, //To any associated channels 
+    hooks: vec![&map!{"tag" => "resonation", "type": "Channel", "function": "", "direction": "both"}, //To any associated channels 
                 &map!{"tag" => "resonation", "type": "Channel", "function": "", "direction": "reverse"}, //To den
                 &map!{"tag" => "resonation", "type": "Group", "function": "", "direction": "reverse"}, //To pack
                 &map!{"tag" => "resonation", "type": "Time", "function": "", "direction": "reverse"}, //To timestamp
@@ -191,10 +199,5 @@ pub const TIME_LINK_DEFINITIONS = ExpressionLinkDefinition {
     contextual_links: vec![&map!{"tag" => "*", "type": "Channel", "function": "function to handle contextualy link to channels"},  //Link to any other channels in expression commit and to relevant user den
                            &map!{"tag" => "*", "type": "Group", "function": "function to contextualy link to relevant groups"}],
 
-    hooks: vec![&map!{"tag" => "*", "type": "Channel", "function": "", "direction": "both"}, //To any associated channels 
-                &map!{"tag" => "resonation", "type": "Channel", "function": "", "direction": "both"}, //To den
-                &map!{"tag" => "resonation", "type": "Group", "function": "", "direction": "both"}, //To pack
-                &map!{"tag" => "resonation", "type": "Time", "function": "", "direction": "both"}, //To timestamp
-                &map!{"tag" => "resonation", "type": "User", "function": "", "direction": "both"},
-                &map!{"tag" => "resonation", "type": "ExpressionPost", "function": "", "direction": "both"}]]
+    hooks: vec![]
 }
