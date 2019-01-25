@@ -18,6 +18,33 @@ pub struct User {
     verified: bool
 }
 
+#[derive(Serialize, Deserialize, Debug, DefaultJson)]
+pub struct Channel {
+    parent: HashString
+}
+
+#[derive(Serialize, Deserialize, Debug, DefaultJson)]
+pub struct ExpressionPost { 
+    parent: HashString
+}
+
+#[derive(Serialize, Deserialize, Debug, DefaultJson)]
+pub struct Group {
+    parent: HashString
+}
+
+//Possible that Time could be handles by Channel Expression Object
+#[derive(Serialize, Deserialize, Debug, DefaultJson)]
+pub struct Time {
+    pub parent: HashString,
+    pub timestamp: String
+}  
+
+#[derive(Serialize, Deserialize, Debug, DefaultJson)]
+pub struct Resonation {
+
+}
+
 //Its possible this struct may not be useful going forward perhaps this can just be definted in the !entry of the the given expression and then retrieved later
 //For now its here - even if just to have some code which defines the structure of the applications data trees - possible that this diagram could be used to create a visualized tree
 pub struct ExpressionLinkDefinition {
