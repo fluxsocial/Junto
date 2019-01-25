@@ -2,7 +2,10 @@
 use hdk::{
     error::{ZomeApiResult, ZomeApiError},
     holochain_core_types::{
-        cas::content::Address, entry::Entry, dna::entry_types::Sharing, error::HolochainError, json::JsonString,
+        cas::content::Address, 
+        entry::Entry, 
+        error::HolochainError, 
+        json::JsonString,
     }
 };
 //Datetime imports
@@ -12,13 +15,13 @@ use chrono::{DateTime, Utc};
 use super::definitions;
 
 //Handle hooked objects that need to be created/linked for a given data type
-pub fn handle_hooks(expression_type: String, parentAddress: Address) -> Result<String, ZomeApiError> {
-    let hook_items = definitions::USER_EXPRESSION_LINK_DEFINITIONS.hooks;
+pub fn handle_hooks(expression_type: String, parent_address: &Address) -> Result<String, ZomeApiError> {
+    let hook_items = definitions::get_user_definitions().hooks;
     Ok("Hooks created".to_string())
 }
 
 //Create and link current timestamps (year, month, day) to given parent address
-pub fn create_timestamps(parent: Address) -> Result<String, ZomeApiError> {
+pub fn create_timestamps(parent: Address) -> ZomeApiResult<String> {
     let now: DateTime<Utc> = Utc::now();
     let year = now.format("%Y").to_string();
     let month_y = now.format("%b %Y").to_string();
@@ -30,29 +33,38 @@ pub fn create_timestamps(parent: Address) -> Result<String, ZomeApiError> {
 
     //Iterate over timestamp objects and check that they exist
     for timestamp in timestamps{
-        match get_timestamp(&timestamp, &parent){
-            Ok(entry) => {
-                match entry{
-                    Some(entry) => timestamp_hashs.push(hdk::entry_address(&entry)), //Check entry and see how we can extract address
-                    None => {//create timestamp with link
+        get_timestamp(&timestamp, &parent)
+            .map(|return_timestamp: Option<Entry>| {
+                match return_timestamp {
+                    Some(entry) => {
+                        match hdk::entry_address(&entry){
+                            Ok(address) => {
+                                timestamp_hashs.push(address);
+                            },
+                            Err(hdk_err) => return Err(hdk_err)
+                        };
+                        Ok(())
+                    },
+                    None => {
                         let time = definitions::Time {
-                            timestamp: timestamp,
-                            parent: parent
+                            timestamp: timestamp.clone(),
+                            parent: parent.clone()
                         };
                         let entry = Entry::App("time".into(), time.into());
                         match hdk::commit_entry(&entry){
-                            Ok(address) => timestamp_hashs.push(hdk::entry_address(&entry)),
-                            Err(hdk_err) => return Err(ZomeApiError::from(hdk_err.into()))
-                        } //Check that this is successful otherwise return error from main function scope
+                            Ok(address) => {
+                                timestamp_hashs.push(address);
+                            },
+                            Err(hdk_err) => return Err(hdk_err)
+                        };
+                        Ok(())
                     }
                 }
-            },
-            Err(hdk_err) => return Err(ZomeApiError::from(hdk_err.into())) //Return error from main function scope
-        }
+            })
+            .map_err(|err: ZomeApiError<>| return ZomeApiError::from(err.to_string()));
     }
-
+    //println!("{:?}", &timestamps);
     for address in timestamp_hashs{
-        // let hash = Entry::App("time".into(), timestamp.into());
         hdk::link_entries(&parent, &address, "time")?;
     } 
 
@@ -60,16 +72,16 @@ pub fn create_timestamps(parent: Address) -> Result<String, ZomeApiError> {
 }
 
 //Get timestamp entry by timestamp string w/ parent address
-pub fn get_timestamp(timestamp: &String, parent: &Address) -> ZomeApiResult<Option<definitions::Time>> {
+pub fn get_timestamp(timestamp: &String, parent: &Address) -> ZomeApiResult<Option<Entry>> {
     let time = definitions::Time {
-        timestamp: *timestamp,
-        parent: *parent
+        timestamp: timestamp.clone(),
+        parent: parent.clone()
     };
     let entry = Entry::App("time".into(), time.into());
-    match hdk::entry_address(&entry){
-        Ok(address) => hdk::get_entry(&address),
-        Err(hdk_err) => ZomeApiResult::from(Err(hdk_err))
-    }
+    hdk::entry_address(&entry)
+        .map(|address: Address| hdk::get_entry(&address))
+        .and_then(|result: ZomeApiResult<Option<Entry>>| result)
+        .or_else(|err: ZomeApiError<>| Err(err))
 }
 
 // pub fn handle_contextual_links(expression_type: String, parentAddress: Address) -> Result<String, ZomeApiError> {

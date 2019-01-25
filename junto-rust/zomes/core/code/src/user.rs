@@ -2,7 +2,6 @@ use hdk::{
     entry_definition::ValidatingEntryType,
     error::ZomeApiResult,
     holochain_core_types::{
-        cas::content::Address, 
         entry::Entry, 
         dna::entry_types::Sharing, 
         error::HolochainError, 
@@ -18,7 +17,7 @@ use super::utils;
 pub fn handle_create_user(user_data: definitions::User) -> JsonString {
     let entry = Entry::App("user".into(), user_data.into());
     match hdk::commit_entry(&entry) {
-        Ok(address) => match utils::handle_hooks("User".to_string(), address) {
+        Ok(address) => match utils::handle_hooks("User".to_string(), &address) {
             Ok(result) => json!({"user_address": address, "data": result}).into(),
             Err(hdk_err) => hdk_err.into(),
         }

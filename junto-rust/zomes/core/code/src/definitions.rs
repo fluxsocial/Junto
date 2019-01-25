@@ -1,6 +1,4 @@
 use hdk::{
-    holochain_core_types::cas::content::Address,
-    holochain_core_types::entry::{entry_type::EntryType, Entry},
     holochain_core_types::error::HolochainError,
     holochain_core_types::json::JsonString,
     holochain_core_types::hash::HashString

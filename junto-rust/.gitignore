@@ -2,3 +2,4 @@ dist/
 node_modules/
 target/
 .hc
+bundle.json
