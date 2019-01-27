@@ -6,6 +6,7 @@ use hdk::{
         dna::entry_types::Sharing, 
         error::HolochainError, 
         json::JsonString,
+        cas::content::Address
     }
 };
 
@@ -26,13 +27,24 @@ pub fn handle_create_user(user_data: definitions::User) -> JsonString {
     //Then we have to handle any hooks/contextual links specified in definitions - functions are in utils.rs currently
 }
 
-// pub fn handle_get_user(user_name: String, address: Address) -> JsonString {
-// }
+pub fn time_to_user(tag: &String, direction: &String, user: &Address) -> ZomeApiResult<String> {    
+    //Check that current times exist and then link user to times
+    let timestamps: Vec<String> = utils::get_current_timestamps();
+    Ok("ok".to_string())
+}
 
-// pub fn create_pack() -> JsonString {
-// }
+pub fn create_pack(user: &Address) -> ZomeApiResult<String> {
+    //Create pack and link to user with required tags as defined by definitions data?
+    Ok("ok".to_string())
+}
 
-// pub fn create_den() -> JsonString {
+pub fn create_den(user: &Address) -> ZomeApiResult<String> {
+    //Create den(s) (multiple dens as signified by definitions data) and link to user with required tags as defined by definitons data
+    Ok("ok".to_string())
+}
+
+// pub fn get_user(user: &Address) -> ZomeApiResult<Entry> {
+     //Ok(Entry)
 // }
 
 //Entry Definition(s)

@@ -8,20 +8,51 @@ use hdk::{
         json::JsonString,
     }
 };
+use std::collections::HashMap;
+
 //Datetime imports
 use chrono::{DateTime, Utc};
 
 //Our module(s) imports
 use super::definitions;
+use super::user;
 
 //Handle hooked objects that need to be created/linked for a given data type
 pub fn handle_hooks(expression_type: String, parent_address: &Address) -> Result<String, ZomeApiError> {
-    let hook_items = definitions::get_user_definitions().hooks;
+    let hook_items: Vec<HashMap<&'static str, &'static str>>;
+    match expression_type.as_ref(){
+        "User" => hook_items = definitions::get_user_definitions().hooks,
+        "Channel" => hook_items = definitions::get_channel_definitions().hooks,
+        "ExpressionPost" => hook_items = definitions::get_post_expression_definitions().hooks,
+        "Group" => hook_items = definitions::get_group_definitions().hooks,
+        "Time" => hook_items = definitions::get_time_definitions().hooks,
+        "Resonation" => hook_items = definitions::get_resonation_definitions().hooks,
+        _ => return Err(ZomeApiError::from("Expression type does not exist".to_string()))
+    }
+    if hook_items.len() > 0{
+        for hook_definition in hook_items{
+            match hook_definition.get("function"){
+                Some(&"time_to_user") =>  {
+                    user::time_to_user(&hook_definition.get("tag").unwrap().to_string(), &hook_definition.get("direction").unwrap().to_string(), &parent_address)
+                        .map_err(|err: ZomeApiError<>| err);
+                },
+                Some(&"create_pack") => {
+                    user::create_pack(&parent_address)
+                        .map_err(|err: ZomeApiError<>| err);
+                },
+                Some(&"create_den") => {
+                    user::create_den(&parent_address)
+                        .map_err(|err: ZomeApiError<>| err);
+                },
+                None => {},
+                _ => {}
+            }
+        }
+    }
     Ok("Hooks created".to_string())
 }
 
-//Create and link current timestamps (year, month, day) to given parent address
-pub fn create_timestamps(parent: Address) -> ZomeApiResult<String> {
+pub fn get_current_timestamps() -> Vec<String>{
     let now: DateTime<Utc> = Utc::now();
     let year = now.format("%Y").to_string();
     let month_y = now.format("%b %Y").to_string();
@@ -29,6 +60,12 @@ pub fn create_timestamps(parent: Address) -> ZomeApiResult<String> {
     let day_m_y = now.format("%b %e %Y").to_string();
     let day = now.format("%b").to_string();
     let timestamps = vec![year, month_y, month, day_m_y, day];
+    timestamps
+}
+
+//Create and link current timestamps (year, month, day) to given parent address
+pub fn create_timestamps(parent: Address) -> ZomeApiResult<String> {
+    let timestamps: Vec<String> = get_current_timestamps();
     let mut timestamp_hashs = vec![];
 
     //Iterate over timestamp objects and check that they exist

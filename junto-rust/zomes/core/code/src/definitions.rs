@@ -88,9 +88,11 @@ pub fn get_user_definitions() -> ExpressionLinkDefinition {
         contextual_links: vec![],
 
         //Links which have to be made upon user expression object commit - some of the objects to be linked to wont exist - they must be created in accordance with schema - these are basic links with not more than one link - unlike contextual links
-        hooks: vec![hashmap!{"tag" => "user", "expression_type" => "Time", "function" => "", "direction" => "reverse"}, //Might need to define some data attribute which explains direction of the link
-                    hashmap!{"tag" => "pack", "expression_type" => "Group", "function" => "", "direction" => "forward"}, //Example is => time goes Time -> User where as pack would go User -> Pack
-                    hashmap!{"tag" => "den", "expression_type" => "Channel", "function" => "", "direction" => "forward"}]
+        //Function is just being stored as a string here and not an actual refrence to the function which would make more sense
+        //This is beacuse I cant figure out how to store a function in a hashmap/struct/enum gyahhh
+        hooks: vec![hashmap!{"tag" => "user", "expression_type" => "Time", "function" => "time_to_user", "direction" => "reverse"}, //Might need to define some data attribute which explains direction of the link
+                    hashmap!{"tag" => "pack", "expression_type" => "Group", "function" => "create_pack", "direction" => "forward"}, //Example is => time goes Time -> User where as pack would go User -> Pack
+                    hashmap!{"tag" => "den", "expression_type" => "Channel", "function" => "create_den", "direction" => "forward"}]
     };
     user_expression_link_definitions
 }
