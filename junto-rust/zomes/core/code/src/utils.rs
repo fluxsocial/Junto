@@ -33,7 +33,7 @@ pub fn handle_hooks(expression_type: String, parent_address: &Address) -> Result
         for hook_definition in hook_items{
             match hook_definition.get("function"){
                 Some(&"time_to_user") =>  {
-                    user::time_to_user(&hook_definition.get("tag").unwrap().to_string(), &hook_definition.get("direction").unwrap().to_string(), &parent_address)
+                    user::time_to_user(&hook_definition.get("tag").unwrap(), &hook_definition.get("direction").unwrap().to_string(), &parent_address)
                         .map_err(|err: ZomeApiError<>| err);
                 },
                 Some(&"create_pack") => {
@@ -64,7 +64,8 @@ pub fn get_current_timestamps() -> Vec<String>{
 }
 
 //Create and link current timestamps (year, month, day) to given parent address
-pub fn create_timestamps(parent: Address) -> ZomeApiResult<String> {
+//will return vector of each timestamp
+pub fn create_timestamps(parent: Address) -> ZomeApiResult<Vec<Address>> {
     let timestamps: Vec<String> = get_current_timestamps();
     let mut timestamp_hashs = vec![];
 
@@ -101,11 +102,11 @@ pub fn create_timestamps(parent: Address) -> ZomeApiResult<String> {
             .map_err(|err: ZomeApiError<>| return ZomeApiError::from(err.to_string()));
     }
     //println!("{:?}", &timestamps);
-    for address in timestamp_hashs{
+    for address in &timestamp_hashs{
         hdk::link_entries(&parent, &address, "time")?;
     } 
 
-    Ok("Timestamps created and linked to parent object".to_string())
+    Ok(timestamp_hashs)
 }
 
 //Get timestamp entry by timestamp string w/ parent address

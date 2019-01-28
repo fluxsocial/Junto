@@ -1,14 +1,19 @@
 use hdk::{
     entry_definition::ValidatingEntryType,
     error::ZomeApiResult,
+    error::ZomeApiError,
+    api::DNA_ADDRESS,
     holochain_core_types::{
         entry::Entry, 
         dna::entry_types::Sharing, 
         error::HolochainError, 
         json::JsonString,
-        cas::content::Address
+        cas::content::Address,
+        hash::HashString
     }
 };
+
+use multihash::Hash;
 
 //Our modules for holochain actins
 use super::definitions;
@@ -27,10 +32,19 @@ pub fn handle_create_user(user_data: definitions::User) -> JsonString {
     //Then we have to handle any hooks/contextual links specified in definitions - functions are in utils.rs currently
 }
 
-pub fn time_to_user(tag: &String, direction: &String, user: &Address) -> ZomeApiResult<String> {    
+pub fn time_to_user(tag: &'static str, direction: &String, user: &Address) -> ZomeApiResult<String> {    
     //Check that current times exist and then link user to times
-    let timestamps: Vec<String> = utils::get_current_timestamps();
-    Ok("ok".to_string())
+    //Get/create timestamps
+    let timestamps: Vec<Address>;
+    match utils::create_timestamps(HashString::encode_from_str(&DNA_ADDRESS.to_string(), Hash::SHA2256)){
+        Ok(result) => timestamps = result,
+        Err(hdk_err) => return Err(ZomeApiError::from("There was an error with creating/getting of timesamps".to_string()))
+    };
+
+    for timestamp in &timestamps{
+        hdk::link_entries(&timestamp, &user, tag)?;
+    }
+    Ok("User linked to global time objects".to_string())
 }
 
 pub fn create_pack(user: &Address) -> ZomeApiResult<String> {

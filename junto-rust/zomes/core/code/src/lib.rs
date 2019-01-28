@@ -30,8 +30,7 @@ define_zome! {
 
     genesis: || { 
         {
-            let app_hash = HashString::encode_from_str(&DNA_ADDRESS.to_string(), Hash::SHA2256);
-            match utils::create_timestamps(app_hash){//Create core application timestamps "global"
+            match utils::create_timestamps(HashString::encode_from_str(&DNA_ADDRESS.to_string(), Hash::SHA2256)){//Create core application timestamps "global"
                 Ok(_) => {},
                 Err(hdk_err) => return Err(hdk_err.to_string())
             };
