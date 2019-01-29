@@ -88,7 +88,13 @@ pub fn create_den(user: &Address) -> ZomeApiResult<String> {
 }
 
 pub fn pack_link(tag: &'static str, direction: &'static str, pack: &Address, expression: &Address) -> ZomeApiResult<String>{
-     Ok("ok".to_string())
+    if (direction == "reverse") | (direction == "both"){
+        hdk::link_entries(&expression, &pack, tag)?;
+    }
+    if (direction == "forward") | (direction == "both"){
+        hdk::link_entries(&pack, &expression, tag)?;
+    }
+    Ok("Pack links made for owner of pack".to_string())
 }
 
 // pub fn get_user(user: &Address) -> ZomeApiResult<Entry> {
