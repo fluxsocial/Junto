@@ -1,34 +1,40 @@
 use hdk::{
-    holochain_core_types::error::HolochainError,
-    holochain_core_types::json::JsonString,
-    holochain_core_types::hash::HashString
+    holochain_core_types::{
+        cas::content::Address, 
+        error::HolochainError,
+        json::JsonString,
+        hash::HashString
+    }
 };
 
 use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 pub struct User {
-    parent: HashString, //Parent HashString data objects to be contextual to given data trees
-    first_name: String,
-    last_name: String,
-    bio: String,
-    profile_picture: String,
-    verified: bool
+    pub parent: HashString, //Parent HashString data objects to be contextual to given data trees
+    pub first_name: String,
+    pub last_name: String,
+    pub bio: String,
+    pub profile_picture: String,
+    pub verified: bool
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 pub struct Channel {
-    parent: HashString
+    pub parent: HashString
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 pub struct ExpressionPost { 
-    parent: HashString
+    pub parent: HashString
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 pub struct Group {
-    parent: HashString
+    pub parent: HashString,
+    pub name: String,
+    pub owner: Address,
+    pub private: bool 
 }
 
 //Possible that Time could be handles by Channel Expression Object
@@ -90,7 +96,7 @@ pub fn get_user_definitions() -> ExpressionLinkDefinition {
         //Links which have to be made upon user expression object commit - some of the objects to be linked to wont exist - they must be created in accordance with schema - these are basic links with not more than one link - unlike contextual links
         //Function is just being stored as a string here and not an actual refrence to the function which would make more sense
         //This is beacuse I cant figure out how to store a function in a hashmap/struct/enum gyahhh
-        hooks: vec![hashmap!{"tag" => "user", "expression_type" => "Time", "function" => "time_to_user", "direction" => "reverse"}, //Might need to define some data attribute which explains direction of the link
+        hooks: vec![hashmap!{"tag" => "user", "expression_type" => "Time", "function" => "global_time_to_expression", "direction" => "reverse"}, //Might need to define some data attribute which explains direction of the link
                     hashmap!{"tag" => "pack", "expression_type" => "Group", "function" => "create_pack", "direction" => "forward"}, //Example is => time goes Time -> User where as pack would go User -> Pack
                     hashmap!{"tag" => "den", "expression_type" => "Channel", "function" => "create_den", "direction" => "forward"}]
     };
@@ -169,9 +175,10 @@ pub fn get_group_definitions() -> ExpressionLinkDefinition {
                         hashmap!{"tag" => "owner", "expression_type" => "User"}],
 
         contextual_links: vec![],
-        hooks: vec![hashmap!{"tag" => "group", "expression_type" => "Time", "function" => "", "direction" => "reverse"},
-                    hashmap!{"tag" => "pack", "expression_type" => "User", "function" => "", "direction" => "reverse"},
-                    hashmap!{"tag" => "owner", "expression_type" => "User", "function" => "", "direction" => "both"}]
+        hooks: vec![hashmap!{"tag" => "group", "expression_type" => "Time", "function" => "global_time_to_expression", "direction" => "reverse"},
+                    hashmap!{"tag" => "pack", "expression_type" => "Time", "function" => "global_time_to_expression", "direction" => "reverse"},
+                    hashmap!{"tag" => "pack", "expression_type" => "User", "function" => "pack_link", "direction" => "reverse"},
+                    hashmap!{"tag" => "owner", "expression_type" => "User", "function" => "pack_link", "direction" => "forward"}]
     };
     group_expression_link_definitions
 }
