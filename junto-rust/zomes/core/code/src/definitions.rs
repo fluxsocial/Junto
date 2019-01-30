@@ -9,6 +9,13 @@ use hdk::{
 
 use std::collections::HashMap;
 
+#[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq)]
+pub enum Privacy {
+    public, //Viewable by everyone
+    shared, //Viewable by selected people
+    private //Viewable by only owner
+}
+
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 pub struct User {
     pub parent: HashString, //Parent HashString data objects to be contextual to given data trees
@@ -21,7 +28,10 @@ pub struct User {
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 pub struct Channel {
-    pub parent: HashString
+    //Channels expressions through given objects to provide searchable tree's 
+    pub parent: HashString, //Should either be app hash for normal expression channel or user hash for den
+    pub name: String,
+    pub privacy: Privacy //Privacy enum 
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
@@ -125,7 +135,9 @@ pub fn get_channel_definitions() -> ExpressionLinkDefinition {
 
         //No contextual links on commit of channel item - contextual links only need to be made if a resonation or expression is being associated with channel
         contextual_links: vec![],
-        hooks: vec![hashmap!{"tag" => "channel", "expression_type" => "Time", "function" => "", "direction" => "reverse"}]  //Anytime expression is committed the time of the expression creation should be linked to relevant time object(s)
+        hooks: vec![hashmap!{"tag" => "channel", "expression_type" => "Time", "function" => "", "direction" => "reverse"}, //Anytime expression is committed the time of the expression creation should be linked to relevant time object(s)
+                    hashmap!{"tag" => "den", "expression_type" => "User", "function" => "link_user_channel", "direction" => "reverse"}, //Link user channel will only run if channel is of privacy type != public, in our case this would make it a den
+                    hashmap!{"tag" => "owner", "expression_type" => "User", "function" => "link_user_channel", "direction" => "forward"}]  
     };
     channel_expression_link_definitions
 }
@@ -175,6 +187,7 @@ pub fn get_group_definitions() -> ExpressionLinkDefinition {
                         hashmap!{"tag" => "owner", "expression_type" => "User"}],
 
         contextual_links: vec![],
+        //Currently pack tag is created between User -> Group, upon any commit of a group - in the future non pack groups might be possible then there should be a way to ensure this tag is not created
         hooks: vec![hashmap!{"tag" => "group", "expression_type" => "Time", "function" => "global_time_to_expression", "direction" => "reverse"},
                     hashmap!{"tag" => "pack", "expression_type" => "Time", "function" => "global_time_to_expression", "direction" => "reverse"},
                     hashmap!{"tag" => "pack", "expression_type" => "User", "function" => "pack_link", "direction" => "reverse"},

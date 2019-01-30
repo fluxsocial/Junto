@@ -36,7 +36,8 @@ pub fn handle_hooks(expression_type: String, parent_address: &Address, child_add
         for hook_definition in hook_items{
             match hook_definition.get("function"){
                 Some(&"global_time_to_expression") =>  {
-                    user::global_time_to_expression(&hook_definition.get("tag").unwrap(), &hook_definition.get("direction").unwrap().to_string(), &parent_address)
+                    user::global_time_to_expression(&hook_definition.get("tag").unwrap(), &hook_definition.get("direction").unwrap().to_string(), 
+                                                    &parent_address)
                         .map_err(|err: ZomeApiError<>| err);
                 },
                 Some(&"create_pack") => {
@@ -51,12 +52,22 @@ pub fn handle_hooks(expression_type: String, parent_address: &Address, child_add
                     match child_address{
                         Some(child_value) => {
                             user::pack_link(&hook_definition.get("tag").unwrap(), &hook_definition.get("direction").unwrap(), 
-                                    parent_address, child_value)
+                                            parent_address, child_value)
                                 .map_err(|err: ZomeApiError<>| err);
                         },
                         None => return Err(ZomeApiError::from("Child address must be specified for pack link".to_string()))
                     }
-                }
+                },
+                Some(&"link_user_channel") =>{
+                    match child_address {
+                        Some(child_value) => {
+                            user::link_user_channel(&hook_definition.get("tag").unwrap(), &hook_definition.get("direction").unwrap(), 
+                                                    &parent_address, child_value)
+                                .map_err(|err: ZomeApiError<>| err);
+                        },
+                        None => return Err(ZomeApiError::from("Child address must be specified for pack link".to_string()))
+                    }
+                },
                 None => {},
                 _ => {}
             }
