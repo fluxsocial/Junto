@@ -44,7 +44,7 @@ pub struct Group {
     pub parent: HashString,
     pub name: String,
     pub owner: Address,
-    pub private: bool 
+    pub private: Privacy 
 }
 
 //Possible that Time could be handles by Channel Expression Object

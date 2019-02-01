@@ -5,8 +5,6 @@ use hdk::{
         cas::content::Address, 
         entry::Entry, 
         entry::AppEntryValue,
-        error::HolochainError, 
-        json::JsonString,
         hash::HashString
     }
 };
@@ -19,39 +17,42 @@ use chrono::{DateTime, Utc};
 //Our module(s) imports
 use super::definitions;
 use super::user;
+use super::group;
+use super::channel;
+use super::time;
 
 //Handle hooked objects that need to be created/linked for a given data type
 pub fn handle_hooks(expression_type: String, parent_address: &Address, child_address: Option<&Address>) -> Result<String, ZomeApiError> {
     let hook_items: Vec<HashMap<&'static str, &'static str>>;
     match expression_type.as_ref(){
-        "User" => hook_items = definitions::get_user_definitions().hooks,
-        "Channel" => hook_items = definitions::get_channel_definitions().hooks,
-        "ExpressionPost" => hook_items = definitions::get_post_expression_definitions().hooks,
-        "Group" => hook_items = definitions::get_group_definitions().hooks,
-        "Time" => hook_items = definitions::get_time_definitions().hooks,
-        "Resonation" => hook_items = definitions::get_resonation_definitions().hooks,
+        "User" => hook_items = definitions::app_definitions::get_user_definitions().hooks,
+        "Channel" => hook_items = definitions::app_definitions::get_channel_definitions().hooks,
+        "ExpressionPost" => hook_items = definitions::app_definitions::get_post_expression_definitions().hooks,
+        "Group" => hook_items = definitions::app_definitions::get_group_definitions().hooks,
+        "Time" => hook_items = definitions::app_definitions::get_time_definitions().hooks,
+        "Resonation" => hook_items = definitions::app_definitions::get_resonation_definitions().hooks,
         _ => return Err(ZomeApiError::from("Expression type does not exist".to_string()))
     }
     if hook_items.len() > 0{
         for hook_definition in hook_items{
             match hook_definition.get("function"){
                 Some(&"global_time_to_expression") =>  {
-                    user::global_time_to_expression(&hook_definition.get("tag").unwrap(), &hook_definition.get("direction").unwrap().to_string(), 
+                    time::global_time_to_expression(&hook_definition.get("tag").unwrap(), &hook_definition.get("direction").unwrap().to_string(), 
                                                     &parent_address)
                         .map_err(|err: ZomeApiError<>| err);
                 },
                 Some(&"create_pack") => {
-                    user::create_pack(&parent_address)
+                    group::create_pack(&parent_address)
                         .map_err(|err: ZomeApiError<>| err);
                 },
                 Some(&"create_den") => {
-                    user::create_den(&parent_address)
+                    channel::create_den(&parent_address)
                         .map_err(|err: ZomeApiError<>| err);
                 },
                 Some(&"pack_link") => {
                     match child_address{
                         Some(child_value) => {
-                            user::pack_link(&hook_definition.get("tag").unwrap(), &hook_definition.get("direction").unwrap(), 
+                            group::pack_link(&hook_definition.get("tag").unwrap(), &hook_definition.get("direction").unwrap(), 
                                             parent_address, child_value)
                                 .map_err(|err: ZomeApiError<>| err);
                         },
@@ -61,7 +62,7 @@ pub fn handle_hooks(expression_type: String, parent_address: &Address, child_add
                 Some(&"link_user_channel") =>{
                     match child_address {
                         Some(child_value) => {
-                            user::link_user_channel(&hook_definition.get("tag").unwrap(), &hook_definition.get("direction").unwrap(), 
+                            channel::link_user_channel(&hook_definition.get("tag").unwrap(), &hook_definition.get("direction").unwrap(), 
                                                     &parent_address, child_value)
                                 .map_err(|err: ZomeApiError<>| err);
                         },
@@ -108,7 +109,7 @@ pub fn create_timestamps(parent: Address) -> ZomeApiResult<Vec<Address>> {
                         Ok(())
                     },
                     None => {
-                        let time = definitions::Time {
+                        let time = definitions::app_definitions::Time {
                             timestamp: timestamp.clone(),
                             parent: parent.clone()
                         };
@@ -135,7 +136,7 @@ pub fn create_timestamps(parent: Address) -> ZomeApiResult<Vec<Address>> {
 
 //Get timestamp entry by timestamp string w/ parent address
 pub fn get_timestamp(timestamp: &String, parent: &Address) -> ZomeApiResult<Option<Entry>> {
-    let time = definitions::Time {
+    let time = definitions::app_definitions::Time {
         timestamp: timestamp.clone(),
         parent: parent.clone()
     };
