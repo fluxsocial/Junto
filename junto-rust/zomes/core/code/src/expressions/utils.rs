@@ -11,9 +11,6 @@ use hdk::{
 use std::collections::HashMap;
 use std::convert::TryFrom;
 
-//Datetime imports
-use chrono::{DateTime, Utc};
-
 //Our module(s) imports
 use super::definitions;
 use super::user;
@@ -75,76 +72,6 @@ pub fn handle_hooks(expression_type: String, parent_address: &Address, child_add
         }
     }
     Ok("Hooks created".to_string())
-}
-
-pub fn get_current_timestamps() -> Vec<String>{
-    let now: DateTime<Utc> = Utc::now();
-    let year = now.format("%Y").to_string();
-    let month_y = now.format("%b %Y").to_string();
-    let month = now.format("%b").to_string();
-    let day_m_y = now.format("%b %e %Y").to_string();
-    let day = now.format("%b").to_string();
-    let timestamps = vec![year, month_y, month, day_m_y, day];
-    timestamps
-}
-
-//Create and link current timestamps (year, month, day) to given parent address
-//will return vector of each timestamp
-pub fn create_timestamps(parent: Address) -> ZomeApiResult<Vec<Address>> {
-    let timestamps: Vec<String> = get_current_timestamps();
-    let mut timestamp_hashs = vec![];
-
-    //Iterate over timestamp objects and check that they exist
-    for timestamp in timestamps{
-        get_timestamp(&timestamp, &parent)
-            .map(|return_timestamp: Option<Entry>| {
-                match return_timestamp {
-                    Some(entry) => {
-                        match hdk::entry_address(&entry){
-                            Ok(address) => {
-                                timestamp_hashs.push(address);
-                            },
-                            Err(hdk_err) => return Err(hdk_err)
-                        };
-                        Ok(())
-                    },
-                    None => {
-                        let time = definitions::app_definitions::Time {
-                            timestamp: timestamp.clone(),
-                            parent: parent.clone()
-                        };
-                        let entry = Entry::App("time".into(), time.into());
-                        match hdk::commit_entry(&entry){
-                            Ok(address) => {
-                                timestamp_hashs.push(address);
-                            },
-                            Err(hdk_err) => return Err(hdk_err)
-                        };
-                        Ok(())
-                    }
-                }
-            })
-            .map_err(|err: ZomeApiError<>| return ZomeApiError::from(err.to_string()));
-    }
-    //println!("{:?}", &timestamps);
-    for address in &timestamp_hashs{
-        hdk::link_entries(&parent, &address, "time")?;
-    } 
-
-    Ok(timestamp_hashs)
-}
-
-//Get timestamp entry by timestamp string w/ parent address
-pub fn get_timestamp(timestamp: &String, parent: &Address) -> ZomeApiResult<Option<Entry>> {
-    let time = definitions::app_definitions::Time {
-        timestamp: timestamp.clone(),
-        parent: parent.clone()
-    };
-    let entry = Entry::App("time".into(), time.into());
-    hdk::entry_address(&entry)
-        .map(|address: Address| hdk::get_entry(&address))
-        .and_then(|result: ZomeApiResult<Option<Entry>>| result)
-        .or_else(|err: ZomeApiError<>| Err(err))
 }
 
 pub fn get_as_type<R: TryFrom<AppEntryValue>> (address: HashString) -> ZomeApiResult<R> {
