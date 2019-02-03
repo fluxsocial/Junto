@@ -21,7 +21,7 @@ pub fn global_time_to_expression(tag: &'static str, direction: &String, expressi
     let timestamps: Vec<Address>;
     match create_timestamps(HashString::encode_from_str(&DNA_ADDRESS.to_string(), Hash::SHA2256)){
         Ok(result) => timestamps = result,
-        Err(hdk_err) => return Err(ZomeApiError::from("There was an error with creating/getting of timesamps".to_string()))
+        Err(_hdk_err) => return Err(ZomeApiError::from("There was an error with creating/getting of timesamps".to_string()))
     };
 
     if (direction == "reverse") | (direction == "both"){

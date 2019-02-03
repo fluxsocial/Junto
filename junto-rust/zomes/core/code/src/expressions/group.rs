@@ -29,7 +29,7 @@ pub fn create_pack(user: &Address) -> ZomeApiResult<serde_json::Value> {
                 Err(hdk_err) => return Err(hdk_err.into()),
             }
         },
-        Err(hdk_err) => return Err(ZomeApiError::from("Error occured on committing pack entry".to_string()))
+        Err(_hdk_err) => return Err(ZomeApiError::from("Error occured on committing pack entry".to_string()))
     };
     Ok(json!({"pack_address": pack_address}))
 }

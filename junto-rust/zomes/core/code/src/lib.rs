@@ -22,7 +22,12 @@ mod expressions;
 
 define_zome! {
     entries: [
-       expressions::definitions::entry_definitions::user::user_definition()
+       expressions::definitions::entry_definitions::user_definition(),
+       expressions::definitions::entry_definitions::time_definiton(),
+       expressions::definitions::entry_definitions::channel_definition(),
+       expressions::definitions::entry_definitions::group_definition(),
+       expressions::definitions::entry_definitions::post_definition(),
+       expressions::definitions::entry_definitions::resonation_definition()
     ]
 
     genesis: || { 

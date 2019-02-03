@@ -20,7 +20,7 @@ pub fn commit_den(entry: &Entry, user: &Address) -> Result<Address, String>{
                 Err(hdk_err) => return Err(hdk_err.into()),
             }
         },
-        Err(hdk_err) => return Err("There was an error commiting den entry".to_string())
+        Err(_hdk_err) => return Err("There was an error commiting den entry".to_string())
     }
     Ok(pack_address)
 }
