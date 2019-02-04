@@ -23,6 +23,102 @@ pub fn time_definiton() -> ValidatingEntryType {
         },
 
         links: [
+            from!(
+                "group",
+                tag: "time", 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                    Ok(())
+                }
+            ),
+            from!(
+                "user",
+                tag: "time",
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                    Ok(())
+                }
+            ),
+            from!(
+                "channel",
+                tag: "*",
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                    Ok(())
+                }
+            ),
+            from!(
+                "expression_post",
+                tag: "*", 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "user",
+                tag: "user", 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "channel",
+                tag: "*", 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "expression_post",
+                tag: "*", 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "resonation",
+                tag: "*", 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                    Ok(())
+                }
+            )
         ]
     )
 }

@@ -23,6 +23,126 @@ pub fn group_definition() -> ValidatingEntryType {
         },
 
         links: [
+            from!(
+                "user",
+                tag: "pack", //Any tag or expression tag
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                    Ok(())
+                }
+            ),
+            from!(
+                "user",
+                tag: "member", //Any tag or expression tag
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                    Ok(())
+                }
+            ),
+            from!(
+                "user",
+                tag: "owner", //Any tag or expression tag
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                    Ok(())
+                }
+            ),
+            from!(
+                "time",
+                tag: "*", //Any tag 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "expression_post",
+                tag: "expression", 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "resonation",
+                tag: "*", 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "channel",
+                tag: "*", 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "time",
+                tag: "*", 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "user",
+                tag: "member", 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "user",
+                tag: "owner", 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                    Ok(())
+                }
+            )
         ]
     )
 }

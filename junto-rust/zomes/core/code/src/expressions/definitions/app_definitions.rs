@@ -153,9 +153,9 @@ pub fn get_post_expression_definitions() -> ExpressionLinkDefinition {
                     hashmap!{"tag" => "*", "expression_type" => "Time"}, 
                     hashmap!{"tag" => "expression", "expression_type" => "Group"}],
 
-        down_links: vec![hashmap!{"tag" => "user", "expression_type" => "User"}, 
+        down_links: vec![hashmap!{"tag" => "owner", "expression_type" => "User"}, 
                         hashmap!{"tag" => "comment", "expression_type" => "ExpressionPost"}, 
-                        hashmap!{"tag" => "resonation", "expression_type" => "Resonation"}],
+                        hashmap!{"tag" => "*", "expression_type" => "Resonation"}],
 
         contextual_links: vec![hashmap!{"tag" => "*", "expression_type" => "Channel", "function" => "function to handle contextualy link to channels"},  //Link to any other channels in expression commit and to relevant user den
                             hashmap!{"tag" => "*", "expression_type" => "Group", "function" => "function to contextualy link to relevant groups"},  //Link to any packs "groups" which the expression should be inserted into
@@ -180,7 +180,7 @@ pub fn get_group_definitions() -> ExpressionLinkDefinition {
                     hashmap!{"tag" => "*", "expression_type" => "Time"}],
 
         down_links: vec![hashmap!{"tag" => "expression", "expression_type" => "ExpressionPost"},
-                        hashmap!{"tag" => "resonation", "expression_type" => "Resonation"},
+                        hashmap!{"tag" => "*", "expression_type" => "Resonation"},
                         hashmap!{"tag" => "*", "expression_type" => "Channel"},
                         hashmap!{"tag" => "*", "expression_type" => "Time"},
                         hashmap!{"tag" => "member", "expression_type" => "User"},
@@ -201,9 +201,9 @@ pub fn get_resonation_definitions() -> ExpressionLinkDefinition {
         up_links: vec![hashmap!{"tag" => "resonation", "expression_type" => "ExpressionPost"},
                     hashmap!{"tag" => "resonation", "expression_type" => "Channel"},
                     hashmap!{"tag" => "*", "expression_type" => "Channel"},
-                    hashmap!{"tag" => "resonation", "expression_type" => "User"},
-                    hashmap!{"tag" => "resonation", "expression_type" => "Group"},
-                    hashmap!{"tag" => "resonation", "expression_type" => "Time"}],
+                    hashmap!{"tag" => "*", "expression_type" => "User"},
+                    hashmap!{"tag" => "*", "expression_type" => "Group"},
+                    hashmap!{"tag" => "*", "expression_type" => "Time"}],
 
         down_links: vec![hashmap!{"tag" => "expression", "expression_type" => "ExpressionPost"},
                         hashmap!{"tag" => "*", "expression_type" => "Channel"}],
@@ -226,7 +226,7 @@ pub fn get_time_definitions() -> ExpressionLinkDefinition{
     let time_link_definitions: ExpressionLinkDefinition = ExpressionLinkDefinition {
         up_links: vec![hashmap!{"tag" => "time", "expression_type" => "Group"},
                     hashmap!{"tag" => "time", "expression_type" => "User"},
-                    hashmap!{"tag" => "time", "expression_type" => "Channel"},
+                    hashmap!{"tag" => "*", "expression_type" => "Channel"},
                     hashmap!{"tag" => "*", "expression_type" => "ExpressionPost"}],
 
         down_links: vec![hashmap!{"tag" => "user", "expression_type" => "User"},
