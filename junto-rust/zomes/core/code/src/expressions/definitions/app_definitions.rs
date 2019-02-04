@@ -86,7 +86,7 @@ pub struct ExpressionLinkDefinition {
 pub fn get_user_definitions() -> ExpressionLinkDefinition {
     let user_expression_link_definitions: ExpressionLinkDefinition = ExpressionLinkDefinition {  
         //Links which user expression can received: UP-LINK -> USER-EXPRESSION-OBJECT
-        up_links: vec![hashmap!{"tag" => "user", "expression_type" => "expression_post"},
+        up_links: vec![hashmap!{"tag" => "owner", "expression_type" => "expression_post"},
                     hashmap!{"tag" => "member", "expression_type" => "Group"},
                     hashmap!{"tag" => "owner", "expression_type" => "Group"}, 
                     hashmap!{"tag" => "user", "expression_type" => "Channel"},
