@@ -59,13 +59,12 @@ pub struct Resonation {
 
 }
 
+//CODE BELLOW IS OLD AND MESSY - refactoring is necassary here, currently only the contextual_links & hooks vectors are being used to validate that certain functions can be ran on given expression objects
 //Its possible this struct may not be useful going forward perhaps this can just be definted in the !entry of the the given expression and then retrieved later
-//For now its here - even if just to have some code which defines the structure of the applications data trees - possible that this diagram could be used to create a visualized tree
+//For now its here - even if just to have some code which defines the structure of the applications data trees
 pub struct ExpressionLinkDefinition {
     //Describes possible links that can be made from any given expression object
     //This is used to define routes that the network can/must take in order to provide a searchable library of expression
-    //vector schema: [{"tag": "linkTag", "expression_type": "expression_typeoflinkingitem", *optional* "direction": "", *optional* "function": "", *optional* "validation": ""}] 
-    //possible that hashmap could also provide references to validation functions
     //direction: forward = current expression object -> Link item. Reverse = Link item -> current expression object
     //* = tag can be anything, used to allow searching through data trees - will be used to search through multiple channels at the same time
 
@@ -73,15 +72,7 @@ pub struct ExpressionLinkDefinition {
     pub down_links: Vec<HashMap<&'static str, &'static str>>, //Defines expression expression_type(s) which object can be linked to current expression object
     pub contextual_links: Vec<HashMap<&'static str, &'static str>>, //Defines expression expression_type(s) which must be linked to given expression upon entry (building contextual paths for searching)
     pub hooks: Vec<HashMap<&'static str, &'static str>> //Defines expression expression_type(s) which must be committed when given expression is committed - might not be necassary to have for any other data other than user - because usually expression object exist independant of each other without children
-    //example for hook would be if channel is included in expression post it must be linked to all expression items in hook vector
-    //or user pack created upon user creation
-
-    //Contextual links probably wont only be run just on the commit of the given object but also on the re-reference of the object upon another commit
-    //Example would be expression channel which has already been commited being reference again on another expression post - contextual links may still need to be made to appropriate resonations/groups/users etc
 }
-
-//For now we will just have a generate definitions "type" definitions functions that will be called each time a zome needs some link definitions
-//In the future when getting variables from genesis becomes more clear all definitions will be created at genesis saved to const values and then retreived from whatever scope the genesis function is in
 
 pub fn get_user_definitions() -> ExpressionLinkDefinition {
     let user_expression_link_definitions: ExpressionLinkDefinition = ExpressionLinkDefinition {  

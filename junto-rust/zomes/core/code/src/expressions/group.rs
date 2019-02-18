@@ -1,3 +1,4 @@
+//Module to handle all group related operations
 use hdk::{
     error::ZomeApiResult,
     error::ZomeApiError,
@@ -16,10 +17,10 @@ use super::definitions::{
     }
 };
 
+//Creates a user "group" - more specifically in this case a pack
 pub fn create_pack(user: &Address) -> ZomeApiResult<serde_json::Value> {
-    //Create pack and link to user with required tags as defined by app_definitions data?
     let user_entry = utils::get_as_type::<app_definitions::User>(user.clone())?;
-    let pack = app_definitions::Group{
+    let pack = app_definitions::Group{ //Create default pack data
         parent: user.clone(),
         name: (user_entry.first_name + "'s Pack").to_string(),
         owner: user.clone(),

@@ -18,9 +18,8 @@ use super::definitions::{
     app_definitions
 };
 
+//Creates timestamp entrys on the global DHT if they do not exist and then links given expression to the timestamps
 pub fn global_time_to_expression(tag: &'static str, direction: &'static str, expression_address: &Address) -> ZomeApiResult<String> {    
-    //Check that current times exist and then link expression address to times
-    //Get/create timestamps
     let timestamps: Vec<Address>;
     match create_timestamps(&HashString::encode_from_str(&DNA_ADDRESS.to_string(), Hash::SHA2256)){
         Ok(result) => timestamps = result,
@@ -34,8 +33,8 @@ pub fn global_time_to_expression(tag: &'static str, direction: &'static str, exp
     Ok("Expression linked to global time object(s)".to_string())
 }
 
+//Creates timestamp entrys on the global DHT but with expression parent specified (context) - this allows us to create unique timestamp objects for each expression "center" such as a user or group
 pub fn local_time_to_expression(tag: &'static str, direction: &'static str, expression_address: &Address, context: &Address) -> ZomeApiResult<String> {
-    //does the same as global_time_to_expression but accepts a context address which allows us to create time(s) inside expression channels such as dens or packs
     let timestamps: Vec<Address>;
     match create_timestamps(context){
         Ok(result) => timestamps = result,
@@ -45,10 +44,11 @@ pub fn local_time_to_expression(tag: &'static str, direction: &'static str, expr
     for timestamp in &timestamps{
         utils::link_expression(tag, direction, timestamp, expression_address);
     }
-    
+
     Ok("Expression linked to global time object(s)".to_string())
 }
 
+//Get current times
 pub fn get_current_timestamps() -> Vec<String>{
     let now: DateTime<Utc> = Utc::now();
     let year = now.format("%Y").to_string();
@@ -60,13 +60,12 @@ pub fn get_current_timestamps() -> Vec<String>{
     timestamps
 }
 
-//Create and link current timestamps (year, month, day) to given parent address
-//will return vector of each timestamp
+//Create and link current timestamps (year, month, day) to given parent address - returns vector of timestamps
 pub fn create_timestamps(parent: &Address) -> ZomeApiResult<Vec<Address>> {
     let timestamps: Vec<String> = get_current_timestamps();
     let mut timestamp_hashs = vec![];
 
-    //Iterate over timestamp objects and check that they exist
+    //Iterate over timestamp objects and check that they exist - if not create them
     for timestamp in timestamps{
         get_timestamp(&timestamp, &parent)
             .map(|return_timestamp: Option<Entry>| {
@@ -98,7 +97,7 @@ pub fn create_timestamps(parent: &Address) -> ZomeApiResult<Vec<Address>> {
             })
             .map_err(|err: ZomeApiError<>| ZomeApiError::Internal("There was an error getting timestamps".to_string()));
     }
-    //println!("{:?}", &timestamps);
+
     for address in &timestamp_hashs{
         hdk::link_entries(&parent, &address, "time")?;
     } 
