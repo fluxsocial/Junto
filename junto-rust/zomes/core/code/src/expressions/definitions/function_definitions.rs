@@ -28,16 +28,10 @@ pub enum FunctionParameters{
     CreateDen{
         user: Address
     },
-    PackLink{
+    LinkExpression{
         tag: &'static str, 
         direction: &'static str, 
-        pack: Address, 
-        expression: Address
-    },
-    LinkUserChannel{
-        tag: &'static str, 
-        direction: &'static str, 
-        channel: Address, 
-        user: Address
+        parent_expression: Address, 
+        child_expression: Address
     },
 }

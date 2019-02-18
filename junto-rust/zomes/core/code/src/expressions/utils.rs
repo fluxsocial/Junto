@@ -83,24 +83,15 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
                             _ => return Err(ZomeApiError::from("create_den expectes the CreateDen enum value to be present".to_string()))
                         }
                     },
-                    &"pack_link" => {
+                    &"link_expression" => {
                         match &hook_descriptor.parameters{
-                            FunctionParameters::PackLink {tag, direction, pack, expression} =>{
-                                group::pack_link(tag, direction, &pack, &expression)
+                            FunctionParameters::LinkExpression {tag, direction, parent_expression, child_expression} =>{
+                                link_expression(tag, direction, &parent_expression, &child_expression)
                                     .map_err(|err: ZomeApiError<>| err);
                             },
-                            _ => return Err(ZomeApiError::from("pack_link expectes the PackLink enum value to be present".to_string()))
+                            _ => return Err(ZomeApiError::from("link_expression expects the LinkExpression enum value to be present".to_string()))
                         }
-                    },
-                    &"link_user_channel" => {
-                        match &hook_descriptor.parameters{
-                            FunctionParameters::LinkUserChannel {tag, direction, channel, user} =>{
-                                channel::link_user_channel(tag, direction, &channel, &user)
-                                    .map_err(|err: ZomeApiError<>| err);
-                            },
-                            _ => return Err(ZomeApiError::from("link_user_channel expectes the LinkUserChannel enum value to be present".to_string()))
-                        }
-                    },
+                    }
                     &_ => {
                         return Err(ZomeApiError::from("Specified function does not exist".to_string()))
                     }

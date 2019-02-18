@@ -21,8 +21,8 @@ pub fn commit_den(entry: &Entry, user: &Address) -> Result<Address, String> {
     match hdk::commit_entry(&entry){
         Ok(address) => {
             pack_address = address.clone();
-            let hook_definitions = vec![FunctionDescriptor{name: "link_user_channel", parameters: FunctionParameters::LinkUserChannel{tag: "den", direction: "reverse", channel: address.clone(), user: user.clone()}},
-                                        FunctionDescriptor{name: "link_user_channel", parameters: FunctionParameters::LinkUserChannel{tag: "owner", direction: "forward", channel: address.clone(), user: user.clone()}}];
+            let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "den", direction: "reverse", parent_expression: address.clone(), child_expression: user.clone()}},
+                                        FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "owner", direction: "forward", parent_expression: address.clone(), child_expression: user.clone()}}];
 
             match utils::handle_hooks("Channel".to_string(), hook_definitions){
                 Ok(_result) => {},
@@ -74,19 +74,6 @@ pub fn create_den(user: &Address) -> ZomeApiResult<serde_json::Value> {
     };
 
     Ok(json!({"private_den_address": private_den_address, "shared_den_address": shared_den_address, "public_den_address": public_den_address}))
-}
-
-pub fn link_user_channel(tag: &'static str, direction: &'static str, channel: &Address, user: &Address) -> ZomeApiResult<String> {
-    //Should check that channel privacy type != public and then make link to user with whatever tag specified
-    //This is currently used to link user den(s) to user address
-    let channel_entry = utils::get_as_type::<app_definitions::Channel>(channel.clone())?;
-    if (direction == "reverse") | (direction == "both"){
-        hdk::link_entries(&user, &channel, tag)?;
-    }
-    if (direction == "forward") | (direction == "both"){
-        hdk::link_entries(&channel, &user, tag)?;
-    }
-    Ok("User channel links created".to_string())
 }
 
 pub fn channel_exists(channel: String, parent: Address, privacy: bool) -> ZomeApiResult<String> {

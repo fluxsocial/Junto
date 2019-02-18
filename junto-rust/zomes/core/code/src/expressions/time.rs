@@ -13,6 +13,7 @@ use hdk::{
 use chrono::{DateTime, Utc};
 use multihash::Hash;
 
+use super::utils;
 use super::definitions::{
     app_definitions
 };
@@ -26,16 +27,10 @@ pub fn global_time_to_expression(tag: &'static str, direction: &'static str, exp
         Err(_hdk_err) => return Err(ZomeApiError::from("There was an error with creating/getting of timestamps".to_string()))
     };
 
-    if (direction == "reverse") | (direction == "both"){
-        for timestamp in &timestamps{
-            hdk::link_entries(&timestamp, &expression_address, tag)?;
-        }
+    for timestamp in &timestamps{
+        utils::link_expression(tag, direction, timestamp, expression_address);
     }
-    if (direction == "forward") | (direction == "both"){
-        for timestamp in &timestamps{
-            hdk::link_entries(&expression_address, &timestamp, tag)?;
-        }
-    }
+
     Ok("Expression linked to global time object(s)".to_string())
 }
 
@@ -47,16 +42,10 @@ pub fn local_time_to_expression(tag: &'static str, direction: &'static str, expr
         Err(_hdk_err) => return Err(ZomeApiError::from("There was an error with creating/getting of timestamps".to_string()))
     };
 
-    if (direction == "reverse") | (direction == "both"){
-        for timestamp in &timestamps{
-            hdk::link_entries(&timestamp, &expression_address, tag)?;
-        }
+    for timestamp in &timestamps{
+        utils::link_expression(tag, direction, timestamp, expression_address);
     }
-    if (direction == "forward") | (direction == "both"){
-        for timestamp in &timestamps{
-            hdk::link_entries(&expression_address, &timestamp, tag)?;
-        }
-    }
+    
     Ok("Expression linked to global time object(s)".to_string())
 }
 
