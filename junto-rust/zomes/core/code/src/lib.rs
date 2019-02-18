@@ -15,7 +15,11 @@ extern crate chrono;
 use multihash::Hash;
 use hdk::{
     api::DNA_ADDRESS,
-    holochain_core_types::{json::JsonString, hash::HashString}
+    holochain_core_types::{
+        json::JsonString, 
+        cas::content::Address,
+        hash::HashString
+    }
 };
 
 mod expressions;
@@ -41,11 +45,16 @@ define_zome! {
     }
 
     functions: {
-        main (Public) {
+        main (Public) { //Capability main - public 
             create_user: {
                 inputs: |user_data: expressions::definitions::app_definitions::User|,
 				outputs: |result: JsonString|,
 				handler: expressions::user::handle_create_user
+            }
+            get_user:{
+                inputs: |user: Address|,
+				outputs: |result: JsonString|,
+				handler: expressions::user::handle_get_user
             }
         }
     }

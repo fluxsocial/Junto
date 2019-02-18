@@ -4,7 +4,8 @@ use super::app_definitions;
 use hdk::{
     entry_definition::ValidatingEntryType,
     holochain_core_types::{
-        dna::entry_types::Sharing
+        dna::entry_types::Sharing,
+        cas::content::Address
     }
 };
 
@@ -13,7 +14,7 @@ pub fn group_definition() -> ValidatingEntryType {
         name: "group",
         description: "Group Object Entry",
         sharing: Sharing::Public,
-        native_type: app_definitions::User,
+        native_type: app_definitions::Group,
         validation_package: || {
             hdk::ValidationPackageDefinition::Entry
         },

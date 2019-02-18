@@ -19,7 +19,8 @@ use super::channel;
 use super::time;
 
 //Handle hooked objects that need to be created/linked for a given data type
-pub fn handle_hooks(expression_type: String, parent_address: &Address, child_address: Option<&Address>) -> Result<String, ZomeApiError> {
+pub fn handle_hooks(expression_type: String, parent_address: &Address, child_address: Option<&Address>, 
+                    context: Option<&Address>, channels: Option<Vec<definitions::app_definitions::Channel>>) -> Result<String, ZomeApiError> {
     let hook_items: Vec<HashMap<&'static str, &'static str>>;
     match expression_type.as_ref(){
         "User" => hook_items = definitions::app_definitions::get_user_definitions().hooks,
@@ -37,6 +38,16 @@ pub fn handle_hooks(expression_type: String, parent_address: &Address, child_add
                     time::global_time_to_expression(&hook_definition.get("tag").unwrap(), &hook_definition.get("direction").unwrap().to_string(), 
                                                     &parent_address)
                         .map_err(|err: ZomeApiError<>| err);
+                },
+                Some(&"local_time_to_expression") => {
+                    match context {
+                        Some(context_address) => {
+                            time::global_time_to_expression(&hook_definition.get("tag").unwrap(), &hook_definition.get("direction").unwrap().to_string(), 
+                                                    &parent_address, &context_address)
+                                .map_err(|err: ZomeApiError<>| err);
+                        },
+                        None => return Err(ZomeApiError::from("Context address must be specified for local_time_to_expression".to_string()))
+                    }
                 },
                 Some(&"create_pack") => {
                     group::create_pack(&parent_address)

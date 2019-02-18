@@ -24,7 +24,7 @@ pub fn create_pack(user: &Address) -> ZomeApiResult<serde_json::Value> {
     match hdk::commit_entry(&entry){
         Ok(address) => {
             pack_address = address.clone();
-            match utils::handle_hooks("Group".to_string(), &address, Some(&user)){
+            match utils::handle_hooks("Group".to_string(), &address, Some(&user), None, None){
                 Ok(_result) => {},
                 Err(hdk_err) => return Err(hdk_err.into()),
             }

@@ -21,7 +21,28 @@ pub fn global_time_to_expression(tag: &'static str, direction: &String, expressi
     let timestamps: Vec<Address>;
     match create_timestamps(HashString::encode_from_str(&DNA_ADDRESS.to_string(), Hash::SHA2256)){
         Ok(result) => timestamps = result,
-        Err(_hdk_err) => return Err(ZomeApiError::from("There was an error with creating/getting of timesamps".to_string()))
+        Err(_hdk_err) => return Err(ZomeApiError::from("There was an error with creating/getting of timestamps".to_string()))
+    };
+
+    if (direction == "reverse") | (direction == "both"){
+        for timestamp in &timestamps{
+            hdk::link_entries(&timestamp, &expression_address, tag)?;
+        }
+    }
+    if (direction == "forward") | (direction == "both"){
+        for timestamp in &timestamps{
+            hdk::link_entries(&expression_address, &timestamp, tag)?;
+        }
+    }
+    Ok("Expression linked to global time object(s)".to_string())
+}
+
+pub fn local_time_to_expression(tag: &'static str, direction: &String, expression_address: &Address, context: &Address) -> ZomeApiResult<String> {
+    //does the same as global_time_to_expression but accepts a context address which allows us to check for time(s) inside expression channels such as dens or packs
+    let timestamps: Vec<Address>;
+    match create_timestamps(context){
+        Ok(result) => timestamps = result,
+        Err(_hdk_err) => return Err(ZomeApiError::from("There was an error with creating/getting of timestamps".to_string()))
     };
 
     if (direction == "reverse") | (direction == "both"){
@@ -84,7 +105,7 @@ pub fn create_timestamps(parent: Address) -> ZomeApiResult<Vec<Address>> {
                     }
                 }
             })
-            .map_err(|err: ZomeApiError<>| return ZomeApiError::from(err.to_string()));
+            .map_err(|err: ZomeApiError<>| ZomeApiError::Internal("There was an error getting timestamps".to_string()));
     }
     //println!("{:?}", &timestamps);
     for address in &timestamp_hashs{

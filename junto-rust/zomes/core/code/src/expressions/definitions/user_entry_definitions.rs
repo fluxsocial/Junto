@@ -4,7 +4,8 @@ use super::app_definitions;
 use hdk::{
     entry_definition::ValidatingEntryType,
     holochain_core_types::{
-        dna::entry_types::Sharing
+        dna::entry_types::Sharing,
+        cas::content::Address
     }
 };
 

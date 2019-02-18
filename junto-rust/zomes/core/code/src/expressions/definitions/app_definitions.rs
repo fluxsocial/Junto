@@ -157,17 +157,13 @@ pub fn get_post_expression_definitions() -> ExpressionLinkDefinition {
                         hashmap!{"tag" => "comment", "expression_type" => "ExpressionPost"}, 
                         hashmap!{"tag" => "*", "expression_type" => "Resonation"}],
 
-        contextual_links: vec![hashmap!{"tag" => "*", "expression_type" => "Channel", "function" => "function to handle contextualy link to channels"},  //Link to any other channels in expression commit and to relevant user den
-                            hashmap!{"tag" => "*", "expression_type" => "Group", "function" => "function to contextualy link to relevant groups"},  //Link to any packs "groups" which the expression should be inserted into
-                            hashmap!{"tag" => "*", "expression_type" => "Time", "function" => "function to contextualy link to time"},
-                            hashmap!{"tag" => "*", "expression_type" => "Resonation", "function" => "function to contextualy link to associated resonations"}],
+        contextual_links: vec![hashmap!{"tag" => "*", "expression_type" => "Channel", "function" => "create_expression_channel_paths"},  //Link to any other channels in expression commit and to relevant user den
+                               hashmap!{"tag" => "*", "expression_type" => "Time", "function" => "create_expression_time_paths"}],
 
-        hooks: vec![hashmap!{"tag" => "expression", "expression_type" => "Channel", "function" => "", "direction" => "reverse"}, //To any associated channels 
-                    hashmap!{"tag" => "expression", "expression_type" => "Channel", "function" => "", "direction" => "reverse"}, //To den
-                    hashmap!{"tag" => "expression", "expression_type" => "Resonation", "function" => "", "direction" => "reverse"},
-                    hashmap!{"tag" => "expression", "expression_type" => "Group", "function" => "", "direction" => "reverse"}, //To pack
-                    hashmap!{"tag" => "expression", "expression_type" => "Time", "function" => "", "direction" => "reverse"}, //To timestamp
-                    hashmap!{"tag" => "expression", "expression_type" => "User", "function" => "", "direction" => "reverse"}] //To user
+        hooks: vec![hashmap!{"tag" => "expression", "expression_type" => "Time", "function" => "global_time_to_expression", "direction" => "reverse"},
+                    hashmap!{"tag" => "expression", "expression_type" => "Time", "function" => "local_time_to_expression", "direction" => "reverse"},
+                    hashmap!{"tag" => "expression", "expression_type" => "Channel", "function" => "create_channels", "direction" => "reverse"}] //To any associated channels 
+                    // hashmap!{"tag" => "expression", "expression_type" => "User", "function" => "expression_to_user", "direction" => "reverse"}] //To user - might not be necassary here, traditionally hooks are only used for creating objects not linking, linking might happen in a contextual link function
     };
     post_expression_link_definitions
 }

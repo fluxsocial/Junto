@@ -1,5 +1,6 @@
 use hdk::{
     holochain_core_types::{
+        cas::content::Address,
         entry::Entry, 
         json::JsonString
     }
@@ -22,6 +23,9 @@ pub fn handle_create_user(user_data: definitions::app_definitions::User) -> Json
     //Then we have to handle any hooks/contextual links specified in definitions - functions are in utils.rs currently
 }
 
-// pub fn get_user(user: &Address) -> ZomeApiResult<Entry> {
-     //Ok(Entry)
-// }
+pub fn handle_get_user(user: Address) -> JsonString {
+    match hdk::get_entry(&user){
+        Ok(result) => json!({ "user": result }).into(),
+        Err(hdk_err) => hdk_err.into()
+    }
+}

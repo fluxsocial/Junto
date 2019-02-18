@@ -10,12 +10,12 @@ use hdk::{
 use super::utils;
 use super::definitions;
 
-pub fn commit_den(entry: &Entry, user: &Address) -> Result<Address, String>{
+pub fn commit_den(entry: &Entry, user: &Address) -> Result<Address, String> {
     let pack_address;
     match hdk::commit_entry(&entry){
         Ok(address) => {
             pack_address = address.clone();
-            match utils::handle_hooks("Channel".to_string(), &address, Some(&user)){
+            match utils::handle_hooks("Channel".to_string(), &address, Some(&user), None, None){
                 Ok(_result) => {},
                 Err(hdk_err) => return Err(hdk_err.into()),
             }
@@ -67,8 +67,9 @@ pub fn create_den(user: &Address) -> ZomeApiResult<serde_json::Value> {
     Ok(json!({"private_den_address": private_den_address, "shared_den_address": shared_den_address, "public_den_address": public_den_address}))
 }
 
-pub fn link_user_channel(tag: &'static str, direction: &'static str, channel: &Address, user: &Address) -> ZomeApiResult<String>{
+pub fn link_user_channel(tag: &'static str, direction: &'static str, channel: &Address, user: &Address) -> ZomeApiResult<String> {
     //Should check that channel privacy type != public and then make link to user with whatever tag specified
+    //This is currently used to link user den(s) to user address
     let channel_entry = utils::get_as_type::<definitions::app_definitions::Channel>(channel.clone())?;
     if channel_entry.privacy == definitions::app_definitions::Privacy::public{
         return Err(ZomeApiError::from("Linking of channel to a user can only occur on non public channels".to_string()));
@@ -82,3 +83,14 @@ pub fn link_user_channel(tag: &'static str, direction: &'static str, channel: &A
     Ok("User channel links created".to_string())
 }
 
+pub fn channel_exists(channel: String, parent: Address, privacy: bool) -> ZomeApiResult<String> {
+    Ok("ok".to_string())
+}
+
+pub fn create_channel(channel: String, parent: Address, privacy: bool) -> ZomeApiResult<String> {
+    Ok("ok".to_string())
+}
+
+pub fn create_channels(channels: Vec<definitions::app_definitions::Channel>) -> ZomeApiResult<String> {
+    Ok("ok".to_string())
+}

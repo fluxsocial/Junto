@@ -8,30 +8,34 @@ const dnaPath = "./dist/bundle.json"
 
 // closure to keep config-only stuff out of test scope
 const container = (() => {
-    const agentAlice = Config.agent("alice")
+    const agentJosh = Config.agent("josh")
 
     const dna = Config.dna(dnaPath)
 
-    const instanceAlice = Config.instance(agentAlice, dna)
+    const instanceJosh = Config.instance(agentJosh, dna)
 
-    const containerConfig = Config.container([instanceAlice])
+    const containerConfig = Config.container([instanceJosh])
     return new Container(containerConfig)
 })()
 
 // Initialize the Container
 container.start()
 
-const alice = container.makeCaller('alice', dnaPath)
+const app = container.makeCaller('josh', dnaPath)
 
-test('description of example test', (t) => {
+test('Creating user test', (t) => {
   // Make a call to a Zome function
   // indicating the capability and function, and passing it an input
-    const addr = alice.call("my_zome", "main", "create_my_entry", {"entry" : {"content":"sample content"}})
-
-    const result = alice.call("my_zome", "main", "get_my_entry", {"address": addr.Ok})
+    let user = app.call("core", "main", "create_user", {user_data : {
+      parent: "hashstring", //Parent HashString data objects to be contextual to given data trees
+      first_name: "Test user",
+      last_name: "Test Last",
+      bio: "Bio test user",
+      profile_picture: "picture test user",
+      verified: true}})
 
   // check for equality of the actual and expected results
-  t.deepEqual(result, { Ok: { App: [ 'my_entry', '{"content":"sample content"}' ] } })
+  t.deepEqual(user, { Ok: { App: [ 'my_entry', '{"content":"sample content"}' ] } })
 
   // ends this test
   t.end()
