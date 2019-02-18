@@ -13,13 +13,15 @@ use hdk::{
 use chrono::{DateTime, Utc};
 use multihash::Hash;
 
-use super::definitions;
+use super::definitions::{
+    app_definitions
+};
 
-pub fn global_time_to_expression(tag: &'static str, direction: &String, expression_address: &Address) -> ZomeApiResult<String> {    
+pub fn global_time_to_expression(tag: &'static str, direction: &'static str, expression_address: &Address) -> ZomeApiResult<String> {    
     //Check that current times exist and then link expression address to times
     //Get/create timestamps
     let timestamps: Vec<Address>;
-    match create_timestamps(HashString::encode_from_str(&DNA_ADDRESS.to_string(), Hash::SHA2256)){
+    match create_timestamps(&HashString::encode_from_str(&DNA_ADDRESS.to_string(), Hash::SHA2256)){
         Ok(result) => timestamps = result,
         Err(_hdk_err) => return Err(ZomeApiError::from("There was an error with creating/getting of timestamps".to_string()))
     };
@@ -37,8 +39,8 @@ pub fn global_time_to_expression(tag: &'static str, direction: &String, expressi
     Ok("Expression linked to global time object(s)".to_string())
 }
 
-pub fn local_time_to_expression(tag: &'static str, direction: &String, expression_address: &Address, context: &Address) -> ZomeApiResult<String> {
-    //does the same as global_time_to_expression but accepts a context address which allows us to check for time(s) inside expression channels such as dens or packs
+pub fn local_time_to_expression(tag: &'static str, direction: &'static str, expression_address: &Address, context: &Address) -> ZomeApiResult<String> {
+    //does the same as global_time_to_expression but accepts a context address which allows us to create time(s) inside expression channels such as dens or packs
     let timestamps: Vec<Address>;
     match create_timestamps(context){
         Ok(result) => timestamps = result,
@@ -71,7 +73,7 @@ pub fn get_current_timestamps() -> Vec<String>{
 
 //Create and link current timestamps (year, month, day) to given parent address
 //will return vector of each timestamp
-pub fn create_timestamps(parent: Address) -> ZomeApiResult<Vec<Address>> {
+pub fn create_timestamps(parent: &Address) -> ZomeApiResult<Vec<Address>> {
     let timestamps: Vec<String> = get_current_timestamps();
     let mut timestamp_hashs = vec![];
 
@@ -90,7 +92,7 @@ pub fn create_timestamps(parent: Address) -> ZomeApiResult<Vec<Address>> {
                         Ok(())
                     },
                     None => {
-                        let time = definitions::app_definitions::Time {
+                        let time = app_definitions::Time {
                             timestamp: timestamp.clone(),
                             parent: parent.clone()
                         };
@@ -117,7 +119,7 @@ pub fn create_timestamps(parent: Address) -> ZomeApiResult<Vec<Address>> {
 
 //Get timestamp entry by timestamp string w/ parent address
 pub fn get_timestamp(timestamp: &String, parent: &Address) -> ZomeApiResult<Option<Entry>> {
-    let time = definitions::app_definitions::Time {
+    let time = app_definitions::Time {
         timestamp: timestamp.clone(),
         parent: parent.clone()
     };

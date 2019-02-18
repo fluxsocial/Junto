@@ -15,7 +15,7 @@ pub fn handle_post_expression(expression: definitions::app_definitions::Expressi
     let entry = Entry::App("expression_post".into(), expression.into());
     match hdk::commit_entry(&entry){
         Ok(address) => {},
-        Err(hdk_err) => hdk_err.into()
+        Err(hdk_err) => return json!({"error": hdk_err}).into()
     };
     //get user den
     //get user pack

@@ -11,9 +11,9 @@ use std::collections::HashMap;
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq)]
 pub enum Privacy {
-    public, //Viewable by everyone
-    shared, //Viewable by selected people
-    private //Viewable by only owner
+    Public, //Viewable by everyone
+    Shared, //Viewable by selected people
+    Private //Viewable by only owner
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
@@ -157,8 +157,7 @@ pub fn get_post_expression_definitions() -> ExpressionLinkDefinition {
                         hashmap!{"tag" => "comment", "expression_type" => "ExpressionPost"}, 
                         hashmap!{"tag" => "*", "expression_type" => "Resonation"}],
 
-        contextual_links: vec![hashmap!{"tag" => "*", "expression_type" => "Channel", "function" => "create_expression_channel_paths"},  //Link to any other channels in expression commit and to relevant user den
-                               hashmap!{"tag" => "*", "expression_type" => "Time", "function" => "create_expression_time_paths"}],
+        contextual_links: vec![hashmap!{"tag" => "*", "expression_type" => "*", "function" => "create_expression_paths"}],  //Link to any other channels in expression commit and to relevant user den
 
         hooks: vec![hashmap!{"tag" => "expression", "expression_type" => "Time", "function" => "global_time_to_expression", "direction" => "reverse"},
                     hashmap!{"tag" => "expression", "expression_type" => "Time", "function" => "local_time_to_expression", "direction" => "reverse"},
