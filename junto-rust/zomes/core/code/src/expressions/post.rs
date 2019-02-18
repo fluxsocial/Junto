@@ -24,11 +24,18 @@ pub fn handle_post_expression(expression: definitions::app_definitions::Expressi
     //check that channel(s) exist in each of the above expression locals
     //if not create needed channels 
     //check for time in each expression locals
-    //create contextual links of times & channels in each expression locals & any other queryable link structures which may want to be made
+    //create contextual links of times & channels in each expression locals & any other queryable link structures which may want to be made such as username
     json!({"message": "ok"}).into()
 }
 
 //Function to handle the resonation of an expression post - will put the post into packs which the post should be resonated into
 pub fn handle_resonation(expression: Address, resonation: definitions::app_definitions::Resonation) -> JsonString{
+    json!({"message": "ok"}).into()
+}
+
+//Function to handle the getting of expression with a given query root and query string
+//for example: query_root: Channel: Technology, query_string: Timestamp<2018>:Channel<holochain>:Channel<dht>:User<Eric>
+//this would search for all posts in the channel Technology, which where posted in 2018 and also contain the channels Holochain & Dht by the user Eric
+pub fn get_expression(query_root: Address, query_string: String) -> JsonString{
     json!({"message": "ok"}).into()
 }
