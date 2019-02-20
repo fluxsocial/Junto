@@ -15,3 +15,6 @@ To install our web application locally see the README in /static/
 ## Learn more
 * JUNTO (https://junto.foundation)
 * Kickstarter (https://www.kickstarter.com/projects/1958309948/junto-a-new-breed-of-social-media) 
+
+## Status 
+This application is not security tested or in any way stable. No validation rules are in place only core application logic is present.
