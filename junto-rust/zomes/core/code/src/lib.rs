@@ -36,7 +36,7 @@ define_zome! {
 
     genesis: || { 
         {
-            match expressions::time::create_timestamps(&HashString::encode_from_str(&DNA_ADDRESS.to_string(), Hash::SHA2256)){//Create core application timestamps "global"
+            match expressions::time::create_timestamps(&HashString::encode_from_str(&DNA_ADDRESS.to_string(), Hash::SHA2256), DNA_ADDRESS.to_string()){//Create core application timestamps "global"
                 Ok(_) => {},
                 Err(hdk_err) => return Err(hdk_err.to_string())
             };

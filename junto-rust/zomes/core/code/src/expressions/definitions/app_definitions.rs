@@ -19,6 +19,7 @@ pub enum Privacy {
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 pub struct User {
     pub parent: HashString, //Parent HashString data objects to be contextual to given data trees
+    pub username: String,
     pub first_name: String,
     pub last_name: String,
     pub bio: String,
@@ -36,7 +37,8 @@ pub struct Channel {
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 pub struct ExpressionPost { 
-    pub parent: HashString
+    pub parent: HashString,
+    pub expression_type: String
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
@@ -51,12 +53,21 @@ pub struct Group {
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 pub struct Time {
     pub parent: HashString,
-    pub timestamp: String
+    pub time: String,
+    pub time_type: String
 }  
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 pub struct Resonation {
 
+}
+
+pub type GetLinksLoadResult<T> = Vec<GetLinksLoadElement<T>>;
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct GetLinksLoadElement<T> {
+	pub address: HashString,
+	pub entry: T
 }
 
 //CODE BELLOW IS OLD AND MESSY - refactoring is necassary here, currently only the contextual_links & hooks vectors are being used to validate that certain functions can be ran on given expression objects
