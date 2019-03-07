@@ -26,16 +26,8 @@ pub fn global_time_to_expression(tag: &'static str, direction: &'static str, exp
     let expression_entry = get_entry(expression_address)?;
     match expression_entry{
         Some(Entry::ChainHeader(header)) => {
-            let iso_timestamp = serde_json::to_string(header.timestamp());
-            match iso_timestamp{
-                Ok(iso_timestamp) => {
-                    match create_timestamps(&HashString::encode_from_str(&DNA_ADDRESS.to_string(), Hash::SHA2256), iso_timestamp){
-                        Ok(result) => timestamps = result,
-                        Err(hdk_err) => return Err(ZomeApiError::from(hdk_err.to_string()))
-                    };
-                },
-                Err(hdk_err) => return Err(ZomeApiError::from(hdk_err.to_string()))
-            }
+            let iso_timestamp = serde_json::to_string(header.timestamp()).map_err(|err| ZomeApiError::from(err.to_string()))?;
+            timestamps = create_timestamps(&HashString::encode_from_str(&DNA_ADDRESS.to_string(), Hash::SHA2256), iso_timestamp)?;
         },
         Some(_) => {},
         None => return Err(ZomeApiError::from("No such expression at expression_address".to_string()))
@@ -54,16 +46,8 @@ pub fn local_time_to_expression(tag: &'static str, direction: &'static str, expr
     let expression_entry = get_entry(expression_address)?;
     match expression_entry{
         Some(Entry::ChainHeader(header)) => {
-            let iso_timestamp = serde_json::to_string(header.timestamp());
-            match iso_timestamp{
-                Ok(iso_timestamp) => {
-                    match create_timestamps(context, iso_timestamp){
-                        Ok(result) => timestamps = result,
-                        Err(hdk_err) => return Err(ZomeApiError::from(hdk_err.to_string()))
-                    };
-                },
-                Err(hdk_err) => return Err(ZomeApiError::from(hdk_err.to_string()))
-            }
+            let iso_timestamp = serde_json::to_string(header.timestamp()).map_err(|err| ZomeApiError::from(err.to_string()))?;
+            timestamps = create_timestamps(context, iso_timestamp)?;
         },
         Some(_) => {},
         None => return Err(ZomeApiError::from("No such expression at expression_address".to_string()))
@@ -85,32 +69,20 @@ pub fn create_timestamps(parent: &Address, iso_timestamp: String) -> ZomeApiResu
     for (i, timestamp) in timestamps.iter().enumerate(){
         match i{
             0 => {
-                let hash = save_timestamp(timestamp, "year".to_string(), &parent);
-                match hash{
-                    Ok(hash) => timestamp_hashs.push(hash),
-                    Err(hdk_err) => return Err(hdk_err)
-                }
+                let hash = save_timestamp(timestamp, "year".to_string(), &parent)?;
+                timestamp_hashs.push(hash);
             },
             1 => {
-                let hash = save_timestamp(timestamp, "month".to_string(), &parent);
-                match hash{
-                    Ok(hash) => timestamp_hashs.push(hash),
-                    Err(hdk_err) => return Err(ZomeApiError::from(hdk_err.to_string()))
-                }
+                let hash = save_timestamp(timestamp, "month".to_string(), &parent)?;
+                timestamp_hashs.push(hash);
             },
             2 => {
-                let hash = save_timestamp(timestamp, "day".to_string(), &parent);
-                match hash{
-                    Ok(hash) => timestamp_hashs.push(hash),
-                    Err(hdk_err) => return Err(ZomeApiError::from(hdk_err.to_string()))
-                }
+                let hash = save_timestamp(timestamp, "day".to_string(), &parent)?;
+                timestamp_hashs.push(hash);
             },
             3 => {
-                let hash = save_timestamp(timestamp, "hour".to_string(), &parent);
-                match hash{
-                    Ok(hash) => timestamp_hashs.push(hash),
-                    Err(hdk_err) => return Err(ZomeApiError::from(hdk_err.to_string()))
-                }
+                let hash = save_timestamp(timestamp, "hour".to_string(), &parent)?;
+                timestamp_hashs.push(hash);
             },
             _ => {}
         }
@@ -129,10 +101,8 @@ pub fn save_timestamp(timestamp: &String, time_type: String, parent: &Address) -
         Ok(Some(entry)) => {
             match Some(entry){
                 Some(entry) => {
-                    match hdk::entry_address(&entry){
-                        Ok(address) => return Ok(address),
-                        Err(hdk_err) => return Err(hdk_err)
-                    };
+                    let address = hdk::entry_address(&entry)?;
+                    return Ok(address)
                 },
                 None => { //This code is a little messy and should be refactored - currently we are matching for the same thing twice - need to try and figure out how to refactor this TODO
                     let time = app_definitions::Time {
@@ -141,10 +111,8 @@ pub fn save_timestamp(timestamp: &String, time_type: String, parent: &Address) -
                         time_type: time_type.clone()
                     };
                     let entry = Entry::App("time".into(), time.into());
-                    match hdk::commit_entry(&entry){
-                        Ok(address) => return Ok(address),
-                        Err(hdk_err) => return Err(hdk_err)
-                    };
+                    let address = hdk::entry_address(&entry)?;
+                    return Ok(address)
                 }
             } 
         },
@@ -155,10 +123,8 @@ pub fn save_timestamp(timestamp: &String, time_type: String, parent: &Address) -
                 time_type: time_type.clone()
             };
             let entry = Entry::App("time".into(), time.into());
-            match hdk::commit_entry(&entry){
-                Ok(address) => return Ok(address),
-                Err(hdk_err) => return Err(hdk_err)
-            };
+            let address = hdk::entry_address(&entry)?;
+            return Ok(address)
         },
         Err(hdk_err) => return Err(hdk_err)
     }
