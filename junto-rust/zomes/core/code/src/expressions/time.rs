@@ -79,7 +79,7 @@ pub fn local_time_to_expression(tag: &'static str, direction: &'static str, expr
 //Create timestamp functions should not use datatime but instead should use the timestamp in the entry header for the expression that will be linked to the timestamp
 //Create and link current timestamps (year, month, day) to given parent address - returns vector of timestamps
 pub fn create_timestamps(parent: &Address, iso_timestamp: String) -> ZomeApiResult<Vec<Address>> {
-    let mut timestamps = vec![iso_timestamp[0..4].to_string(), iso_timestamp[5..7].to_string(), iso_timestamp[8..10].to_string(), iso_timestamp[11..13].to_string()]; //Slice timestamp into vector as year, month, day, hour
+    let timestamps = vec![iso_timestamp[0..4].to_string(), iso_timestamp[5..7].to_string(), iso_timestamp[8..10].to_string(), iso_timestamp[11..13].to_string()]; //Slice timestamp into vector as year, month, day, hour
     let mut timestamp_hashs = vec![];
 
     for (i, timestamp) in timestamps.iter().enumerate(){

@@ -80,16 +80,16 @@ pub fn create_den(user: &Address) -> ZomeApiResult<serde_json::Value> {
 }
 
 //Check if channel with given data exists
-pub fn channel_exists(channel: String, parent: Address, privacy: bool) -> ZomeApiResult<String> {
+pub fn channel_exists(channel: app_definitions::Channel) -> ZomeApiResult<String> {
     Ok("ok".to_string())
 }
 
 //Creates channel
-pub fn create_channel(channel: String, parent: Address, privacy: bool) -> ZomeApiResult<String> {
+pub fn create_channel(channel: app_definitions::Channel) -> ZomeApiResult<String> {
     Ok("ok".to_string())
 }
 
 //Creates multiple channels
-pub fn create_channels(channels: Vec<app_definitions::Channel>) -> ZomeApiResult<String> {
+pub fn create_channels(channels: &Vec<String>, parent: &Address, privacy: &app_definitions::Privacy) -> ZomeApiResult<String> {
     Ok("ok".to_string())
 }

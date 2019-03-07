@@ -4,7 +4,8 @@ use hdk::{
     error::ZomeApiError,
     holochain_core_types::{
         entry::Entry, 
-        cas::content::Address
+        cas::content::Address,
+        json::JsonString
     }
 };
 
@@ -44,4 +45,11 @@ pub fn create_pack(user: &Address) -> ZomeApiResult<serde_json::Value> {
         Err(_hdk_err) => return Err(ZomeApiError::from("Error occured on committing pack entry".to_string()))
     };
     Ok(json!({"pack_address": pack_address}))
+}
+
+pub fn add_to_pack(user: &Address) -> JsonString{
+    //get current users pack
+    //create link on pack and add member @address
+    //add link on members address w/ link: pack_member
+    json!({ "message": "Ok" }).into()
 }

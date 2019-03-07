@@ -9,14 +9,14 @@ use hdk::{
 
 use std::collections::HashMap;
 
-#[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone)]
 pub enum Privacy {
     Public, //Viewable by everyone
     Shared, //Viewable by selected people
     Private //Viewable by only owner
 }
 
-#[derive(Serialize, Deserialize, Debug, DefaultJson)]
+#[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct User {
     pub parent: HashString, //Parent HashString data objects to be contextual to given data trees
     pub username: String,
@@ -27,7 +27,7 @@ pub struct User {
     pub verified: bool
 }
 
-#[derive(Serialize, Deserialize, Debug, DefaultJson)]
+#[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct Channel {
     //Channels expressions through given objects to provide searchable tree's 
     pub parent: HashString, //Should either be app hash for normal expression channel or user hash for den
