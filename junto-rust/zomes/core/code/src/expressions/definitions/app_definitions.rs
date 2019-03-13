@@ -16,6 +16,21 @@ pub enum Privacy {
     Private //Viewable by only owner
 }
 
+#[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone)]
+pub enum ChannelType {
+    Tag, 
+    Den,
+    Type 
+}
+
+#[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone)]
+pub enum TimeType {
+    Year, 
+    Month,
+    Day,
+    Hour
+}
+
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct User {
     pub parent: HashString, //Parent HashString data objects to be contextual to given data trees
@@ -32,7 +47,8 @@ pub struct Channel {
     //Channels expressions through given objects to provide searchable tree's 
     pub parent: HashString, //Should either be app hash for normal expression channel or user hash for den
     pub name: String,
-    pub privacy: Privacy //Privacy enum 
+    pub privacy: Privacy, //Privacy enum 
+    pub channel_type: ChannelType
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
@@ -54,7 +70,7 @@ pub struct Group {
 pub struct Time {
     pub parent: HashString,
     pub time: String,
-    pub time_type: String
+    pub time_type: TimeType
 }  
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]

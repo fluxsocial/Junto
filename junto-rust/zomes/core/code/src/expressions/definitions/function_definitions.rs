@@ -3,6 +3,7 @@ use hdk::{
         cas::content::Address, 
     }
 };
+use std::collections::HashMap;
 
 use super::app_definitions;
 
@@ -47,5 +48,19 @@ pub enum FunctionParameters{
         channels: Vec<String>,
         parent: Address,
         privacy: app_definitions::Privacy
+    },
+    CreateQueryPoints{
+        query_points: Vec<HashMap<String, String>>, 
+        context: Address, 
+        privacy: app_definitions::Privacy
+    },
+    CreateExpressionLinks{
+        query_points: Vec<HashMap<String, String>>, 
+        expression: Address, 
+        context: Address
+    },
+    CreateContextualLinks{
+        query_points: Vec<HashMap<String, String>>, 
+        expression: Address
     }
 }

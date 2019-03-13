@@ -43,17 +43,20 @@ pub fn create_den(user: &Address) -> ZomeApiResult<serde_json::Value> {
     let private_den = app_definitions::Channel{ //Create private den
         parent: user.clone(),
         name: (user_entry.first_name.clone() + "'s Den").to_string(),
-        privacy: app_definitions::Privacy::Private
+        privacy: app_definitions::Privacy::Private,
+        channel_type: app_definitions::ChannelType::Den
     };
     let shared_den = app_definitions::Channel{ //Create shared den - den viewable by people in your pack
         parent: user.clone(),
         name: (user_entry.first_name.clone()  + "'s Den").to_string(),
-        privacy: app_definitions::Privacy::Shared
+        privacy: app_definitions::Privacy::Shared,
+        channel_type: app_definitions::ChannelType::Den
     };
     let public_den = app_definitions::Channel{ //Create public den - personal expression place viewable by everyone
         parent: user.clone(),
         name: (user_entry.first_name.clone()  + "'s Den").to_string(),
-        privacy: app_definitions::Privacy::Public
+        privacy: app_definitions::Privacy::Public,
+        channel_type: app_definitions::ChannelType::Den
     };
     let private_entry = Entry::App("channel".into(), private_den.into());
     let shared_entry = Entry::App("channel".into(), shared_den.into());

@@ -12,7 +12,6 @@ use hdk::{
     }
 };
 
-//Datetime imports
 use multihash::Hash;
 
 use super::utils;
@@ -69,19 +68,19 @@ pub fn create_timestamps(parent: &Address, iso_timestamp: String) -> ZomeApiResu
     for (i, timestamp) in timestamps.iter().enumerate(){
         match i{
             0 => {
-                let hash = save_timestamp(timestamp, "year".to_string(), &parent)?;
+                let hash = save_timestamp(timestamp, app_definitions::TimeType::Year, &parent)?;
                 timestamp_hashs.push(hash);
             },
             1 => {
-                let hash = save_timestamp(timestamp, "month".to_string(), &parent)?;
+                let hash = save_timestamp(timestamp, app_definitions::TimeType::Month, &parent)?;
                 timestamp_hashs.push(hash);
             },
             2 => {
-                let hash = save_timestamp(timestamp, "day".to_string(), &parent)?;
+                let hash = save_timestamp(timestamp, app_definitions::TimeType::Day, &parent)?;
                 timestamp_hashs.push(hash);
             },
             3 => {
-                let hash = save_timestamp(timestamp, "hour".to_string(), &parent)?;
+                let hash = save_timestamp(timestamp, app_definitions::TimeType::Hour, &parent)?;
                 timestamp_hashs.push(hash);
             },
             _ => {}
@@ -95,7 +94,7 @@ pub fn create_timestamps(parent: &Address, iso_timestamp: String) -> ZomeApiResu
     Ok(timestamp_hashs)
 }
 
-pub fn save_timestamp(timestamp: &String, time_type: String, parent: &Address) -> ZomeApiResult<Address>{
+pub fn save_timestamp(timestamp: &String, time_type: app_definitions::TimeType, parent: &Address) -> ZomeApiResult<Address>{
     //Check that timestamp object exists if not create it
     match get_timestamp(&timestamp, &parent, &time_type){
         Ok(Some(entry)) => {
@@ -131,7 +130,7 @@ pub fn save_timestamp(timestamp: &String, time_type: String, parent: &Address) -
 }
 
 //Get timestamp entry by timestamp string w/ parent address
-pub fn get_timestamp(timestamp: &String, parent: &Address, time_type: &String) -> ZomeApiResult<Option<Entry>> {
+pub fn get_timestamp(timestamp: &String, parent: &Address, time_type: &app_definitions::TimeType) -> ZomeApiResult<Option<Entry>> {
     let time = app_definitions::Time {
         time: timestamp.clone(),
         parent: parent.clone(),

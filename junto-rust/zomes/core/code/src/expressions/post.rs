@@ -5,9 +5,13 @@ use hdk::{
     holochain_core_types::{
         cas::content::Address,
         entry::Entry, 
-        json::JsonString
+        json::JsonString,
+        hash::HashString
     }
 };
+
+use std::collections::HashMap;
+use multihash::Hash;
 
 //Our modules for holochain actins
 use super::definitions::{
@@ -26,7 +30,7 @@ use super::user;
 pub fn handle_post_expression(expression: app_definitions::ExpressionPost, channels: Vec<String>) -> ZomeApiResult<Address>{
     let expression_type = expression.expression_type.clone();
     let mut channels_save = channels.clone();
-    let mut query_params: Vec<String> = channels;
+    let mut query_params: Vec<HashMap<String, String>> = channels.iter().map(|channel| hashmap!{"type".to_string() => "Channel".to_string(), "value".to_string() => channel.to_string()}).collect();
     let mut user_member_packs: Vec<Address> = vec![];
 
     let entry = Entry::App("expression_post".into(), expression.into());
@@ -37,21 +41,21 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, chann
             if result_vec.len() > 1{
                 return Err(ZomeApiError::from("Post Failed links on user greater than 1".to_string()))
             }
-            query_params.push(result_vec[0].entry.username.clone());
+            query_params.push(hashmap!{"type".to_string() => "User".to_string(), "value".to_string() => result_vec[0].entry.username.to_string()});
         },
         Err(hdk_err) => return Err(hdk_err)
     };
-    query_params.push(expression_type);
+    query_params.push(hashmap!{"type".to_string() => "Type".to_string(), "value".to_string() => expression_type.to_string()});
     
     match entry{
         Entry::ChainHeader(header) => {
             let iso_timestamp = serde_json::to_string(header.timestamp());
             match iso_timestamp{
                 Ok(iso_timestamp) => {
-                    query_params.push(iso_timestamp[0..4].to_string()); //add year slice to query params
-                    query_params.push(iso_timestamp[5..7].to_string()); //add month slice to query params
-                    query_params.push(iso_timestamp[8..10].to_string()); //add day slice to query params
-                    query_params.push(iso_timestamp[11..13].to_string()) //add hour slice to query params
+                    query_params.push(hashmap!{"type".to_string() => "Time:Y".to_string(), "value".to_string() => iso_timestamp[0..4].to_string()}); //add year slice to query params
+                    query_params.push(hashmap!{"type".to_string() => "Time:M".to_string(), "value".to_string() => iso_timestamp[5..7].to_string()}); //add month slice to query params
+                    query_params.push(hashmap!{"type".to_string() => "Time:D".to_string(), "value".to_string() => iso_timestamp[8..10].to_string()}); //add day slice to query params
+                    query_params.push(hashmap!{"type".to_string() => "Time:H".to_string(), "value".to_string() => iso_timestamp[11..13].to_string()}) //add hour slice to query params
                 },
                 Err(hdk_err) => return Err(ZomeApiError::from(hdk_err.to_string()))
             }
@@ -59,7 +63,7 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, chann
         _ => {}
     }
 
-    query_params.sort_by(|a, b| b.cmp(a)); //Order vector in reverse alphabetical order
+    query_params.sort_by(|a, b| b["value"].cmp(&a["value"])); //Order vector in reverse alphabetical order
     let user_profile = user::get_user_profile()?.address;
 
     let den_result = user::get_user_dens(&user_profile)?;
@@ -84,24 +88,31 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, chann
 
     //Look at using borrows here with lifetime parameters vs clone
     let mut hook_definitions = vec![FunctionDescriptor{name: "global_time_to_expression", parameters: FunctionParameters::GlobalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone()}}, //Link expression to global time objects
+                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: HashString::encode_from_str(&hdk::api::DNA_ADDRESS.to_string(), Hash::SHA2256), privacy: app_definitions::Privacy::Public}}, 
+                                    FunctionDescriptor{name: "create_contextual_links", parameters: FunctionParameters::CreateContextualLinks{query_points: query_params.clone(), expression: address.clone()}}, 
+                                    
                                     FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: expression_local_hashs[0].clone()}}, //Link expression to private den time objects
-                                    FunctionDescriptor{name: "create_channels", parameters: FunctionParameters::CreateChannels{channels: channels_save.clone(), parent: expression_local_hashs[0].clone(), privacy: app_definitions::Privacy::Private}}, //Create channels on private den if they do not exist
+                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: expression_local_hashs[0].clone(), privacy: app_definitions::Privacy::Private}}, 
+                                    FunctionDescriptor{name: "create_expression_links", parameters: FunctionParameters::CreateExpressionLinks{query_points: query_params.clone(), expression: address.clone(), context: expression_local_hashs[0].clone()}}, 
 
                                     FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: expression_local_hashs[1].clone()}}, //Link expression to shared den time objects
-                                    FunctionDescriptor{name: "create_channels", parameters: FunctionParameters::CreateChannels{channels: channels_save.clone(), parent: expression_local_hashs[1].clone(), privacy: app_definitions::Privacy::Shared}}, //Create channels on shared den if they do not exist
+                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: expression_local_hashs[1].clone(), privacy: app_definitions::Privacy::Shared}}, 
+                                    FunctionDescriptor{name: "create_expression_links", parameters: FunctionParameters::CreateExpressionLinks{query_points: query_params.clone(), expression: address.clone(), context: expression_local_hashs[1].clone()}}, 
 
                                     FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: expression_local_hashs[2].clone()}}, //Link expression to public den time objects
-                                    FunctionDescriptor{name: "create_channels", parameters: FunctionParameters::CreateChannels{channels: channels_save.clone(), parent: expression_local_hashs[2].clone(), privacy: app_definitions::Privacy::Public}}, //Create channels on public den if they do not exist
+                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: expression_local_hashs[2].clone(), privacy: app_definitions::Privacy::Public}}, 
+                                    FunctionDescriptor{name: "create_expression_links", parameters: FunctionParameters::CreateExpressionLinks{query_points: query_params.clone(), expression: address.clone(), context: expression_local_hashs[2].clone()}}, 
 
                                     FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: expression_local_hashs[3].clone()}}, //Link expression to private den time objects
-                                    FunctionDescriptor{name: "create_channels", parameters: FunctionParameters::CreateChannels{channels: channels_save.clone(), parent: expression_local_hashs[3].clone(), privacy: app_definitions::Privacy::Shared}}]; //Create channels on private den if they do not exist
-
+                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: expression_local_hashs[3].clone(), privacy: app_definitions::Privacy::Shared}}, 
+                                    FunctionDescriptor{name: "create_expression_links", parameters: FunctionParameters::CreateExpressionLinks{query_points: query_params.clone(), expression: address.clone(), context: expression_local_hashs[3].clone()}}];
     for pack in user_member_packs{
         hook_definitions.push(FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: pack.clone()}});
-        hook_definitions.push(FunctionDescriptor{name: "create_channels", parameters: FunctionParameters::CreateChannels{channels: channels_save.clone(), parent: pack.clone(), privacy: app_definitions::Privacy::Shared}});
+        hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: pack.clone(), privacy: app_definitions::Privacy::Shared}});
+        hook_definitions.push(FunctionDescriptor{name: "create_expression_links", parameters: FunctionParameters::CreateExpressionLinks{query_points: query_params.clone(), expression: address.clone(), context: pack.clone()}});
     };
 
-    let r = utils::handle_hooks("ExpressionPost".to_string(), hook_definitions)?;
+    utils::handle_hooks("ExpressionPost".to_string(), hook_definitions)?;
 
     //check that link point(s) exist in each of the above expression locals
     //if not create needed channels 
