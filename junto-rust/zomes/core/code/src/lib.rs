@@ -18,7 +18,8 @@ use hdk::{
     holochain_core_types::{
         json::JsonString, 
         cas::content::Address,
-        hash::HashString
+        hash::HashString,
+        error::HolochainError
     }
 };
 
@@ -44,18 +45,20 @@ define_zome! {
         }
     }
 
-    functions: {
-        main (Public) { //Capability main - public 
-            create_user: {
-                inputs: |user_data: expressions::definitions::app_definitions::User|,
-				outputs: |result: JsonString|,
-				handler: expressions::user::handle_create_user
-            }
-            get_user:{
-                inputs: |user: Address|,
-				outputs: |result: JsonString|,
-				handler: expressions::user::handle_get_user
-            }
+    functions: [
+        create_user: {
+            inputs: |user_data: expressions::definitions::app_definitions::User|,
+            outputs: |result: JsonString|,
+            handler: expressions::user::handle_create_user
         }
+        get_user:{
+            inputs: |user: Address|,
+            outputs: |result: JsonString|,
+            handler: expressions::user::handle_get_user
+        }
+    ]
+
+    traits: {
+        hc_public [create_user, get_user]
     }
 }

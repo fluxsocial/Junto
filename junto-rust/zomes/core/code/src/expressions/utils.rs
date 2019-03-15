@@ -91,26 +91,10 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
                     },
                     &"create_query_points" => {
                         match &hook_descriptor.parameters{
-                            FunctionParameters::CreateQueryPoints {query_points, context, privacy} =>{
-                                query::create_query_points(query_points, context, privacy)?;
+                            FunctionParameters::CreateQueryPoints {query_points, context, privacy, query_type, expression} =>{
+                                query::create_query_points(query_points, context, privacy, query_type, expression)?;
                             },
                             _ => return Err(ZomeApiError::from("create_query_points expects the CreateQueryPoints enum value to be present".to_string()))
-                        }
-                    },
-                    &"create_contextual_links" => {
-                        match &hook_descriptor.parameters{
-                            FunctionParameters::CreateContextualLinks {query_points, expression} =>{
-                                query::create_contextual_links(query_points, expression)?;
-                            },
-                            _ => return Err(ZomeApiError::from("create_contextual_links expects the CreateContextualLinks enum value to be present".to_string()))
-                        }
-                    },
-                    &"create_expression_links" => {
-                        match &hook_descriptor.parameters{
-                            FunctionParameters::CreateExpressionLinks {query_points, expression, context} =>{
-                                query::create_expression_links(query_points, expression, context)?;
-                            },
-                            _ => return Err(ZomeApiError::from("create_expression_links expects the CreateExpressionLinks enum value to be present".to_string()))
                         }
                     },
                     &_ => {

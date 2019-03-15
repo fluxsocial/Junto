@@ -52,15 +52,8 @@ pub enum FunctionParameters{
     CreateQueryPoints{
         query_points: Vec<HashMap<String, String>>, 
         context: Address, 
-        privacy: app_definitions::Privacy
-    },
-    CreateExpressionLinks{
-        query_points: Vec<HashMap<String, String>>, 
-        expression: Address, 
-        context: Address
-    },
-    CreateContextualLinks{
-        query_points: Vec<HashMap<String, String>>, 
+        privacy: app_definitions::Privacy,
+        query_type: String,
         expression: Address
     }
 }

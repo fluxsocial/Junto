@@ -88,28 +88,23 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, chann
 
     //Look at using borrows here with lifetime parameters vs clone
     let mut hook_definitions = vec![FunctionDescriptor{name: "global_time_to_expression", parameters: FunctionParameters::GlobalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone()}}, //Link expression to global time objects
-                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: HashString::encode_from_str(&hdk::api::DNA_ADDRESS.to_string(), Hash::SHA2256), privacy: app_definitions::Privacy::Public}}, 
-                                    FunctionDescriptor{name: "create_contextual_links", parameters: FunctionParameters::CreateContextualLinks{query_points: query_params.clone(), expression: address.clone()}}, 
-                                    
+                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: HashString::encode_from_str(&hdk::api::DNA_ADDRESS.to_string(), Hash::SHA2256), privacy: app_definitions::Privacy::Public, query_type: "Contextual".to_string(), expression: address.clone()}}, 
+
                                     FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: expression_local_hashs[0].clone()}}, //Link expression to private den time objects
-                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: expression_local_hashs[0].clone(), privacy: app_definitions::Privacy::Private}}, 
-                                    FunctionDescriptor{name: "create_expression_links", parameters: FunctionParameters::CreateExpressionLinks{query_points: query_params.clone(), expression: address.clone(), context: expression_local_hashs[0].clone()}}, 
+                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: expression_local_hashs[0].clone(), privacy: app_definitions::Privacy::Private, query_type: "Standard".to_string(), expression: address.clone()}}, 
 
                                     FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: expression_local_hashs[1].clone()}}, //Link expression to shared den time objects
-                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: expression_local_hashs[1].clone(), privacy: app_definitions::Privacy::Shared}}, 
-                                    FunctionDescriptor{name: "create_expression_links", parameters: FunctionParameters::CreateExpressionLinks{query_points: query_params.clone(), expression: address.clone(), context: expression_local_hashs[1].clone()}}, 
+                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: expression_local_hashs[1].clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: address.clone()}}, 
 
                                     FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: expression_local_hashs[2].clone()}}, //Link expression to public den time objects
-                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: expression_local_hashs[2].clone(), privacy: app_definitions::Privacy::Public}}, 
-                                    FunctionDescriptor{name: "create_expression_links", parameters: FunctionParameters::CreateExpressionLinks{query_points: query_params.clone(), expression: address.clone(), context: expression_local_hashs[2].clone()}}, 
+                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: expression_local_hashs[2].clone(), privacy: app_definitions::Privacy::Public, query_type: "Standard".to_string(), expression: address.clone()}}, 
 
                                     FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: expression_local_hashs[3].clone()}}, //Link expression to private den time objects
-                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: expression_local_hashs[3].clone(), privacy: app_definitions::Privacy::Shared}}, 
-                                    FunctionDescriptor{name: "create_expression_links", parameters: FunctionParameters::CreateExpressionLinks{query_points: query_params.clone(), expression: address.clone(), context: expression_local_hashs[3].clone()}}];
+                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: expression_local_hashs[3].clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: address.clone()}}];
+  
     for pack in user_member_packs{
         hook_definitions.push(FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: pack.clone()}});
-        hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: pack.clone(), privacy: app_definitions::Privacy::Shared}});
-        hook_definitions.push(FunctionDescriptor{name: "create_expression_links", parameters: FunctionParameters::CreateExpressionLinks{query_points: query_params.clone(), expression: address.clone(), context: pack.clone()}});
+        hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: pack.clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: address.clone()}});
     };
 
     utils::handle_hooks("ExpressionPost".to_string(), hook_definitions)?;
