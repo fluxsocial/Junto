@@ -92,7 +92,7 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
                     &"create_query_points" => {
                         match &hook_descriptor.parameters{
                             FunctionParameters::CreateQueryPoints {query_points, context, privacy, query_type, expression} =>{
-                                query::create_query_points(query_points, context, privacy, query_type, expression)?;
+                                query::create_query_points(query_points.to_vec(), context, privacy, query_type, expression)?;
                             },
                             _ => return Err(ZomeApiError::from("create_query_points expects the CreateQueryPoints enum value to be present".to_string()))
                         }

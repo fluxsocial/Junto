@@ -14,6 +14,7 @@ maplit = "1.0.1"
 hdk = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.6-alpha" }
 holochain_wasm_utils = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.6-alpha" }
 holochain_core_types_derive = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.6-alpha" }
+itertools = "0.8"
 
 [lib]
 path = "src/lib.rs"
