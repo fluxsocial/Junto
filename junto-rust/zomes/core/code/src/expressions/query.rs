@@ -37,12 +37,14 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                         //No checks to see if there is a link on context need to made - chanels can only be created in the None block here and thus must have been linked to the context
                         hdk::api::link_entries(&address, expression, "expression")?;
                         hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
+                        hdk::api::link_entries(&expression, &address, "channel")?;
                         addressed_params[i].insert("address".to_string(), address.to_string()); 
                     }, 
                     None => {
                         let address = hdk::utils::commit_and_link(&entry, context, "channel")?;
                         hdk::api::link_entries(&address, expression, "expression")?;
                         hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
+                        hdk::api::link_entries(&expression, &address, "channel")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     }
                 };
@@ -57,12 +59,14 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                     Some(value) => {
                         hdk::api::link_entries(&address, expression, "expression")?;
                         hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
+                        hdk::api::link_entries(&expression, &address, "type")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     },
                     None => {
                         let address = hdk::utils::commit_and_link(&entry, context, "channel")?;
                         hdk::api::link_entries(&address, expression, "expression")?;
                         hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
+                        hdk::api::link_entries(&expression, &address, "type")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     }
                 };
@@ -77,6 +81,8 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                     Some(value) => {
                         hdk::api::link_entries(&address, expression, "expression")?;
                         hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
+                        hdk::api::link_entries(&expression, &address, "time")?;
+                        hdk::api::link_entries(&expression, &address, "year")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     },
                     None => {
@@ -84,6 +90,8 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                         hdk::api::link_entries(context, &address, "year")?;
                         hdk::api::link_entries(&address, expression, "expression")?;
                         hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
+                        hdk::api::link_entries(&expression, &address, "time")?;
+                        hdk::api::link_entries(&expression, &address, "year")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     }
                 };
@@ -98,6 +106,8 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                     Some(value) => {
                         hdk::api::link_entries(&address, expression, "expression")?;
                         hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
+                        hdk::api::link_entries(&expression, &address, "time")?;
+                        hdk::api::link_entries(&expression, &address, "month")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     },
                     None => {
@@ -105,6 +115,8 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                         hdk::api::link_entries(context, &address, "month")?;
                         hdk::api::link_entries(&address, expression, "expression")?;
                         hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
+                        hdk::api::link_entries(&expression, &address, "time")?;
+                        hdk::api::link_entries(&expression, &address, "month")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     }
                 };
@@ -119,6 +131,8 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                     Some(value) => {
                         hdk::api::link_entries(&address, expression, "expression")?;
                         hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
+                        hdk::api::link_entries(&expression, &address, "time")?;
+                        hdk::api::link_entries(&expression, &address, "day")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     },
                     None => {
@@ -126,6 +140,8 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                         hdk::api::link_entries(context, &address, "day")?;
                         hdk::api::link_entries(&address, expression, "expression")?;
                         hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
+                        hdk::api::link_entries(&expression, &address, "time")?;
+                        hdk::api::link_entries(&expression, &address, "day")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     }
                 };
@@ -140,6 +156,8 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                     Some(value) => {
                         hdk::api::link_entries(&address, expression, "expression")?;
                         hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
+                        hdk::api::link_entries(&expression, &address, "time")?;
+                        hdk::api::link_entries(&expression, &address, "hour")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     },
                     None => {
@@ -147,6 +165,8 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                         hdk::api::link_entries(context, &address, "hour")?;
                         hdk::api::link_entries(&address, expression, "expression")?;
                         hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
+                        hdk::api::link_entries(&expression, &address, "time")?;
+                        hdk::api::link_entries(&expression, &address, "hour")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     }
                 };

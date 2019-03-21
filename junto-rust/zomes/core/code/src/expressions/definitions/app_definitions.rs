@@ -179,7 +179,7 @@ pub fn get_post_expression_definitions() -> ExpressionLinkDefinition {
 
         hooks: vec![hashmap!{"tag" => "expression", "expression_type" => "Time", "function" => "global_time_to_expression", "direction" => "reverse"},
                     hashmap!{"tag" => "expression", "expression_type" => "Time", "function" => "local_time_to_expression", "direction" => "reverse"},
-                    hashmap!{"tag" => "expression", "expression_type" => "Channel", "function" => "create_channels", "direction" => "reverse"}] //To any associated channels 
+                    hashmap!{"tag" => "expression", "expression_type" => "Channel", "function" => "create_query_points", "direction" => "reverse"}] //To any associated channels 
                     // hashmap!{"tag" => "expression", "expression_type" => "User", "function" => "expression_to_user", "direction" => "reverse"}] //To user - might not be necassary here, traditionally hooks are only used for creating objects not linking, linking might happen in a contextual link function
     };
     post_expression_link_definitions
