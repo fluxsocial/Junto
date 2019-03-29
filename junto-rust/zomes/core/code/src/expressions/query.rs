@@ -59,14 +59,14 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                     Some(value) => {
                         hdk::api::link_entries(&address, expression, "expression")?;
                         hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
-                        hdk::api::link_entries(&expression, &address, "type")?;
+                        hdk::api::link_entries(expression, &address, "type")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     },
                     None => {
                         let address = hdk::utils::commit_and_link(&entry, context, "channel")?;
                         hdk::api::link_entries(&address, expression, "expression")?;
                         hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
-                        hdk::api::link_entries(&expression, &address, "type")?;
+                        hdk::api::link_entries(expression, &address, "type")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     }
                 };
@@ -81,8 +81,8 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                     Some(value) => {
                         hdk::api::link_entries(&address, expression, "expression")?;
                         hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
-                        hdk::api::link_entries(&expression, &address, "time")?;
-                        hdk::api::link_entries(&expression, &address, "year")?;
+                        hdk::api::link_entries(expression, &address, "time")?;
+                        hdk::api::link_entries(expression, &address, "year")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     },
                     None => {
@@ -171,11 +171,8 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                     }
                 };
             },
-            "User" => {
-                //Should look for user with given username value - if it is not found - return error, dont create user
-            },
-            &_ => {
-
+            _ => {
+                return Err(ZomeApiError::from("That contextual link type does not exist".to_string()))
             }
         };
     };

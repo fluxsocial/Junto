@@ -15,6 +15,7 @@ extern crate chrono;
 use multihash::Hash;
 use hdk::{
     api::DNA_ADDRESS,
+    error::ZomeApiResult,
     holochain_core_types::{
         json::JsonString, 
         cas::content::Address,
@@ -27,12 +28,13 @@ mod expressions;
 
 define_zome! {
     entries: [
-       expressions::definitions::user_entry_definitions::user_definition(),
-       expressions::definitions::time_entry_definitions::time_definiton(),
-       expressions::definitions::channel_entry_definitions::channel_definition(),
-       expressions::definitions::group_entry_definitions::group_definition(),
-       expressions::definitions::post_entry_definitions::post_definition(),
-       expressions::definitions::post_entry_definitions::resonation_definition()
+        expressions::definitions::user_entry_definitions::user_name_definition(),
+        expressions::definitions::user_entry_definitions::user_definition(),
+        expressions::definitions::time_entry_definitions::time_definiton(),
+        expressions::definitions::channel_entry_definitions::channel_definition(),
+        expressions::definitions::group_entry_definitions::group_definition(),
+        expressions::definitions::post_entry_definitions::post_definition(),
+        expressions::definitions::post_entry_definitions::resonation_definition()
     ]
 
     genesis: || { 
@@ -47,8 +49,8 @@ define_zome! {
 
     functions: [
         create_user: {
-            inputs: |user_data: expressions::definitions::app_definitions::User|,
-            outputs: |result: JsonString|,
+            inputs: |username: String, user_data: expressions::definitions::app_definitions::User|,
+            outputs: |result: ZomeApiResult<Address>|,
             handler: expressions::user::handle_create_user
         }
         get_user:{

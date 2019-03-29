@@ -18,9 +18,11 @@ use super::definitions::{
     }
 };
 
+use super::user;
+
 //Creates a user "group" - more specifically in this case a pack
 pub fn create_pack(user: &Address) -> ZomeApiResult<serde_json::Value> {
-    let user_entry = utils::get_as_type::<app_definitions::User>(user.clone())?;
+    let user_entry = user::get_user_profile()?.entry;
     let pack = app_definitions::Group{ //Create default pack data
         parent: user.clone(),
         name: (user_entry.first_name + "'s Pack").to_string(),

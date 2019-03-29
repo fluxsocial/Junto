@@ -9,6 +9,24 @@ use hdk::{
     }
 };
 
+pub fn user_name_definition() -> ValidatingEntryType {
+    entry!(
+        name: "username",
+        description: "Username Object Entry",
+        sharing: Sharing::Public,
+        native_type: app_definitions::UserName,
+        validation_package: || {
+            hdk::ValidationPackageDefinition::Entry
+        },
+
+        validation: |_username: app_definitions::UserName, _ctx: hdk::ValidationData| {
+            Ok(())
+        },
+
+        links: []
+    )
+}
+
 pub fn user_definition() -> ValidatingEntryType {
     entry!(
         name: "user",

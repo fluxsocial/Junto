@@ -36,7 +36,7 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, chann
     let entry = Entry::App("expression_post".into(), expression.into());
     let address = hdk::commit_entry(&entry)?;
 
-    match utils::get_links_and_load_type::<String, app_definitions::User>(&AGENT_ADDRESS, "user".to_string()){
+    match utils::get_links_and_load_type::<String, app_definitions::UserName>(&AGENT_ADDRESS, "username".to_string()){
         Ok(result_vec) => {
             if result_vec.len() > 1{
                 return Err(ZomeApiError::from("Post Failed links on user greater than 1".to_string()))
@@ -64,16 +64,16 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, chann
     }
 
     query_params.sort_by(|a, b| b["value"].cmp(&a["value"])); //Order vector in reverse alphabetical order
-    let user_profile = user::get_user_profile()?.address;
+    let user_name_address = user::get_user_username()?.address;
 
-    let den_result = user::get_user_dens(&user_profile)?;
+    let den_result = user::get_user_dens(&user_name_address)?;
     let private_den = den_result.private_den;
     let shared_den = den_result.shared_den;
     let public_den = den_result.public_den;
 
-    let user_pack = user::get_user_pack(&user_profile)?;
+    let user_pack = user::get_user_pack(&user_name_address)?;
 
-    let member_results = user::get_user_member_packs(&user_profile)?.iter().map(|pack| user_member_packs.push(pack.address.clone()));
+    let member_results = user::get_user_member_packs(&user_name_address)?.iter().map(|pack| user_member_packs.push(pack.address.clone()));
 
     let expression_locals = vec![private_den, shared_den, public_den, user_pack];
     let mut expression_local_hashs = vec![];
@@ -114,7 +114,12 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, chann
 //Function to handle the resonation of an expression post - will put the post into packs which the post should be resonated into
 pub fn handle_resonation(expression: Address, resonation: app_definitions::Resonation) -> ZomeApiResult<String>{
     let expression_post = hdk::utils::get_as_type::<app_definitions::ExpressionPost>(expression.clone())?;
-    //let user_pack = user::get_user_pack(&user_profile)?;
+    let user_name_address = user::get_user_username()?.address;
+    let user_pack;
+    match user::get_user_pack(&user_name_address)?{
+        Some(pack) => {user_pack = pack.address;},
+        None => return Err(ZomeApiError::from("User has no packs".to_string()))
+    };
     let channels = utils::get_links_and_load_type::<String, app_definitions::Channel>(&expression, "channel".to_string())?;
     let times = utils::get_links_and_load_type::<String, app_definitions::Time>(&expression, "time".to_string())?;
     let exp_type = utils::get_links_and_load_type::<String, app_definitions::Channel>(&expression, "type".to_string())?;
@@ -129,10 +134,10 @@ pub fn handle_resonation(expression: Address, resonation: app_definitions::Reson
                     );
     query_points.push(hashmap!{"value".to_string() => exp_type[0].entry.name.clone(), "type".to_string() => "Type".to_string()});
     
-    //let mut hook_definitions = vec![FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: user_pack.clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: expression.clone()}},
-                                    //FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "resonation", direction: "both", parent_address: user_pack, child_expression: expression}}];
-    //utils::handle_hooks("Resonation".to_string(), hook_definitions)?;
-    Ok("ok".to_string())
+    let mut hook_definitions = vec![FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_points.clone(), context: user_pack.clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: expression.clone()}},
+                                    FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "resonation", direction: "both", parent_expression: user_pack, child_expression: expression}}];
+    utils::handle_hooks("Resonation".to_string(), hook_definitions)?;
+    Ok("Resonation generated".to_string())
 }
 
 //Function to handle the getting of expression with a given query root and query string

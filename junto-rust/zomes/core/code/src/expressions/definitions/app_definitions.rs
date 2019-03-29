@@ -31,15 +31,26 @@ pub enum TimeType {
     Hour
 }
 
+#[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone)]
+pub enum Expression {
+    PostExpression{},
+    VideoExpression{},
+    LongFormExpression{}
+}
+
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct User {
     pub parent: HashString, //Parent HashString data objects to be contextual to given data trees
-    pub username: String,
     pub first_name: String,
     pub last_name: String,
     pub bio: String,
     pub profile_picture: String,
     pub verified: bool
+}
+
+#[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
+pub struct UserName {
+    pub username: String
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
@@ -54,7 +65,8 @@ pub struct Channel {
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 pub struct ExpressionPost { 
     pub parent: HashString,
-    pub expression_type: String
+    pub expression_type: String,
+    pub expression: Expression
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
