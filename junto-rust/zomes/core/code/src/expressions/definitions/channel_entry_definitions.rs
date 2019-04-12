@@ -1,4 +1,3 @@
-#![feature(try_from)]
 //Entry Definition(s)
 use super::app_definitions;
 

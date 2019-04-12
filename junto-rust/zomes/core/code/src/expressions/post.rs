@@ -5,31 +5,34 @@ use hdk::{
     holochain_core_types::{
         cas::content::Address,
         entry::Entry, 
-        json::JsonString,
+        entry::AppEntryValue,
         hash::HashString
     }
 };
 
 use std::collections::HashMap;
 use multihash::Hash;
+use std::convert::TryFrom;
+use regex::Regex;
 
 //Our modules for holochain actins
 use super::definitions::{
     app_definitions,
     function_definitions::{
         FunctionDescriptor,
-        FunctionParameters
+        FunctionParameters,
+        QueryTarget,
+        QueryOptions
     }
 };
 
 use super::utils;
-use super::channel;
 use super::user;
 
 //Function to handle the posting of an expression - will link to any specified channels and insert into relevant groups/packs
 pub fn handle_post_expression(expression: app_definitions::ExpressionPost, channels: Vec<String>) -> ZomeApiResult<Address>{
     let expression_type = expression.expression_type.clone();
-    let mut channels_save = channels.clone();
+    let channels_save = channels.clone();
     let mut query_params: Vec<HashMap<String, String>> = channels.iter().map(|channel| hashmap!{"type".to_string() => "Channel".to_string(), "value".to_string() => channel.to_string()}).collect();
     let mut user_member_packs: Vec<Address> = vec![];
 
@@ -41,6 +44,7 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, chann
             if result_vec.len() > 1{
                 return Err(ZomeApiError::from("Post Failed links on user greater than 1".to_string()))
             }
+            hdk::api::link_entries(&address, &result_vec[0].address, "owner".to_string())?;
             query_params.push(hashmap!{"type".to_string() => "User".to_string(), "value".to_string() => result_vec[0].entry.username.to_string()});
         },
         Err(hdk_err) => return Err(hdk_err)
@@ -86,9 +90,11 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, chann
         }
     };
 
+    let query_params_less: Vec<HashMap<String, String>> = query_params.clone().into_iter().filter(|query| query["type"] != "user").collect();
+
     //Look at using borrows here with lifetime parameters vs clone
     let mut hook_definitions = vec![FunctionDescriptor{name: "global_time_to_expression", parameters: FunctionParameters::GlobalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone()}}, //Link expression to global time objects
-                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: HashString::encode_from_str(&hdk::api::DNA_ADDRESS.to_string(), Hash::SHA2256), privacy: app_definitions::Privacy::Public, query_type: "Contextual".to_string(), expression: address.clone()}}, 
+                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: HashString::encode_from_str(&hdk::api::DNA_ADDRESS.to_string(), Hash::SHA2256), privacy: app_definitions::Privacy::Public, query_type: "Contextual".to_string(), expression: address.clone()}}, //Create contextual query points for expression post
 
                                     FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: expression_local_hashs[0].clone()}}, //Link expression to private den time objects
                                     FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: expression_local_hashs[0].clone(), privacy: app_definitions::Privacy::Private, query_type: "Standard".to_string(), expression: address.clone()}}, 
@@ -112,7 +118,7 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, chann
 }
 
 //Function to handle the resonation of an expression post - will put the post into packs which the post should be resonated into
-pub fn handle_resonation(expression: Address, resonation: app_definitions::Resonation) -> ZomeApiResult<String>{
+pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
     let expression_post = hdk::utils::get_as_type::<app_definitions::ExpressionPost>(expression.clone())?;
     let user_name_address = user::get_user_username()?.address;
     let user_pack;
@@ -120,39 +126,24 @@ pub fn handle_resonation(expression: Address, resonation: app_definitions::Reson
         Some(pack) => {user_pack = pack.address;},
         None => return Err(ZomeApiError::from("User has no packs".to_string()))
     };
+    //possible we will want to create expression object within expression context to allow searching of expressions via resonation
     let channels = utils::get_links_and_load_type::<String, app_definitions::Channel>(&expression, "channel".to_string())?;
     let times = utils::get_links_and_load_type::<String, app_definitions::Time>(&expression, "time".to_string())?;
     let exp_type = utils::get_links_and_load_type::<String, app_definitions::Channel>(&expression, "type".to_string())?;
     
     let mut query_points: Vec<HashMap<String, String>> = channels.iter().map(|channel| hashmap!{"value".to_string() => channel.entry.name.clone(), "type".to_string() => "Channel".to_string()}).collect();
-    times.iter().map(|time| match time.entry.time_type{
-                                app_definitions::TimeType::Year => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "Time:Y".to_string()});},
-                                app_definitions::TimeType::Month => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "Time:M".to_string()});},
-                                app_definitions::TimeType::Day => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "Time:D".to_string()});},
-                                app_definitions::TimeType::Hour => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "Time:H".to_string()});}
-                            }
-                    );
+    for time in times{
+        match time.entry.time_type{
+            app_definitions::TimeType::Year => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "Time:Y".to_string()});},
+            app_definitions::TimeType::Month => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "Time:M".to_string()});},
+            app_definitions::TimeType::Day => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "Time:D".to_string()});},
+            app_definitions::TimeType::Hour => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "Time:H".to_string()});}
+        };
+    }
     query_points.push(hashmap!{"value".to_string() => exp_type[0].entry.name.clone(), "type".to_string() => "Type".to_string()});
     
-    let mut hook_definitions = vec![FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_points.clone(), context: user_pack.clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: expression.clone()}},
-                                    FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "resonation", direction: "both", parent_expression: user_pack, child_expression: expression}}];
+    let hook_definitions = vec![FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_points.clone(), context: user_pack.clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: expression.clone()}},
+                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "resonation", direction: "both", parent_expression: user_pack, child_expression: expression}}];
     utils::handle_hooks("Resonation".to_string(), hook_definitions)?;
     Ok("Resonation generated".to_string())
-}
-
-//Function to handle the getting of expression with a given query root and query string
-//for example: query_root: Channel: Technology, query_string: Timestamp<2018>:Channel<holochain>:Channel<dht>:User<Eric>
-//this would search for all posts in the channel Technology, which where posted in 2018 and also contain the channels Holochain & Dht by the user Eric
-//lets see how this function could also be used to get a user for example. all expression = eachother so finding users here should also be possible
-//perhaps using query root of application and then using query string Username<User>
-// pub fn get_expression(query_root: Address, query_string: String) -> ZomeApiResult<Vec<app_definitions::ExpressionPost>>{
-//     json!({"message": "ok"}).into()
-// }
-
-pub fn handle_local_query(query_root: Address, query_string: String) -> JsonString{
-    json!({"message": "ok"}).into()
-}
-
-pub fn handle_global_query(query_root: Address, query_string: String) -> JsonString{
-    json!({"message": "ok"}).into()
 }

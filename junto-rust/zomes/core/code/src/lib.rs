@@ -11,6 +11,7 @@ extern crate serde_json;
 #[macro_use]
 extern crate holochain_core_types_derive;
 extern crate chrono;
+extern crate regex;
 
 use multihash::Hash;
 use hdk::{
@@ -33,8 +34,8 @@ define_zome! {
         expressions::definitions::time_entry_definitions::time_definiton(),
         expressions::definitions::channel_entry_definitions::channel_definition(),
         expressions::definitions::group_entry_definitions::group_definition(),
-        expressions::definitions::post_entry_definitions::post_definition(),
-        expressions::definitions::post_entry_definitions::resonation_definition()
+        expressions::definitions::post_entry_definitions::post_definition()
+        //expressions::definitions::post_entry_definitions::resonation_definition()
     ]
 
     genesis: || { 
@@ -56,7 +57,7 @@ define_zome! {
         get_user:{
             inputs: |user: Address|,
             outputs: |result: JsonString|,
-            handler: expressions::user::handle_get_user
+            handler: expressions::user::get_user_from_address
         }
     ]
 

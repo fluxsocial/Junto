@@ -82,17 +82,6 @@ pub fn create_den(user: &Address) -> ZomeApiResult<serde_json::Value> {
     Ok(json!({"private_den_address": private_den_address, "shared_den_address": shared_den_address, "public_den_address": public_den_address}))
 }
 
-//Check if channel with given data exists
-pub fn channel_exists(channel: app_definitions::Channel) -> ZomeApiResult<String> {
-    Ok("ok".to_string())
-}
-
-//Creates channel
-pub fn create_channel(channel: app_definitions::Channel) -> ZomeApiResult<String> {
-    Ok("ok".to_string())
-}
-
-//Creates multiple channels
-pub fn create_channels(channels: &Vec<String>, parent: &Address, privacy: &app_definitions::Privacy) -> ZomeApiResult<String> {
-    Ok("ok".to_string())
+pub fn is_den_owner(den: &Address, user: &Address) -> bool{
+    true
 }

@@ -1,6 +1,7 @@
 use hdk::{
     holochain_core_types::{
         cas::content::Address, 
+        hash::HashString
     }
 };
 use std::collections::HashMap;
@@ -14,9 +15,34 @@ pub struct FunctionDescriptor{
 }
 
 pub struct UserDens{
-    pub private_den: Option<app_definitions::GetLinksLoadElement<app_definitions::Channel>>,
-    pub shared_den: Option<app_definitions::GetLinksLoadElement<app_definitions::Channel>>,
-    pub public_den: Option<app_definitions::GetLinksLoadElement<app_definitions::Channel>>
+    pub private_den: Option<GetLinksLoadElement<app_definitions::Channel>>,
+    pub shared_den: Option<GetLinksLoadElement<app_definitions::Channel>>,
+    pub public_den: Option<GetLinksLoadElement<app_definitions::Channel>>
+}
+
+pub enum QueryTarget{
+    ExpressionPost,
+    User
+}
+
+pub enum QueryOptions {
+    FilterPopular,
+    FilterNew,
+    FilterOld
+}
+
+pub type GetLinksLoadResult<T> = Vec<GetLinksLoadElement<T>>;
+
+#[derive(Serialize, Deserialize, Debug, Clone)]
+pub struct GetLinksLoadElement<T> {
+	pub address: HashString,
+	pub entry: T
+}
+
+impl<T> PartialEq for GetLinksLoadElement<T>{
+    fn eq(self: &Self, other: &GetLinksLoadElement<T>) -> bool {
+        self.address == other.address
+    }
 }
 
 //Parameters for each function in holochain application

@@ -53,7 +53,7 @@ pub fn local_time_to_expression(tag: &'static str, direction: &'static str, expr
     }
 
     for timestamp in &timestamps{
-        utils::link_expression(tag, direction, timestamp, expression_address);
+        utils::link_expression(tag, direction, timestamp, expression_address)?;
     }
 
     Ok("Expression linked to global time object(s)".to_string())

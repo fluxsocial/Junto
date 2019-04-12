@@ -27,7 +27,7 @@ pub fn create_pack(user: &Address) -> ZomeApiResult<serde_json::Value> {
         parent: user.clone(),
         name: (user_entry.first_name + "'s Pack").to_string(),
         owner: user.clone(),
-        private: app_definitions::Privacy::Shared 
+        privacy: app_definitions::Privacy::Shared 
     };
     let entry = Entry::App("group".into(), pack.into());
     let pack_address: Address;
@@ -54,4 +54,8 @@ pub fn add_to_pack(user: &Address) -> JsonString{
     //create link on pack and add member @address
     //add link on members address w/ link: pack_member
     json!({ "message": "Ok" }).into()
+}
+
+pub fn is_pack_member(pack: &Address, user: &Address) -> bool{
+    true
 }

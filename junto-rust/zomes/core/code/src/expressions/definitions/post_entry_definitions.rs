@@ -124,105 +124,105 @@ pub fn post_definition() -> ValidatingEntryType {
     )
 }
 
-pub fn resonation_definition() -> ValidatingEntryType {
-    entry!(
-        name: "resonation",
-        description: "Resonation Object Entry",
-        sharing: Sharing::Public,
-        native_type: app_definitions::Resonation,
-        validation_package: || {
-            hdk::ValidationPackageDefinition::Entry
-        },
+// pub fn resonation_definition() -> ValidatingEntryType {
+//     entry!(
+//         name: "resonation",
+//         description: "Resonation Object Entry",
+//         sharing: Sharing::Public,
+//         native_type: app_definitions::Resonation,
+//         validation_package: || {
+//             hdk::ValidationPackageDefinition::Entry
+//         },
 
-        validation: |_resonation: app_definitions::Resonation, _ctx: hdk::ValidationData| {
-            Ok(())
-        },
+//         validation: |_resonation: app_definitions::Resonation, _ctx: hdk::ValidationData| {
+//             Ok(())
+//         },
 
-        links: [
-            from!(
-                "expression_post",
-                tag: "*", //Either any tag containing resonation colour/search query through expression or just resonation tag
+//         links: [
+//             from!(
+//                 "expression_post",
+//                 tag: "*", //Either any tag containing resonation colour/search query through expression or just resonation tag
 
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
-                },
+//                 validation_package: || {
+//                     hdk::ValidationPackageDefinition::ChainFull
+//                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
-                    Ok(())
-                }
-            ),
-            from!(
-                "channel",
-                tag: "*", //Either any tag containing resonation colour/search query through expression or just resonation tag
+//                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+//                     Ok(())
+//                 }
+//             ),
+//             from!(
+//                 "channel",
+//                 tag: "*", //Either any tag containing resonation colour/search query through expression or just resonation tag
 
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
-                },
+//                 validation_package: || {
+//                     hdk::ValidationPackageDefinition::ChainFull
+//                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
-                    Ok(())
-                }
-            ),
-            from!(
-                "user",
-                tag: "*",//Either any tag containing resonation colour/search query through expression or just resonation tag
+//                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+//                     Ok(())
+//                 }
+//             ),
+//             from!(
+//                 "user",
+//                 tag: "*",//Either any tag containing resonation colour/search query through expression or just resonation tag
 
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
-                },
+//                 validation_package: || {
+//                     hdk::ValidationPackageDefinition::ChainFull
+//                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
-                    Ok(())
-                }
-            ),
-            from!(
-                "group",
-                tag: "*",//Either any tag containing resonation colour/search query through expression or just resonation tag
+//                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+//                     Ok(())
+//                 }
+//             ),
+//             from!(
+//                 "group",
+//                 tag: "*",//Either any tag containing resonation colour/search query through expression or just resonation tag
 
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
-                },
+//                 validation_package: || {
+//                     hdk::ValidationPackageDefinition::ChainFull
+//                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
-                    Ok(())
-                }
-            ),
-            from!(
-                "time",
-                tag: "*",//Either any tag containing resonation colour/search query through expression or just resonation tag
+//                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+//                     Ok(())
+//                 }
+//             ),
+//             from!(
+//                 "time",
+//                 tag: "*",//Either any tag containing resonation colour/search query through expression or just resonation tag
 
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
-                },
+//                 validation_package: || {
+//                     hdk::ValidationPackageDefinition::ChainFull
+//                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
-                "expression_post",
-                tag: "expression", 
+//                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+//                     Ok(())
+//                 }
+//             ),
+//             to!(
+//                 "expression_post",
+//                 tag: "expression", 
 
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
-                },
+//                 validation_package: || {
+//                     hdk::ValidationPackageDefinition::ChainFull
+//                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
-                "channel",
-                tag: "*", //Any tag to provide searchable trees 
+//                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+//                     Ok(())
+//                 }
+//             ),
+//             to!(
+//                 "channel",
+//                 tag: "*", //Any tag to provide searchable trees 
 
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
-                },
+//                 validation_package: || {
+//                     hdk::ValidationPackageDefinition::ChainFull
+//                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
-                    Ok(())
-                }
-            )
-        ]
-    )
-}
+//                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+//                     Ok(())
+//                 }
+//             )
+//         ]
+//     )
+// }

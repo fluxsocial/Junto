@@ -74,7 +74,7 @@ pub struct Group {
     pub parent: HashString,
     pub name: String,
     pub owner: Address,
-    pub private: Privacy 
+    pub privacy: Privacy 
 }
 
 //Possible that Time could be handles by Channel Expression Object
@@ -84,19 +84,6 @@ pub struct Time {
     pub time: String,
     pub time_type: TimeType
 }  
-
-#[derive(Serialize, Deserialize, Debug, DefaultJson)]
-pub struct Resonation {
-
-}
-
-pub type GetLinksLoadResult<T> = Vec<GetLinksLoadElement<T>>;
-
-#[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct GetLinksLoadElement<T> {
-	pub address: HashString,
-	pub entry: T
-}
 
 //CODE BELLOW IS OLD AND MESSY - refactoring is necassary here, currently only the contextual_links & hooks vectors are being used to validate that certain functions can be ran on given expression objects
 //Its possible this struct may not be useful going forward perhaps this can just be definted in the !entry of the the given expression and then retrieved later

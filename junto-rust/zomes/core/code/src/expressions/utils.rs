@@ -8,19 +8,23 @@ use hdk::{
         hash::HashString
     }
 };
+
 use std::collections::HashMap;
 use std::convert::TryFrom;
+use regex::Regex;
 
 //Our module(s) imports
 use super::group;
 use super::channel;
 use super::time;
-use super::query;
+use super::indexing;
 use super::definitions::{
     app_definitions,
     function_definitions::{
         FunctionDescriptor,
-        FunctionParameters
+        FunctionParameters,
+        GetLinksLoadResult,
+        GetLinksLoadElement
     }
 };
 
@@ -92,7 +96,7 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
                     &"create_query_points" => {
                         match &hook_descriptor.parameters{
                             FunctionParameters::CreateQueryPoints {query_points, context, privacy, query_type, expression} =>{
-                                query::create_query_points(query_points.to_vec(), context, privacy, query_type, expression)?;
+                                indexing::create_query_points(query_points.to_vec(), context, privacy, query_type, expression)?;
                             },
                             _ => return Err(ZomeApiError::from("create_query_points expects the CreateQueryPoints enum value to be present".to_string()))
                         }
@@ -109,12 +113,13 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
     Ok("Hooks created".to_string()) //success
 }
 
-//This will handle our queryable link structure - contextual links name likely to change. 
-//
-//This function will enable the dynamic querying we envison to happen. 
-//We should be able to query and expression in relation to another - so that means for example: being able to query a given group by any amount of channels and times
-// pub fn handle_contextual_links(expression_type: String, parent_address: Address) -> Result<String, ZomeApiError> {
-// }
+pub fn catch_query_string_types(re: &Regex, query_string: &String) -> Vec<String> {
+    let mut caps: Vec<String> = vec![];
+    for cap in re.captures_iter(&query_string.as_ref()){
+        caps.push(cap[0].to_string());
+    };
+    caps
+}
 
 //Get entry as a given entry type
 pub fn get_as_type<R: TryFrom<AppEntryValue>> (address: HashString) -> ZomeApiResult<R> {
@@ -147,7 +152,7 @@ pub fn link_expression(tag: &'static str, direction: &'static str, parent_expres
 pub fn get_links_and_load<S: Into<String>>(
     base: &HashString,
     tag: S
-) -> ZomeApiResult<app_definitions::GetLinksLoadResult<Entry>>  {
+) -> ZomeApiResult<GetLinksLoadResult<Entry>>  {
 	let get_links_result = hdk::get_links(base, tag)?;
 
 	Ok(get_links_result.addresses()
@@ -155,7 +160,7 @@ pub fn get_links_and_load<S: Into<String>>(
 	.map(|address| {
 		hdk::get_entry(&address.to_owned())
 		.map(|entry: Option<Entry>| {
-			app_definitions::GetLinksLoadElement{
+			GetLinksLoadElement{
 				address: address.to_owned(),
 				entry: entry.unwrap()
 			}
@@ -165,7 +170,8 @@ pub fn get_links_and_load<S: Into<String>>(
 	.collect())
 }
 
-pub fn get_links_and_load_type<S: Into<String>, R: TryFrom<AppEntryValue>>(base: &HashString, tag: S) -> ZomeApiResult<app_definitions::GetLinksLoadResult<R>> {
+//This function has now been implemented in the HDK - but its still useful as it can return the address as well as the entry
+pub fn get_links_and_load_type<S: Into<String>, R: TryFrom<AppEntryValue>>(base: &HashString, tag: S) -> ZomeApiResult<GetLinksLoadResult<R>> {
 	let link_load_results = get_links_and_load(base, tag)?;
 
 	Ok(link_load_results
@@ -179,7 +185,7 @@ pub fn get_links_and_load_type<S: Into<String>, R: TryFrom<AppEntryValue>>(base:
 					"Could not convert get_links result to requested type".to_string())
 				)?;
 
-	            Ok(app_definitions::GetLinksLoadElement::<R>{
+	            Ok(GetLinksLoadElement::<R>{
 	                entry: entry, 
 	                address: get_links_result.address.clone()
 	            })
@@ -191,9 +197,4 @@ pub fn get_links_and_load_type<S: Into<String>, R: TryFrom<AppEntryValue>>(base:
 	})
 	.filter_map(Result::ok)
 	.collect())
-}
-
-pub fn sort_alphabetically(mut vector: Vec<String>) -> Vec<String>{
-    vector.sort_by(|a, b| b.cmp(a));
-    vector
 }
