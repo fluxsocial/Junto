@@ -8,6 +8,15 @@ use std::collections::HashMap;
 
 use super::app_definitions;
 
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+pub struct CreateUserInformation{
+    pub username: String,
+    pub first_name: String,
+    pub last_name: String,
+    pub profile_picture: String,
+    pub bio: String
+}
+
 //Basic struct to be used to describe a function and its parameters to the handle_hooks & handle_contextual_links functions
 pub struct FunctionDescriptor{  
     pub name: &'static str,

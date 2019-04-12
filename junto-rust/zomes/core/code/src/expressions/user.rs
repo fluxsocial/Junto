@@ -2,6 +2,7 @@ use hdk::{
     AGENT_ADDRESS,
     error::ZomeApiResult,
     error::ZomeApiError,
+    api::DNA_ADDRESS,
     holochain_core_types::{
         cas::content::Address,
         entry::Entry, 
@@ -17,18 +18,20 @@ use super::definitions::{
         FunctionDescriptor,
         FunctionParameters,
         UserDens,
-        GetLinksLoadElement
+        GetLinksLoadElement,
+        CreateUserInformation
     }
 };
 
 //Create methods
 //Function to create user and all necassary expression centers for the user
-pub fn handle_create_user(username: String, user_data: app_definitions::User) -> ZomeApiResult<Address> {
-    let username_struct = app_definitions::UserName{username: username.clone()};
+pub fn handle_create_user(user_data: CreateUserInformation) -> ZomeApiResult<Address> {
+    let username_struct = app_definitions::UserName{username: user_data.username.clone()};
     let username_hook = Entry::App("username".into(), username_struct.into()); //Username is the starting point of a users tree - from this comes profile(s), den, pack etc
     let username_address = hdk::commit_entry(&username_hook)?;
+    let user_meta_data = app_definitions::User{parent: Address::from(DNA_ADDRESS.to_string()), first_name: user_data.first_name, last_name: user_data.last_name, bio: user_data.bio, profile_picture: user_data.profile_picture, verified: true};
 
-    let entry = Entry::App("user".into(), user_data.into());
+    let entry = Entry::App("user".into(), user_meta_data.into());
     match hdk::commit_entry(&entry) {
         Ok(address) => {
             //Build hook definitions to link user to timestamps and create pack/den

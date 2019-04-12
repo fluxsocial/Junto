@@ -50,7 +50,7 @@ define_zome! {
 
     functions: [
         create_user: {
-            inputs: |username: String, user_data: expressions::definitions::app_definitions::User|,
+            inputs: |user_data: expressions::definitions::function_definitions::CreateUserInformation|,
             outputs: |result: ZomeApiResult<Address>|,
             handler: expressions::user::handle_create_user
         }
@@ -62,6 +62,9 @@ define_zome! {
     ]
 
     traits: {
-        hc_public [create_user, get_user]
+        hc_public [
+            create_user, 
+            get_user
+        ]
     }
 }
