@@ -14,12 +14,12 @@ pub fn channel_definition() -> ValidatingEntryType {
         name: "channel",
         description: "Channel Object Entry",
         sharing: Sharing::Public,
-        native_type: app_definitions::Channel,
+        //native_type: app_definitions::Channel,
         validation_package: || {
             hdk::ValidationPackageDefinition::Entry
         },
 
-        validation: |_channel: app_definitions::Channel, _ctx: hdk::ValidationData| {
+        validation: |validation_data: hdk::EntryValidationData<app_definitions::Channel>| {
             Ok(())
         },
 
@@ -32,7 +32,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -44,7 +44,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -56,7 +56,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -68,7 +68,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -80,7 +80,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -92,7 +92,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -104,7 +104,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -116,7 +116,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -128,7 +128,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -140,7 +140,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             )

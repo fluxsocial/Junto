@@ -14,12 +14,12 @@ pub fn time_definiton() -> ValidatingEntryType {
         name: "time",
         description: "Time Object Entry",
         sharing: Sharing::Public,
-        native_type: app_definitions::Time,
+        //native_type: app_definitions::Time,
         validation_package: || {
             hdk::ValidationPackageDefinition::Entry
         },
 
-        validation: |_time: app_definitions::Time, _ctx: hdk::ValidationData| {
+        validation: |validation_data: hdk::EntryValidationData<app_definitions::Time>| {
             Ok(())
         },
 
@@ -32,7 +32,7 @@ pub fn time_definiton() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -44,7 +44,7 @@ pub fn time_definiton() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -56,7 +56,7 @@ pub fn time_definiton() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -68,7 +68,7 @@ pub fn time_definiton() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -80,7 +80,7 @@ pub fn time_definiton() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -92,7 +92,7 @@ pub fn time_definiton() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -104,7 +104,7 @@ pub fn time_definiton() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -116,7 +116,7 @@ pub fn time_definiton() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             )

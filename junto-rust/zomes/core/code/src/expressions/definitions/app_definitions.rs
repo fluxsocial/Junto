@@ -62,14 +62,14 @@ pub struct Channel {
     pub channel_type: ChannelType
 }
 
-#[derive(Serialize, Deserialize, Debug, DefaultJson)]
+#[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct ExpressionPost { 
     pub parent: HashString,
     pub expression_type: String,
     pub expression: Expression
 }
 
-#[derive(Serialize, Deserialize, Debug, DefaultJson)]
+#[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct Group {
     pub parent: HashString,
     pub name: String,
@@ -78,7 +78,7 @@ pub struct Group {
 }
 
 //Possible that Time could be handles by Channel Expression Object
-#[derive(Serialize, Deserialize, Debug, DefaultJson)]
+#[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct Time {
     pub parent: HashString,
     pub time: String,

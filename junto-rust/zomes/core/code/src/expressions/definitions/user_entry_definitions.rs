@@ -14,12 +14,12 @@ pub fn user_name_definition() -> ValidatingEntryType {
         name: "username",
         description: "Username Object Entry",
         sharing: Sharing::Public,
-        native_type: app_definitions::UserName,
+        //native_type: app_definitions::UserName,
         validation_package: || {
             hdk::ValidationPackageDefinition::Entry
         },
 
-        validation: |_username: app_definitions::UserName, _ctx: hdk::ValidationData| {
+        validation: |validation_data: hdk::EntryValidationData<app_definitions::UserName>| {
             Ok(())
         },
 
@@ -32,12 +32,12 @@ pub fn user_definition() -> ValidatingEntryType {
         name: "user",
         description: "User Object Entry",
         sharing: Sharing::Public,
-        native_type: app_definitions::User,
+        //native_type: app_definitions::User,
         validation_package: || {
             hdk::ValidationPackageDefinition::Entry
         },
 
-        validation: |_user: app_definitions::User, _ctx: hdk::ValidationData| {
+        validation: |validation_data: hdk::EntryValidationData<app_definitions::User>| {
             Ok(())
         },
 
@@ -50,7 +50,7 @@ pub fn user_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -62,7 +62,7 @@ pub fn user_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -74,7 +74,7 @@ pub fn user_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -86,7 +86,7 @@ pub fn user_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -98,7 +98,7 @@ pub fn user_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -110,7 +110,7 @@ pub fn user_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -122,7 +122,7 @@ pub fn user_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -134,7 +134,7 @@ pub fn user_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -146,7 +146,7 @@ pub fn user_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -158,7 +158,7 @@ pub fn user_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             )

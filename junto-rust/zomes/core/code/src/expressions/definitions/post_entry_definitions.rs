@@ -14,12 +14,12 @@ pub fn post_definition() -> ValidatingEntryType {
         name: "expression_post",
         description: "ExpressionPost Object Entry",
         sharing: Sharing::Public,
-        native_type: app_definitions::ExpressionPost,
+        //native_type: app_definitions::ExpressionPost,
         validation_package: || {
             hdk::ValidationPackageDefinition::Entry
         },
 
-        validation: |_expression_post: app_definitions::ExpressionPost, _ctx: hdk::ValidationData| {
+        validation: |validation_data: hdk::EntryValidationData<app_definitions::ExpressionPost>| {
             Ok(())
         },
 
@@ -32,7 +32,7 @@ pub fn post_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -44,7 +44,7 @@ pub fn post_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -56,7 +56,7 @@ pub fn post_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -68,7 +68,7 @@ pub fn post_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -80,7 +80,7 @@ pub fn post_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -92,7 +92,7 @@ pub fn post_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -104,7 +104,7 @@ pub fn post_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             ),
@@ -116,7 +116,7 @@ pub fn post_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::ChainFull
                 },
 
-                validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
+                validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
             )
