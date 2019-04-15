@@ -68,10 +68,8 @@ pub enum FunctionParameters{
         context: Address,
     },
     CreatePack{
-        user: Address
     },
     CreateDen{
-        user: Address
     },
     LinkExpression{
         tag: &'static str, 

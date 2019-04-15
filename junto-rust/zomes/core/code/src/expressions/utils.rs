@@ -71,16 +71,16 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
                     },
                     &"create_pack" => {
                         match &hook_descriptor.parameters{
-                            FunctionParameters::CreatePack {user} =>{
-                                group::create_pack(&user)?;
+                            FunctionParameters::CreatePack {} =>{
+                                group::create_pack()?;
                             },
                             _ => return Err(ZomeApiError::from("create_pack expectes the CreatePack enum value to be present".to_string()))
                         }
                     },
                     &"create_den" => {
                         match &hook_descriptor.parameters{
-                            FunctionParameters::CreateDen {user} =>{
-                                channel::create_den(&user)?;
+                            FunctionParameters::CreateDen {} =>{
+                                channel::create_den()?;
                             },
                             _ => return Err(ZomeApiError::from("create_den expectes the CreateDen enum value to be present".to_string()))
                         }

@@ -36,12 +36,11 @@ pub fn handle_create_user(user_data: CreateUserInformation) -> ZomeApiResult<Add
         Ok(address) => {
             //Build hook definitions to link user to timestamps and create pack/den
             let hook_definitions = vec![FunctionDescriptor{name: "global_time_to_expression", parameters: FunctionParameters::GlobalTimeToExpression{tag: "user", direction: "reverse", expression_address: username_address.clone()}},
-                            FunctionDescriptor{name: "create_pack", parameters: FunctionParameters::CreatePack{user: username_address.clone()}},
-                            FunctionDescriptor{name: "create_den", parameters: FunctionParameters::CreateDen{user: username_address.clone()}}];
+                            FunctionDescriptor{name: "create_pack", parameters: FunctionParameters::CreatePack{}},
+                            FunctionDescriptor{name: "create_den", parameters: FunctionParameters::CreateDen{}}];
 
             match utils::handle_hooks("User".to_string(), hook_definitions){
                 Ok(result) => {
-                    //hdk::link_entries(&hdk::api::DNA_ADDRESS, &address, username+&"<user>".to_string())?; //add query link
                     hdk::link_entries(&AGENT_ADDRESS, &address, "user")?; 
                     hdk::link_entries(&AGENT_ADDRESS, &username_address, "username")?; 
                     hdk::link_entries(&username_address, &address, "profile")?;
@@ -77,6 +76,15 @@ pub fn get_user_username() -> ZomeApiResult<GetLinksLoadElement<app_definitions:
         return Err(ZomeApiError::from("agent does not have any profile links".to_string()))
     };
     Ok(user_name_links[0].clone())
+}
+
+
+pub fn get_user_username_address() -> ZomeApiResult<Address>{
+    let user_name_links = utils::get_links_and_load_type::<String, app_definitions::UserName>(&AGENT_ADDRESS, "username".to_string())?;
+    if user_name_links.len() == 0{
+        return Err(ZomeApiError::from("agent does not have any profile links".to_string()))
+    };
+    Ok(user_name_links[0].address.clone())
 }
 
 pub fn get_user_dens(user_profile: &Address) -> ZomeApiResult<UserDens>{
