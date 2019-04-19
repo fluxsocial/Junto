@@ -29,6 +29,13 @@ use super::definitions::{
 
 use super::utils;
 use super::user;
+use super::channel;
+use super::group;
+
+//handles conversion of JSON from app call to rust types to call "get_expression" - also converts received entries back to JSON
+// pub fn handle_get_expression(query_root: Address, query_string: String, query_options: QueryOptions, context: Address, target_type: QueryTarget) -> ZomeApiResult<Vec<JsonString>>{
+
+// }
 
 //Function to handle the getting of expression with a given query root and query string
 //for example: query_root: Channel: Technology, query_string: 2018<timestamp>:holochain<channel>:dht<channel>:eric<user>
@@ -75,14 +82,40 @@ pub fn get_expression<T: TryFrom<AppEntryValue>>(query_root: Address, query_stri
                         if entry.channel_type != app_definitions::ChannelType::Den{
                             return Err(ZomeApiError::from("When context is a channel it must be of type den".to_string()))
                         };
-                        //do den auth checking here
                         privacy = entry.privacy;
+                        if privacy == app_definitions::Privacy::Private {
+                            let current_user_hash = user::get_user_username_address()?;
+                            if channel::is_den_owner(&context, &current_user_hash)? == false{
+                                return Err(ZomeApiError::from("You are attempting to get results from a private channel which you do not own".to_string()))
+                            };
+                        } else if privacy == app_definitions::Privacy::Shared {
+                            //check that user is in pack and thus a shared member of their shared den
+                            let den_owner_links = utils::get_links_and_load_type::<String, app_definitions::UserName>(&context, "owner".to_string())?;
+                            let den_owner = den_owner_links[0].address;
+                            let den_owner_pack_links = utils::get_links_and_load_type::<String, app_definitions::Group>(&den_owner, "pack".to_string())?;
+                            let den_owner_pack = den_owner_pack_links[0].address;
+                            let current_user_hash = user::get_user_username_address()?;
+                            if group::is_pack_member(&den_owner_pack, &current_user_hash) == false{
+                                return Err(ZomeApiError::from("You are attempting to access a shared channel (den). In order to access expressions from this channel you must be in the owners group".to_string()))
+                            };
+                        };
                     },
                     Err(_err) => {
                         match app_definitions::Group::try_from(&entry_value){
                             Ok(entry) => {
-                                // do group auth checking here
                                 privacy = entry.privacy;
+                                if privacy == app_definitions::Privacy::Private {
+                                    let current_user_hash = user::get_user_username_address()?;
+                                    if group::is_pack_owner(&context, &current_user_hash)? == false{
+                                        return Err(ZomeApiError::from("You are attempting to get results from a private pack which you do not own".to_string()))
+                                    };
+                                } else if privacy == app_definitions::Privacy::Shared{
+                                    //check that user is in group members list
+                                    let current_user_hash = user::get_user_username_address()?;
+                                    if group::is_pack_member(&context, &current_user_hash)? == false{
+                                        return Err(ZomeApiError::from("You are attempting to get results from a private pack which you do not own".to_string()))
+                                    };
+                                };
                             },
                             Err(_err) => {return Err(ZomeApiError::from("Context address was not a channel, group (den or pack)".to_string()))}
                         };
@@ -112,8 +145,6 @@ pub fn handle_local_query<T: TryFrom<AppEntryValue>>(context: Address, query_roo
 
     for (i, cap) in caps.iter().enumerate(){
         match cap.to_lowercase().as_ref(){ //Make queries for each value/type
-            //again in section below for channels/groups/users we should make sure that if querytarget == query param that only this param is used 
-            //otherwise if we combine results it will be an incorrect query
             "<channel>" => {
                 let entry = Entry::App("channel".into(), app_definitions::Channel{parent: query_root.clone(), name: query_values[i].to_string(), 
                                                             privacy: privacy.clone(), channel_type: app_definitions::ChannelType::Tag}.into());
