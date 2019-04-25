@@ -91,11 +91,9 @@ pub fn get_expression<T: TryFrom<AppEntryValue>>(query_root: Address, query_stri
                         } else if privacy == app_definitions::Privacy::Shared {
                             //check that user is in pack and thus a shared member of their shared den
                             let den_owner_links = utils::get_links_and_load_type::<String, app_definitions::UserName>(&context, "owner".to_string())?;
-                            let den_owner = den_owner_links[0].address;
-                            let den_owner_pack_links = utils::get_links_and_load_type::<String, app_definitions::Group>(&den_owner, "pack".to_string())?;
-                            let den_owner_pack = den_owner_pack_links[0].address;
+                            let den_owner_pack_links = utils::get_links_and_load_type::<String, app_definitions::Group>(&den_owner_links[0].address, "pack".to_string())?;
                             let current_user_hash = user::get_user_username_address()?;
-                            if group::is_pack_member(&den_owner_pack, &current_user_hash) == false{
+                            if group::is_pack_member(&den_owner_pack_links[0].address, &current_user_hash)? == false{
                                 return Err(ZomeApiError::from("You are attempting to access a shared channel (den). In order to access expressions from this channel you must be in the owners group".to_string()))
                             };
                         };

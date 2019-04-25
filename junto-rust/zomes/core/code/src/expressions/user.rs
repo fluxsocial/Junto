@@ -29,21 +29,21 @@ pub fn handle_create_user(user_data: CreateUserInformation) -> ZomeApiResult<Add
     let username_struct = app_definitions::UserName{username: user_data.username.clone()};
     let username_hook = Entry::App("username".into(), username_struct.into()); //Username is the starting point of a users tree - from this comes profile(s), den, pack etc
     let username_address = hdk::commit_entry(&username_hook)?;
-    let user_meta_data = app_definitions::User{parent: Address::from(DNA_ADDRESS.to_string()), first_name: user_data.first_name, last_name: user_data.last_name, bio: user_data.bio, profile_picture: user_data.profile_picture, verified: true};
+    let user_meta_data = app_definitions::User{parent: Address::from(DNA_ADDRESS.to_string()), first_name: user_data.first_name.clone(), last_name: user_data.last_name, bio: user_data.bio, profile_picture: user_data.profile_picture, verified: true};
 
     let entry = Entry::App("user".into(), user_meta_data.into());
     match hdk::commit_entry(&entry) {
         Ok(address) => {
+            hdk::link_entries(&AGENT_ADDRESS, &address, "user")?; 
+            hdk::link_entries(&AGENT_ADDRESS, &username_address, "username")?; 
+            hdk::link_entries(&username_address, &address, "profile")?;
             //Build hook definitions to link user to timestamps and create pack/den
             let hook_definitions = vec![FunctionDescriptor{name: "global_time_to_expression", parameters: FunctionParameters::GlobalTimeToExpression{tag: "user", direction: "reverse", expression_address: username_address.clone()}},
-                            FunctionDescriptor{name: "create_pack", parameters: FunctionParameters::CreatePack{}},
-                            FunctionDescriptor{name: "create_den", parameters: FunctionParameters::CreateDen{}}];
+                            FunctionDescriptor{name: "create_pack", parameters: FunctionParameters::CreatePack{username_address: username_address.clone(), first_name: user_data.first_name.clone()}},
+                            FunctionDescriptor{name: "create_den", parameters: FunctionParameters::CreateDen{username_address: username_address.clone(), first_name: user_data.first_name}}];
 
             match utils::handle_hooks("User".to_string(), hook_definitions){
                 Ok(result) => {
-                    hdk::link_entries(&AGENT_ADDRESS, &address, "user")?; 
-                    hdk::link_entries(&AGENT_ADDRESS, &username_address, "username")?; 
-                    hdk::link_entries(&username_address, &address, "profile")?;
                     Ok(username_address) 
                 },
                 Err(hdk_err) => return Err(ZomeApiError::from(hdk_err.to_string()))

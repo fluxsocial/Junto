@@ -23,7 +23,80 @@ pub fn user_name_definition() -> ValidatingEntryType {
             Ok(())
         },
 
-        links: []
+        links: [
+            from!(
+                "%agent_id",
+                tag: "username",
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            from!(
+                "time",
+                tag: "user",
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            from!(
+                "group",
+                tag: "owner",
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "time",
+                tag: "time",
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "user",
+                tag: "profile",
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "group",
+                tag: "pack",
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            )
+        ]
     )
 }
 
@@ -42,6 +115,30 @@ pub fn user_definition() -> ValidatingEntryType {
         },
 
         links: [
+            from!(
+                "username",
+                tag: "profile",
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            from!(
+                "%agent_id",
+                tag: "user",
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
             from!(
                 "expression_post",
                 tag: "owner",

@@ -25,7 +25,19 @@ pub fn channel_definition() -> ValidatingEntryType {
 
         links: [
             from!(
-                "user",
+                "username",
+                tag: "den",
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            from!(
+                "username",
                 tag: "*",
 
                 validation_package: || {
@@ -111,6 +123,18 @@ pub fn channel_definition() -> ValidatingEntryType {
             to!(
                 "user",
                 tag: "*", //Any tag or user tag
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "username",
+                tag: "owner", //Any tag or user tag
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::ChainFull

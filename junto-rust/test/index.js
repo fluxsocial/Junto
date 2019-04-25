@@ -10,9 +10,8 @@ const instanceJosh = Config.instance(agentJosh, dna)
 const scenario = new Scenario([instanceJosh], { debugLog: true }) 
 
 scenario.runTape('Can register a profile and retrieve', async (t, {josh}) => {
-  const register_result = await josh.callSync('core', 'create_user', {user_data: {first_name: "Josh", last_name: "Parkin", bio: "Junto Testing", profile_picture: "pictureurl"}})
-  console.log(register_result)
-  // t.equal(register_result.Ok.length, 63)
+  const register_result = await josh.callSync('core', 'create_user', {user_data: {username: "jdeepee", first_name: "Josh", last_name: "Parkin", bio: "Junto Testing", profile_picture: "pictureurl"}})
+  t.equal(register_result.Ok, 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn')
 })
 
 

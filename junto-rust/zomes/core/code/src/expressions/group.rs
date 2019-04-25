@@ -23,27 +23,11 @@ use super::definitions::{
 use super::user;
 
 //Creates a user "group" - more specifically in this case a pack
-pub fn create_pack() -> ZomeApiResult<serde_json::Value> {
-    let username_address;
-    let user_first_name;
-    match utils::get_links_and_load_type::<String, app_definitions::UserName>(&AGENT_ADDRESS, "username".to_string()){
-        Ok(result_vec) => {
-            if result_vec.len() > 1{
-                return Err(ZomeApiError::from("Post Failed links on user greater than 1".to_string()))
-            }
-            username_address = result_vec[0].address.clone();
-            match utils::get_links_and_load_type::<String, app_definitions::User>(&username_address, "profile".to_string()){
-                Ok(result_vec) => {
-                    user_first_name = result_vec[0].entry.first_name.clone();
-                },
-                Err(hdk_err) => return Err(hdk_err)
-            }
-        },
-        Err(hdk_err) => return Err(hdk_err)
-    };
+pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiResult<serde_json::Value> {
+    hdk::debug("Creating pack")?;
     let pack = app_definitions::Group{ //Create default pack data
         parent: username_address.clone(),
-        name: (user_first_name + "'s Pack").to_string(),
+        name: (first_name + "'s Pack").to_string(),
         owner: username_address.clone(),
         privacy: app_definitions::Privacy::Shared 
     };
