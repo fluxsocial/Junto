@@ -27,6 +27,9 @@ use hdk::{
 
 mod expressions;
 
+use expressions::definitions::app_definitions;
+use expressions::definitions::function_definitions;
+
 define_zome! {
     entries: [
         expressions::definitions::user_entry_definitions::user_name_definition(),
@@ -50,21 +53,51 @@ define_zome! {
 
     functions: [
         create_user: {
-            inputs: |user_data: expressions::definitions::function_definitions::CreateUserInformation|,
+            inputs: |user_data: function_definitions::CreateUserInformation|,
             outputs: |result: ZomeApiResult<Address>|,
             handler: expressions::user::handle_create_user
         }
-        get_user:{
+        get_username_from_address: {
             inputs: |user: Address|,
             outputs: |result: JsonString|,
-            handler: expressions::user::get_user_from_address
+            handler: expressions::user::get_username_from_address
+        }
+        get_user_profile_from_address: {
+            inputs: |user: Address|,
+            outputs: |result: ZomeApiResult<app_definitions::User>|,
+            handler: expressions::user::get_user_profile_from_address
+        }
+        get_user_profile_by_agent_address: {
+            inputs: | |,
+            outputs: |result: ZomeApiResult<app_definitions::User>|,
+            handler: expressions::user::get_user_profile_by_agent_address
+        }
+        get_user_profile_address_by_agent_address: {
+            inputs: | |,
+            outputs: |result: ZomeApiResult<Address>|,
+            handler: expressions::user::get_user_profile_address_by_agent_address 
+        }
+        get_user_username_by_agent_address: {
+            inputs: | |,
+            outputs: |result: ZomeApiResult<app_definitions::UserName>|,
+            handler: expressions::user::get_user_username_by_agent_address
+        }
+        get_user_username_address_by_agent_address: {
+            inputs: | |,
+            outputs: |result: ZomeApiResult<Address>|,
+            handler: expressions::user::get_user_username_address_by_agent_address
         }
     ]
 
     traits: {
         hc_public [
             create_user, 
-            get_user
+            get_username_from_address,
+            get_user_profile_from_address,
+            get_user_profile_by_agent_address,
+            get_user_profile_address_by_agent_address,
+            get_user_username_by_agent_address,
+            get_user_username_address_by_agent_address
         ]
     }
 }

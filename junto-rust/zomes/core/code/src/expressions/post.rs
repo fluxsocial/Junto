@@ -30,7 +30,7 @@ use super::utils;
 use super::user;
 
 //Function to handle the posting of an expression - will link to any specified channels and insert into relevant groups/packs
-pub fn handle_post_expression(expression: app_definitions::ExpressionPost, channels: Vec<String>) -> ZomeApiResult<Address>{
+pub fn handle_post_expression(expression: app_definitions::ExpressionPost, channels: Vec<String>, context: Vec<Address>) -> ZomeApiResult<Address>{
     let expression_type = expression.expression_type.clone();
     let channels_save = channels.clone();
     let mut query_params: Vec<HashMap<String, String>> = channels.iter().map(|channel| hashmap!{"type".to_string() => "Channel".to_string(), "value".to_string() => channel.to_string()}).collect();
@@ -68,7 +68,7 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, chann
     }
 
     query_params.sort_by(|a, b| b["value"].cmp(&a["value"])); //Order vector in reverse alphabetical order
-    let user_name_address = user::get_user_username()?.address;
+    let user_name_address = user::get_user_username_address_by_agent_address()?;
 
     let den_result = user::get_user_dens(&user_name_address)?;
     let private_den = den_result.private_den;
@@ -120,7 +120,7 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, chann
 //Function to handle the resonation of an expression post - will put the post into packs which the post should be resonated into
 pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
     let expression_post = hdk::utils::get_as_type::<app_definitions::ExpressionPost>(expression.clone())?;
-    let user_name_address = user::get_user_username()?.address;
+    let user_name_address = user::get_user_username_address_by_agent_address()?;
     let user_pack;
     match user::get_user_pack(&user_name_address)?{
         Some(pack) => {user_pack = pack.address;},

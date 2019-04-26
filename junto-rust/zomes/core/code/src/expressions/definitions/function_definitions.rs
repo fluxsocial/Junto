@@ -1,10 +1,14 @@
 use hdk::{
     holochain_core_types::{
         cas::content::Address, 
-        hash::HashString
+        hash::HashString,
+        json::JsonString,
+        error::HolochainError
     }
 };
+
 use std::collections::HashMap;
+use serde::Serialize;
 
 use super::app_definitions;
 
@@ -39,6 +43,19 @@ pub enum QueryOptions {
     FilterNew,
     FilterOld
 }
+
+fn to_json_string<T: Into<JsonString>>(result: GetLinksLoadElement<T>) -> JsonString where T: Serialize {
+    //JsonString::from_json(&format!( "{{\"{}\":{}\, \"{}\":{}}}", "address", address, "entry", result.entry))
+    JsonString::from_json(&format!("{{\"address\": {}, \"entry\": {:?}}}", result.address, serde_json::to_string(&result.entry)))
+    //JsonString::from_json(json!({"address": result.address, "entry": result.entry}))
+}
+
+impl<T: Into<JsonString>> From<GetLinksLoadElement<T>> for JsonString  where T: Serialize{
+    fn from(result: GetLinksLoadElement<T>) -> JsonString {
+        to_json_string(result)
+    }
+}
+
 
 pub type GetLinksLoadResult<T> = Vec<GetLinksLoadElement<T>>;
 

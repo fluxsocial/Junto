@@ -10,6 +10,8 @@ use hdk::{
     }
 };
 
+use std::convert::TryFrom;
+
 //Our modules for holochain actions
 use super::utils;
 use super::definitions::{
@@ -55,31 +57,55 @@ pub fn handle_create_user(user_data: CreateUserInformation) -> ZomeApiResult<Add
 
 //Get methods 
 //Returns user JsonObject from a given address
-pub fn get_user_from_address(user: Address) -> JsonString {
-    match hdk::get_entry(&user){
-        Ok(result) => json!({ "user": result }).into(),
-        Err(hdk_err) => hdk_err.into()
+pub fn get_username_from_address(user: Address) -> JsonString {
+    let entry = hdk::get_entry(&user);
+    match entry {
+        Ok(Some(Entry::App(_, entry_value))) => {
+            match app_definitions::UserName::try_from(&entry_value){
+                Ok(entry) => json!({ "Ok": entry }).into(),
+                Err(_err) => json!({ "Err": "Address specified was not a username"}).into()
+            }
+        },
+        Ok(Some(_)) => {json!({ "Err": "Address specified was not an app entry" }).into()},
+        Ok(None) => json!({ "Ok": {} }).into(),
+        Err(hdk_err) => hdk_err.into() 
     }
 }
 
-pub fn get_user_profile() -> ZomeApiResult<GetLinksLoadElement<app_definitions::User>>{
+pub fn get_user_profile_from_address(user: Address) -> ZomeApiResult<app_definitions::User> {
+    let user_links = utils::get_links_and_load_type::<String, app_definitions::User>(&user, "profile".to_string())?;
+    if user_links.len() == 0{
+        return Err(ZomeApiError::from("User address does not have any profile links".to_string()))
+    };
+    Ok(user_links[0].entry.clone())
+}
+
+pub fn get_user_profile_by_agent_address() -> ZomeApiResult<app_definitions::User>{
     let user_links = utils::get_links_and_load_type::<String, app_definitions::User>(&AGENT_ADDRESS, "user".to_string())?;
     if user_links.len() == 0{
         return Err(ZomeApiError::from("agent does not have any profile links".to_string()))
     };
-    Ok(user_links[0].clone())
+    Ok(user_links[0].entry.clone())
 }
 
-pub fn get_user_username() -> ZomeApiResult<GetLinksLoadElement<app_definitions::UserName>>{
+pub fn get_user_profile_address_by_agent_address() -> ZomeApiResult<Address>{
+    let user_links = utils::get_links_and_load_type::<String, app_definitions::User>(&AGENT_ADDRESS, "user".to_string())?;
+    if user_links.len() == 0{
+        return Err(ZomeApiError::from("agent does not have any profile links".to_string()))
+    };
+    Ok(user_links[0].address.clone())
+}
+
+pub fn get_user_username_by_agent_address() -> ZomeApiResult<app_definitions::UserName>{
     let user_name_links = utils::get_links_and_load_type::<String, app_definitions::UserName>(&AGENT_ADDRESS, "username".to_string())?;
     if user_name_links.len() == 0{
         return Err(ZomeApiError::from("agent does not have any profile links".to_string()))
     };
-    Ok(user_name_links[0].clone())
+    Ok(user_name_links[0].entry.clone())
 }
 
 
-pub fn get_user_username_address() -> ZomeApiResult<Address>{
+pub fn get_user_username_address_by_agent_address() -> ZomeApiResult<Address>{
     let user_name_links = utils::get_links_and_load_type::<String, app_definitions::UserName>(&AGENT_ADDRESS, "username".to_string())?;
     if user_name_links.len() == 0{
         return Err(ZomeApiError::from("agent does not have any profile links".to_string()))
