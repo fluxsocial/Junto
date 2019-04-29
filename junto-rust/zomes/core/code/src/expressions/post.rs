@@ -70,7 +70,7 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, chann
     query_params.sort_by(|a, b| b["value"].cmp(&a["value"])); //Order vector in reverse alphabetical order
     let user_name_address = user::get_user_username_address_by_agent_address()?;
 
-    let den_result = user::get_user_dens(&user_name_address)?;
+    let den_result = user::get_user_dens(user_name_address.clone())?;
     let private_den = den_result.private_den;
     let shared_den = den_result.shared_den;
     let public_den = den_result.public_den;

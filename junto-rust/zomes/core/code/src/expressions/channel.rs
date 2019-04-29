@@ -83,9 +83,9 @@ pub fn create_den(username_address: &Address, first_name: String) -> ZomeApiResu
     Ok(json!({"private_den_address": private_den_address, "shared_den_address": shared_den_address, "public_den_address": public_den_address}))
 }
 
-pub fn is_den_owner(den: &Address, user: &Address) -> ZomeApiResult<bool>{
-    match utils::get_links_and_load_type::<String, app_definitions::UserName>(den, "owner".to_string()){
-        Ok(result_vec) => return Ok(result_vec[0].address == *user),
+pub fn is_den_owner(den: Address, user: Address) -> ZomeApiResult<bool>{
+    match utils::get_links_and_load_type::<String, app_definitions::UserName>(&den, "owner".to_string()){
+        Ok(result_vec) => return Ok(result_vec[0].address == user),
         Err(err) => return Err(ZomeApiError::from(err))
     }
 }

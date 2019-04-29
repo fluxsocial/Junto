@@ -87,6 +87,16 @@ define_zome! {
             outputs: |result: ZomeApiResult<Address>|,
             handler: expressions::user::get_user_username_address_by_agent_address
         }
+        get_user_dens: {
+            inputs: |user: Address|,
+            outputs: |result: ZomeApiResult<function_definitions::UserDens>|,
+            handler: expressions::user::get_user_dens
+        }
+        is_den_owner: {
+            inputs: |den: Address, user: Address|,
+            outputs: |result: ZomeApiResult<bool>|,
+            handler: expressions::channel::is_den_owner
+        }
     ]
 
     traits: {
@@ -97,7 +107,9 @@ define_zome! {
             get_user_profile_by_agent_address,
             get_user_profile_address_by_agent_address,
             get_user_username_by_agent_address,
-            get_user_username_address_by_agent_address
+            get_user_username_address_by_agent_address,
+            get_user_dens,
+            is_den_owner
         ]
     }
 }

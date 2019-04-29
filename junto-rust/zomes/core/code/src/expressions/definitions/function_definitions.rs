@@ -27,6 +27,7 @@ pub struct FunctionDescriptor{
     pub parameters: FunctionParameters,
 }
 
+#[derive(Serialize, Deserialize)]
 pub struct UserDens{
     pub private_den: Option<GetLinksLoadElement<app_definitions::Channel>>,
     pub shared_den: Option<GetLinksLoadElement<app_definitions::Channel>>,
@@ -44,15 +45,34 @@ pub enum QueryOptions {
     FilterOld
 }
 
-fn to_json_string<T: Into<JsonString>>(result: GetLinksLoadElement<T>) -> JsonString where T: Serialize {
-    //JsonString::from_json(&format!( "{{\"{}\":{}\, \"{}\":{}}}", "address", address, "entry", result.entry))
-    JsonString::from_json(&format!("{{\"address\": {}, \"entry\": {:?}}}", result.address, serde_json::to_string(&result.entry)))
-    //JsonString::from_json(json!({"address": result.address, "entry": result.entry}))
+impl From<UserDens> for JsonString {
+    fn from(result: UserDens) -> JsonString {
+        JsonString::from_json(json!({
+            "private_den": match result.private_den{
+                Some(den) => JsonString::from(den),
+                None => JsonString::from("{}")
+            },
+            "shared_den": match result.shared_den{
+                Some(den) => JsonString::from(den),
+                None => JsonString::from("{}")
+            },
+            "public_den": match result.public_den{
+                Some(den) => JsonString::from(den),
+                None => JsonString::from("{}")
+            }
+        }).to_string().as_ref())
+    }
 }
 
 impl<T: Into<JsonString>> From<GetLinksLoadElement<T>> for JsonString  where T: Serialize{
     fn from(result: GetLinksLoadElement<T>) -> JsonString {
-        to_json_string(result)
+        let entry = serde_json::to_string(&result.entry);
+        let entry_string: String;
+        match entry {
+            Ok(entry) => entry_string = entry,
+            Err(e) => return JsonString::from(HolochainError::SerializationError(e.to_string()))
+        };
+        JsonString::from_json(&format!("{{\"address\": {}, \"entry\": {}}}", result.address, entry_string))
     }
 }
 

@@ -85,7 +85,7 @@ pub fn get_expression<T: TryFrom<AppEntryValue>>(query_root: Address, query_stri
                         privacy = entry.privacy;
                         if privacy == app_definitions::Privacy::Private {
                             let current_user_hash = user::get_user_username_address_by_agent_address()?;
-                            if channel::is_den_owner(&context, &current_user_hash)? == false{
+                            if channel::is_den_owner(context.clone(), current_user_hash.clone())? == false{
                                 return Err(ZomeApiError::from("You are attempting to get results from a private channel which you do not own".to_string()))
                             };
                         } else if privacy == app_definitions::Privacy::Shared {
