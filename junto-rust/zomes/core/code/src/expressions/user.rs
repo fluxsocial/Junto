@@ -6,7 +6,8 @@ use hdk::{
     holochain_core_types::{
         cas::content::Address,
         entry::Entry, 
-        json::JsonString
+        json::JsonString,
+        hash::HashString
     }
 };
 
@@ -21,7 +22,8 @@ use super::definitions::{
         FunctionParameters,
         UserDens,
         GetLinksLoadElement,
-        CreateUserInformation
+        CreateUserInformation,
+        UserPack
     }
 };
 
@@ -129,24 +131,23 @@ pub fn get_user_dens(user: Address) -> ZomeApiResult<UserDens>{
             public_den = Some(den.clone());
         };
     };
-
     Ok(UserDens{private_den: private_den, shared_den: shared_den, public_den: public_den})
 }
 
-pub fn get_user_pack(user_name_address: &Address) -> ZomeApiResult<Option<GetLinksLoadElement<app_definitions::Channel>>>{
-    let pack_links = utils::get_links_and_load_type::<String, app_definitions::Channel>(user_name_address, "pack".to_string())?;
+pub fn get_user_pack(username_address: HashString) -> ZomeApiResult<UserPack>{
+    let pack_links = utils::get_links_and_load_type::<String, app_definitions::Group>(&username_address, "pack".to_string())?;
+    hdk::debug(format!("Pack links on username: {}", pack_links.len().to_string()))?;
     if pack_links.len() > 1{
         return Err(ZomeApiError::from("pack links on user greater than 1".to_string()))
-
     } else if pack_links.len() == 0{
-        return Ok(None)
+        return Ok(UserPack{pack: None})
     }
-    Ok(Some(pack_links[0].clone()))
+    Ok(UserPack{pack:Some(pack_links[0].clone())})
 }
 
-pub fn get_user_member_packs(user_profile: &Address) -> ZomeApiResult<Vec<GetLinksLoadElement<app_definitions::Channel>>>{
-    let pack_links = utils::get_links_and_load_type::<String, app_definitions::Channel>(&user_profile, "pack_member".to_string())?;
-    let mut packs: Vec<GetLinksLoadElement<app_definitions::Channel>> = vec![];
+pub fn get_user_member_packs(username_address: HashString) -> ZomeApiResult<Vec<GetLinksLoadElement<app_definitions::Group>>>{
+    let pack_links = utils::get_links_and_load_type::<String, app_definitions::Group>(&username_address, "pack_member".to_string())?;
+    let mut packs: Vec<GetLinksLoadElement<app_definitions::Group>> = vec![];
     for pack in pack_links{
         packs.push(pack.clone());
     };

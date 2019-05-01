@@ -60,6 +60,18 @@ pub fn user_name_definition() -> ValidatingEntryType {
                     Ok(())
                 }
             ),
+            from!(
+                "group",
+                tag: "member",
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::ChainFull
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
             to!(
                 "time",
                 tag: "time",

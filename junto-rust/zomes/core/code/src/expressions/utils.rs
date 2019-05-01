@@ -148,9 +148,11 @@ pub fn get_as_type<R: TryFrom<AppEntryValue>> (address: HashString) -> ZomeApiRe
 pub fn link_expression(tag: &'static str, direction: &'static str, parent_expression: &Address, child_expression: &Address) -> ZomeApiResult<String>{
     hdk::debug("Linking expressions")?;
     if (direction == "reverse") | (direction == "both"){
+        hdk::debug(format!("Linking expression: {} to: {} with tag: {}", child_expression.to_string(), parent_expression.to_string(), tag))?;
         hdk::link_entries(&child_expression, &parent_expression, tag)?;
     }
     if (direction == "forward") | (direction == "both"){
+        hdk::debug(format!("Linking expression: {} to: {} with tag: {}", parent_expression.to_string(), child_expression.to_string(), tag))?;
         hdk::link_entries(&parent_expression, &child_expression, tag)?;
     }
     Ok("Links between expressions made with specified tag".to_string())

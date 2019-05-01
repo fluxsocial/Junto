@@ -97,6 +97,26 @@ define_zome! {
             outputs: |result: ZomeApiResult<bool>|,
             handler: expressions::channel::is_den_owner
         }
+        get_user_pack: {
+            inputs: |username_address: HashString|,
+            outputs: |result: ZomeApiResult<function_definitions::UserPack>|,
+            handler: expressions::user::get_user_pack
+        }
+        add_to_pack: {
+            inputs: |username_address: Address|,
+            outputs: |result: ZomeApiResult<JsonString>|,
+            handler: expressions::group::add_to_pack
+        }
+        get_pack_members: {
+            inputs: |pack: Address|,
+            outputs: |result: ZomeApiResult<function_definitions::PackMembers>|,
+            handler: expressions::group::get_pack_members
+        }
+        is_pack_member: {
+            inputs: |pack: Address, user: Address|,
+            outputs: |result: ZomeApiResult<bool>|,
+            handler: expressions::group::is_pack_member
+        }
     ]
 
     traits: {
@@ -109,7 +129,11 @@ define_zome! {
             get_user_username_by_agent_address,
             get_user_username_address_by_agent_address,
             get_user_dens,
-            is_den_owner
+            is_den_owner,
+            get_user_pack,
+            add_to_pack,
+            get_pack_members,
+            is_pack_member
         ]
     }
 }
