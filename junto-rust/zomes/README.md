@@ -1,14 +1,14 @@
-#Zome API Documentation
+# Zome API Documentation
 
-##User
+## User
 
-##Group
+## Group
 
-##Channel
+## Channel
 
-##Expression
+## Expression
 
-######Post Expression
+###### Post Expression
 **Request:** 
 ```
 Endpoint: /post_expression
@@ -21,7 +21,7 @@ Success: {Ok: "address of post"}
 Error: {Err:  {Error Type: 'Error Message'} }
 ```
 
-######Make Resonation
+###### Make Resonation
 **Request:** 
 ```
 Endpoint: /resonation
@@ -34,7 +34,7 @@ Success: {Ok: "Resonation Generated"}
 Error: {Err:  {Error Type: 'Error Message'} }
 ```
 
-######Get Expression
+###### Get Expression
 **Request:** 
 ```
 Endpoint: /get_expressions
@@ -47,7 +47,7 @@ Success: {Ok: [{ "entry": { expression entry data }, "address": "address of expr
 Error: {Err: {Error Type: 'Error Message')}}
 ```
 
-######Other Notes
+###### Other Notes
 The get_expressions function has a few arguments which might not be easily understandable as to what they do. I will go over each argument here detailing how to use the argument and how they effect the results. Please note this is the first iteration of trying to handle our more advance query functionality into a Holochain application. It is likely this will be refined in the future as we become more comfortable with Holochain/Rust and the optimal designs start to reveal themselves.
 
 **Query Root**: This is the root object where you want to begin the query. In most cases this will either be a channel object or time object. In Holochain all entries are stored "independently" (not related) to each other, in order to create relations between entries you use links. Thus if you want to get expressions you need to start at a given entry and then get links from here.
@@ -64,8 +64,8 @@ The get_expressions function has a few arguments which might not be easily under
 
 **Example**: If you are using get_expressions to search for a user. You have two possible options which may not be readily apparent. You can either pass a user object into the query parameter which will do a regular user search using the username. Or you can pass other parameters (and no username parameter); this will do a traditional ExpressionPost search but then get all ExpressionPost owners and then return these users. This is an interesting way to search for users, an example: being able to search via channels/time and then filter this using QueryOptions to see which user is a high contributor for any given time period/channel.
 
-##Errors
+## Errors
 
-######Types
+###### Types
 
-######Messages
+###### Messages
