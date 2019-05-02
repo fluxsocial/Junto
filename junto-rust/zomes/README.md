@@ -8,46 +8,46 @@
 
 ## Expression
 
-###### Post Expression
-**Request:** 
+**Post Expression**
+###### Request: 
 ```
 Endpoint: /post_expression
 Arguments: { expression: {expression object data}, channels: [array of channels], context: [array of context(s) addresses] }
 ```
 
-**Response:** 
+###### Response: 
 ```
 Success: {Ok: "address of post"}
 Error: {Err:  {Error Type: 'Error Message'} }
 ```
 
-###### Make Resonation
-**Request:** 
+**Make Resonation**
+###### Request: 
 ```
 Endpoint: /resonation
 Arguments: { expression: 'address of expression to resonate' }
 ```
 
-**Response:**
+###### Response:
 ```
 Success: {Ok: "Resonation Generated"}
 Error: {Err:  {Error Type: 'Error Message'} }
 ```
 
-###### Get Expression
-**Request:** 
+**Get Expression**
+###### Request: 
 ```
 Endpoint: /get_expressions
 Arguments: { query_root: "address of query root", query_string: "query string to build expression query", query_options: QueryOptions, context: "address of context in which expression exists", target_type: QueryTarget, query_type: QueryType) }
 ```
 
-**Response:**
+###### Response:
 ```
 Success: {Ok: [{ "entry": { expression entry data }, "address": "address of expression }, ...]}
 Error: {Err: {Error Type: 'Error Message')}}
 ```
 
-###### Other Notes
+**Other Notes**
 The get_expressions function has a few arguments which might not be easily understandable as to what they do. I will go over each argument here detailing how to use the argument and how they effect the results. Please note this is the first iteration of trying to handle our more advance query functionality into a Holochain application. It is likely this will be refined in the future as we become more comfortable with Holochain/Rust and the optimal designs start to reveal themselves.
 
 **Query Root**: This is the root object where you want to begin the query. In most cases this will either be a channel object or time object. In Holochain all entries are stored "independently" (not related) to each other, in order to create relations between entries you use links. Thus if you want to get expressions you need to start at a given entry and then get links from here.
