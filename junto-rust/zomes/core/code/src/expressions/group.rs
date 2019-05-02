@@ -19,7 +19,8 @@ use super::definitions::{
     function_definitions::{
         FunctionDescriptor,
         FunctionParameters,
-        PackMembers
+        PackMembers,
+        GetLinksLoadResult
     }
 };
 use super::user;
@@ -53,7 +54,7 @@ pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiRes
     Ok(json!({"pack_address": pack_address}))
 }
 
-pub fn add_to_group(username_address: Address) -> ZomeApiResult<JsonString>{
+pub fn add_member_to_group(username_address: Address) -> ZomeApiResult<JsonString>{
     let current_user_username = user::get_user_username_address_by_agent_address()?;
     let pack = user::get_user_pack(current_user_username)?.pack;
     match pack {
@@ -132,3 +133,7 @@ pub fn is_pack_owner(pack: Address, user: Address) -> ZomeApiResult<bool>{
         None => return Err(ZomeApiError::from("No context entry at specified address".to_string()))
     }
 }
+
+// pub fn search_groups(query_string: String) -> ZomeApiResult<Vec<GetLinksLoadResult<app_definitions::Group>>>{
+
+// }

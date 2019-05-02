@@ -44,7 +44,7 @@ scenario.runTape('Retrieve pack and make pack auth operations', async (t, {josh,
         t.equal(JSON.stringify(get_eric_pack), JSON.stringify({ Ok: '{"address": "QmTevRrtjaaJzNCESubqfZfZjNXxJH4RxFBKFb9Nd7LUWh", "entry": {"parent":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","name":"Eric\'s Pack","owner":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","privacy":"Shared"}}' }));
         console.log("Completed get eric pack\n\n\n");
 
-        const add_pack_member = await josh.callSync('core', 'add_to_pack', {username_address: 'QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU'}); //add eric to josh's pack
+        const add_pack_member = await josh.callSync('core', 'add_member_to_group', {username_address: 'QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU'}); //add eric to josh's pack
         t.equal(JSON.stringify(add_pack_member), JSON.stringify({ Ok: { message: 'User added to pack' } }));
         console.log("add pack member result", add_pack_member);
         console.log("Completed add pack member to josh's pack\n\n\n");

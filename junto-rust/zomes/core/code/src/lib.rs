@@ -102,10 +102,10 @@ define_zome! {
             outputs: |result: ZomeApiResult<function_definitions::UserPack>|,
             handler: expressions::user::get_user_pack
         }
-        add_to_pack: {
+        add_member_to_group: {
             inputs: |username_address: Address|,
             outputs: |result: ZomeApiResult<JsonString>|,
-            handler: expressions::group::add_to_pack
+            handler: expressions::group::add_member_to_group
         }
         get_pack_members: {
             inputs: |pack: Address|,
@@ -116,6 +116,22 @@ define_zome! {
             inputs: |pack: Address, user: Address|,
             outputs: |result: ZomeApiResult<bool>|,
             handler: expressions::group::is_pack_member
+        }
+        get_expressions: {
+            inputs: |query_root: Address, query_string: String, query_options: function_definitions::QueryOptions, 
+                     context: Address, target_type: function_definitions::QueryTarget, query_type: function_definitions::QueryType|,
+            outputs: |result: ZomeApiResult<JsonString>|,
+            handler: expressions::query::handle_get_expression
+        }
+        post_expression: {
+            inputs: |expression: app_definitions::ExpressionPost, channels: Vec<String>, context: Vec<Address>|,
+            outputs: |result: ZomeApiResult<Address>|,
+            handler: expressions::post::handle_post_expression
+        }
+        resonation: {
+            inputs: |expression: Address|,
+            outputs: |result: ZomeApiResult<String>|,
+            handler: expressions::post::handle_resonation
         }
     ]
 
@@ -131,9 +147,12 @@ define_zome! {
             get_user_dens,
             is_den_owner,
             get_user_pack,
-            add_to_pack,
+            add_member_to_group,
             get_pack_members,
-            is_pack_member
+            is_pack_member,
+            get_expressions,
+            post_expression,
+            resonation
         ]
     }
 }
