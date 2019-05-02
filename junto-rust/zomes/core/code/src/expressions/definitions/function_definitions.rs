@@ -47,15 +47,28 @@ pub struct PackMembers{
     pub members: Vec<GetLinksLoadElement<app_definitions::UserName>>
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct ExpressionResults<T>{
+    pub expressions: Option<Vec<GetLinksLoadElement<T>>>
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub enum QueryTarget{
     ExpressionPost,
     User
 }
 
+#[derive(Debug, Serialize, Deserialize)]
 pub enum QueryOptions {
     FilterPopular,
     FilterNew,
     FilterOld
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub enum QueryType {
+    And,
+    Or
 }
 
 pub type GetLinksLoadResult<T> = Vec<GetLinksLoadElement<T>>;
@@ -99,6 +112,33 @@ impl From<UserPack> for JsonString {
         }
     }
 }
+
+impl From<ExpressionResults<app_definitions::UserName>> for JsonString {
+    fn from(result: ExpressionResults<app_definitions::UserName>) -> JsonString{
+        match result.expressions {
+            Some(expressions) => JsonString::from(default_to_json(expressions)),
+            None => JsonString::from(default_to_json("[]"))
+        }
+    }
+}
+
+impl From<ExpressionResults<app_definitions::ExpressionPost>> for JsonString {
+    fn from(result: ExpressionResults<app_definitions::ExpressionPost>) -> JsonString{
+         match result.expressions {
+            Some(expressions) => JsonString::from(default_to_json(expressions)),
+            None => JsonString::from(default_to_json("[]"))
+         }
+    }
+}
+
+// impl<T: Into<JsonString>> From<ExpressionResults<T>> for JsonString where T: Debug{
+//     fn from(result: ExpressionResults<T>) -> JsonString{
+//         match result.expressions {
+//             Some(expressions) => JsonString::from(default_to_json(expressions)),
+//             None => JsonString::from(default_to_json("[]"))
+//         }
+//     }
+// }
 
 impl<T: Into<JsonString>> From<GetLinksLoadElement<T>> for JsonString  where T: Serialize{
     fn from(result: GetLinksLoadElement<T>) -> JsonString {

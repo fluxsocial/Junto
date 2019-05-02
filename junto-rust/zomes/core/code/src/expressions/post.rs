@@ -6,6 +6,7 @@ use hdk::{
         cas::content::Address,
         entry::Entry, 
         entry::AppEntryValue,
+        json::JsonString,
         hash::HashString
     }
 };
@@ -152,5 +153,5 @@ pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
     let hook_definitions = vec![FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_points.clone(), context: user_pack.clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: expression.clone()}},
                                 FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "resonation", direction: "both", parent_expression: user_pack, child_expression: expression}}];
     utils::handle_hooks("Resonation".to_string(), hook_definitions)?;
-    Ok("Resonation generated".to_string())
+    Ok("Resonation Generated".to_string())
 }

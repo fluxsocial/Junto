@@ -5,6 +5,7 @@ use hdk::{
     holochain_core_types::{
         cas::content::Address,
         entry::Entry, 
+        json::JsonString,
         entry::AppEntryValue,
         hash::HashString
     }
@@ -23,7 +24,9 @@ use super::definitions::{
         FunctionParameters,
         QueryTarget,
         QueryOptions,
-        GetLinksLoadElement
+        GetLinksLoadElement,
+        ExpressionResults,
+        QueryType
     }
 };
 
@@ -33,15 +36,25 @@ use super::channel;
 use super::group;
 
 //handles conversion of JSON from app call to rust types to call "get_expression" - also converts received entries back to JSON
-// pub fn handle_get_expression(query_root: Address, query_string: String, query_options: QueryOptions, context: Address, target_type: QueryTarget) -> ZomeApiResult<Vec<JsonString>>{
-
-// }
+pub fn handle_get_expression(query_root: Address, query_string: String, query_options: QueryOptions, 
+                             context: Address, target_type: QueryTarget, query_type: QueryType) -> ZomeApiResult<JsonString>{
+    match target_type {
+        QueryTarget::ExpressionPost => {
+            let expressions = get_expression::<app_definitions::UserName>(query_root, query_string, query_options, context, target_type)?;
+            Ok(JsonString::from(expressions))
+        },
+        QueryTarget::User => {
+            let expressions = get_expression::<app_definitions::ExpressionPost>(query_root, query_string, query_options, context, target_type)?;
+            Ok(JsonString::from(expressions))
+        }
+    }
+}
 
 //Function to handle the getting of expression with a given query root and query string
 //for example: query_root: Channel: Technology, query_string: 2018<timestamp>:holochain<channel>:dht<channel>:eric<user>
 //this would search for all posts in the channel Technology, which where posted in 2018 and also contain the channels Holochain & Dht by the user Eric
 pub fn get_expression<T: TryFrom<AppEntryValue>>(query_root: Address, query_string: String, 
-        query_options: QueryOptions, context: Address, target_type: QueryTarget) -> ZomeApiResult<Option<Vec<T>>> where T: Clone {
+        query_options: QueryOptions, context: Address, target_type: QueryTarget) -> ZomeApiResult<ExpressionResults<T>> where T: Clone {
     let expression_results = None;
     if context.to_string() == hdk::api::DNA_ADDRESS.to_string(){ //global context
         match target_type{
@@ -56,20 +69,20 @@ pub fn get_expression<T: TryFrom<AppEntryValue>>(query_root: Address, query_stri
                 };
                 match has_user_query{ //match user query
                     Some(query) => { //user query is present - this means we will do a search for the user - disregarding any other query parameters - otherwise the query wont return correct results
-                        let expression_results = hdk::utils::get_links_and_load_type::<String, app_definitions::UserName>(&query_root, query.to_string())?;
+                        let expression_results = utils::get_links_and_load_type::<String, app_definitions::UserName>(&query_root, query.to_string())?;
                     },
                     None => { //no user query is present - thus users will be found based on expressions
                         let expression_post_results = utils::get_links_and_load_type::<String, app_definitions::ExpressionPost>(&query_root, query_string.to_string())?;
                         let mut expression_results = vec![];
                         for expression in expression_post_results{
-                            let user = hdk::utils::get_links_and_load_type::<String, app_definitions::UserName>(&expression.address, "owner".to_string())?;
+                            let user = utils::get_links_and_load_type::<String, app_definitions::UserName>(&expression.address, "owner".to_string())?;
                             expression_results.push(user[0].clone());
                         };
                     }
                 };
             },
             QueryTarget::ExpressionPost => {
-                let expression_results = hdk::utils::get_links_and_load_type::<String, T>(&query_root, query_string.to_string())?;
+                let expression_results = utils::get_links_and_load_type::<String, T>(&query_root, query_string.to_string())?;
             }
         };
     } else {
@@ -126,12 +139,12 @@ pub fn get_expression<T: TryFrom<AppEntryValue>>(query_root: Address, query_stri
         //context checking here to see if they are allowed to view posts at given context/privacy
         let expression_results = handle_local_query::<T>(context, query_root, query_string, privacy, target_type)?;
     }
-    Ok(expression_results)
+    Ok(ExpressionResults{expressions: expression_results})
 }
 
 //handle local query will just use simple getting of links per query in query string and then cross reference results
 pub fn handle_local_query<T: TryFrom<AppEntryValue>>(context: Address, query_root: Address, query_string: String, privacy: app_definitions::Privacy,
-                          target_type: QueryTarget) -> ZomeApiResult<Option<Vec<T>>> where T: Clone {
+                          target_type: QueryTarget) -> ZomeApiResult<Option<Vec<GetLinksLoadElement<T>>>> where T: Clone {
     let re = Regex::new(r"(<channel>|<user>|<time:y>|<time:m>|<time:d>|<time:h>|<type>)").unwrap();
     let caps = utils::catch_query_string_types(&re, &query_string);
     let value_query_string = &re.replace_all(query_string.as_ref(), "");
@@ -197,7 +210,7 @@ pub fn handle_local_query<T: TryFrom<AppEntryValue>>(context: Address, query_roo
         let mut out = vec![]; //Most likely more effecient method than this - this will do for now
         let start_comparison = &expression_results[0];
         for expression in start_comparison{ //look over each expressions in first query parameter
-            out.push(expression.entry.clone()); //push current expression to out vector
+            out.push(expression.clone()); //push current expression to out vector
             for expression_set in expression_results[1..].into_iter(){ //loop over following expression querys
                 if expression_set.contains(&expression) == false{ //check if expression exists inside next expression query
                     out.pop(); //expression does not exist - in the case of an "and" query this should be removed from out vector
