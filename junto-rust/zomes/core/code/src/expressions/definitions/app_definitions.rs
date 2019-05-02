@@ -153,8 +153,8 @@ pub fn get_channel_definitions() -> ExpressionLinkDefinition {
         //No contextual links on commit of channel item - contextual links only need to be made if a resonation or expression is being associated with channel
         contextual_links: vec![],
         hooks: vec![hashmap!{"tag" => "channel", "expression_type" => "Time", "function" => "", "direction" => "reverse"}, //Anytime expression is committed the time of the expression creation should be linked to relevant time object(s)
-                    hashmap!{"tag" => "den", "expression_type" => "User", "function" => "link_user_channel", "direction" => "reverse"}, //Link user channel will only run if channel is of privacy type != public, in our case this would make it a den
-                    hashmap!{"tag" => "owner", "expression_type" => "User", "function" => "link_user_channel", "direction" => "forward"}]  
+                    hashmap!{"tag" => "den", "expression_type" => "User", "function" => "link_expression", "direction" => "reverse"}, //Link user channel will only run if channel is of privacy type != public, in our case this would make it a den
+                    hashmap!{"tag" => "owner", "expression_type" => "User", "function" => "link_expression", "direction" => "forward"}]  
     };
     channel_expression_link_definitions
 }
@@ -202,8 +202,7 @@ pub fn get_group_definitions() -> ExpressionLinkDefinition {
         //Currently pack tag is created between User -> Group, upon any commit of a group - in the future non pack groups might be possible then there should be a way to ensure this tag is not created
         hooks: vec![hashmap!{"tag" => "group", "expression_type" => "Time", "function" => "global_time_to_expression", "direction" => "reverse"},
                     hashmap!{"tag" => "pack", "expression_type" => "Time", "function" => "global_time_to_expression", "direction" => "reverse"},
-                    hashmap!{"tag" => "pack", "expression_type" => "User", "function" => "pack_link", "direction" => "reverse"},
-                    hashmap!{"tag" => "owner", "expression_type" => "User", "function" => "pack_link", "direction" => "forward"}]
+                    hashmap!{"tag" => "pack", "expression_type" => "User", "function" => "link_expression", "direction" => "both"}]
     };
     group_expression_link_definitions
 }

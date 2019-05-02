@@ -27,6 +27,9 @@ use hdk::{
 
 mod expressions;
 
+use expressions::definitions::app_definitions;
+use expressions::definitions::function_definitions;
+
 define_zome! {
     entries: [
         expressions::definitions::user_entry_definitions::user_name_definition(),
@@ -50,21 +53,87 @@ define_zome! {
 
     functions: [
         create_user: {
-            inputs: |user_data: expressions::definitions::function_definitions::CreateUserInformation|,
+            inputs: |user_data: function_definitions::CreateUserInformation|,
             outputs: |result: ZomeApiResult<Address>|,
             handler: expressions::user::handle_create_user
         }
-        get_user:{
+        get_username_from_address: {
             inputs: |user: Address|,
             outputs: |result: JsonString|,
-            handler: expressions::user::get_user_from_address
+            handler: expressions::user::get_username_from_address
+        }
+        get_user_profile_from_address: {
+            inputs: |user: Address|,
+            outputs: |result: ZomeApiResult<app_definitions::User>|,
+            handler: expressions::user::get_user_profile_from_address
+        }
+        get_user_profile_by_agent_address: {
+            inputs: | |,
+            outputs: |result: ZomeApiResult<app_definitions::User>|,
+            handler: expressions::user::get_user_profile_by_agent_address
+        }
+        get_user_profile_address_by_agent_address: {
+            inputs: | |,
+            outputs: |result: ZomeApiResult<Address>|,
+            handler: expressions::user::get_user_profile_address_by_agent_address 
+        }
+        get_user_username_by_agent_address: {
+            inputs: | |,
+            outputs: |result: ZomeApiResult<app_definitions::UserName>|,
+            handler: expressions::user::get_user_username_by_agent_address
+        }
+        get_user_username_address_by_agent_address: {
+            inputs: | |,
+            outputs: |result: ZomeApiResult<Address>|,
+            handler: expressions::user::get_user_username_address_by_agent_address
+        }
+        get_user_dens: {
+            inputs: |user: Address|,
+            outputs: |result: ZomeApiResult<function_definitions::UserDens>|,
+            handler: expressions::user::get_user_dens
+        }
+        is_den_owner: {
+            inputs: |den: Address, user: Address|,
+            outputs: |result: ZomeApiResult<bool>|,
+            handler: expressions::channel::is_den_owner
+        }
+        get_user_pack: {
+            inputs: |username_address: HashString|,
+            outputs: |result: ZomeApiResult<function_definitions::UserPack>|,
+            handler: expressions::user::get_user_pack
+        }
+        add_to_pack: {
+            inputs: |username_address: Address|,
+            outputs: |result: ZomeApiResult<JsonString>|,
+            handler: expressions::group::add_to_pack
+        }
+        get_pack_members: {
+            inputs: |pack: Address|,
+            outputs: |result: ZomeApiResult<function_definitions::PackMembers>|,
+            handler: expressions::group::get_pack_members
+        }
+        is_pack_member: {
+            inputs: |pack: Address, user: Address|,
+            outputs: |result: ZomeApiResult<bool>|,
+            handler: expressions::group::is_pack_member
         }
     ]
 
     traits: {
         hc_public [
             create_user, 
-            get_user
+            get_username_from_address,
+            get_user_profile_from_address,
+            get_user_profile_by_agent_address,
+            get_user_profile_address_by_agent_address,
+            get_user_username_by_agent_address,
+            get_user_username_address_by_agent_address,
+            get_user_dens,
+            is_den_owner,
+            get_user_pack,
+            add_to_pack,
+            get_pack_members,
+            is_pack_member
         ]
     }
 }

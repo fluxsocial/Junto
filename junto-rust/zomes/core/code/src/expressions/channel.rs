@@ -39,39 +39,23 @@ pub fn commit_den(entry: &Entry, user: &Address) -> Result<Address, String> {
 }
 
 //Create den(s) (multiple dens as signified by app_definitions data) and link to user with required tags as defined by definitons data
-pub fn create_den() -> ZomeApiResult<serde_json::Value> {
-    let username_address;
-    let user_first_name;
-    match utils::get_links_and_load_type::<String, app_definitions::UserName>(&AGENT_ADDRESS, "username".to_string()){
-        Ok(result_vec) => {
-            if result_vec.len() > 1{
-                return Err(ZomeApiError::from("Post Failed links on user greater than 1".to_string()))
-            }
-            username_address = result_vec[0].address.clone();
-            match utils::get_links_and_load_type::<String, app_definitions::User>(&username_address, "profile".to_string()){
-                Ok(result_vec) => {
-                    user_first_name = result_vec[0].entry.first_name.clone();
-                },
-                Err(hdk_err) => return Err(hdk_err)
-            }
-        },
-        Err(hdk_err) => return Err(hdk_err)
-    };
+pub fn create_den(username_address: &Address, first_name: String) -> ZomeApiResult<serde_json::Value> {
+    hdk::debug("Creating den")?;
     let private_den = app_definitions::Channel{ //Create private den
         parent: username_address.clone(),
-        name: (user_first_name.clone() + "'s Den").to_string(),
+        name: (first_name.clone() + "'s Den").to_string(),
         privacy: app_definitions::Privacy::Private,
         channel_type: app_definitions::ChannelType::Den
     };
     let shared_den = app_definitions::Channel{ //Create shared den - den viewable by people in your pack
         parent: username_address.clone(),
-        name: (user_first_name.clone()  + "'s Den").to_string(),
+        name: (first_name.clone()  + "'s Den").to_string(),
         privacy: app_definitions::Privacy::Shared,
         channel_type: app_definitions::ChannelType::Den
     };
     let public_den = app_definitions::Channel{ //Create public den - personal expression place viewable by everyone
         parent: username_address.clone(),
-        name: (user_first_name.clone()  + "'s Den").to_string(),
+        name: (first_name.clone()  + "'s Den").to_string(),
         privacy: app_definitions::Privacy::Public,
         channel_type: app_definitions::ChannelType::Den
     };
@@ -99,9 +83,9 @@ pub fn create_den() -> ZomeApiResult<serde_json::Value> {
     Ok(json!({"private_den_address": private_den_address, "shared_den_address": shared_den_address, "public_den_address": public_den_address}))
 }
 
-pub fn is_den_owner(den: &Address, user: &Address) -> ZomeApiResult<bool>{
-    match utils::get_links_and_load_type::<String, app_definitions::UserName>(den, "owner".to_string()){
-        Ok(result_vec) => return Ok(result_vec[0].address == *user),
+pub fn is_den_owner(den: Address, user: Address) -> ZomeApiResult<bool>{
+    match utils::get_links_and_load_type::<String, app_definitions::UserName>(&den, "owner".to_string()){
+        Ok(result_vec) => return Ok(result_vec[0].address == user),
         Err(err) => return Err(ZomeApiError::from(err))
     }
 }

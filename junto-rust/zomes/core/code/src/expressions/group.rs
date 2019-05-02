@@ -6,7 +6,8 @@ use hdk::{
     holochain_core_types::{
         entry::Entry, 
         cas::content::Address,
-        json::JsonString
+        json::JsonString,
+        hash::HashString
     }
 };
 
@@ -17,33 +18,18 @@ use super::definitions::{
     app_definitions,
     function_definitions::{
         FunctionDescriptor,
-        FunctionParameters
+        FunctionParameters,
+        PackMembers
     }
 };
 use super::user;
 
 //Creates a user "group" - more specifically in this case a pack
-pub fn create_pack() -> ZomeApiResult<serde_json::Value> {
-    let username_address;
-    let user_first_name;
-    match utils::get_links_and_load_type::<String, app_definitions::UserName>(&AGENT_ADDRESS, "username".to_string()){
-        Ok(result_vec) => {
-            if result_vec.len() > 1{
-                return Err(ZomeApiError::from("Post Failed links on user greater than 1".to_string()))
-            }
-            username_address = result_vec[0].address.clone();
-            match utils::get_links_and_load_type::<String, app_definitions::User>(&username_address, "profile".to_string()){
-                Ok(result_vec) => {
-                    user_first_name = result_vec[0].entry.first_name.clone();
-                },
-                Err(hdk_err) => return Err(hdk_err)
-            }
-        },
-        Err(hdk_err) => return Err(hdk_err)
-    };
+pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiResult<serde_json::Value> {
+    hdk::debug("Creating pack")?;
     let pack = app_definitions::Group{ //Create default pack data
         parent: username_address.clone(),
-        name: (user_first_name + "'s Pack").to_string(),
+        name: (first_name + "'s Pack").to_string(),
         owner: username_address.clone(),
         privacy: app_definitions::Privacy::Shared 
     };
@@ -67,23 +53,28 @@ pub fn create_pack() -> ZomeApiResult<serde_json::Value> {
     Ok(json!({"pack_address": pack_address}))
 }
 
-pub fn add_to_pack(user: &Address) -> JsonString{
-    //get current users pack
-    //create link on pack and add member @address
-    //add link on members address w/ link: pack_member
-    json!({ "message": "Ok" }).into()
+pub fn add_to_group(username_address: Address) -> ZomeApiResult<JsonString>{
+    let current_user_username = user::get_user_username_address_by_agent_address()?;
+    let pack = user::get_user_pack(current_user_username)?.pack;
+    match pack {
+        Some(pack_obj) => {
+            hdk::link_entries(&pack_obj.address, &username_address, "member".to_string())?;
+        }, //validation to ensure that current user can add another user to pack will happen in validation layer
+        None => return Err(ZomeApiError::from("No pack entries on current user".to_string()))
+    };
+    Ok(json!({ "message": "User added to pack"}).into())
 }
 
-pub fn is_pack_member(pack: &Address, user: &Address) -> ZomeApiResult<bool>{
-    let pack_entry = hdk::api::get_entry(pack)?;
+pub fn is_pack_member(pack: Address, user: Address) -> ZomeApiResult<bool>{
+    let pack_entry = hdk::api::get_entry(&pack)?;
     match pack_entry {
         Some(Entry::App(_, entry_value)) => {
             match app_definitions::Group::try_from(&entry_value){
                 Ok(entry) => {
-                    match utils::get_links_and_load_type::<String, app_definitions::UserName>(pack, "member".to_string()){
-                        Ok(member_vec) =>{
-                            for member in member_vec{
-                                if member.address == *user{
+                    match utils::get_links_and_load_type::<String, app_definitions::UserName>(&pack, "member".to_string()){
+                        Ok(member_vec) => {
+                            for member in member_vec {
+                                if member.address == user{
                                     return Ok(true)
                                 };
                             };
@@ -100,13 +91,39 @@ pub fn is_pack_member(pack: &Address, user: &Address) -> ZomeApiResult<bool>{
     }
 }
 
-pub fn is_pack_owner(pack: &Address, user: &Address) -> ZomeApiResult<bool>{
-    let pack_entry = hdk::api::get_entry(pack)?;
+pub fn get_pack_members(pack: Address) -> ZomeApiResult<PackMembers> {
+    //only viewable by pack members or owner
+    let pack_entry = hdk::api::get_entry(&pack)?;
     match pack_entry {
         Some(Entry::App(_, entry_value)) => {
             match app_definitions::Group::try_from(&entry_value){
                 Ok(entry) => {
-                    return Ok(entry.owner == *user) 
+                    let current_user_username = user::get_user_username_address_by_agent_address()?;
+                    if (is_pack_owner(pack.clone(), current_user_username.clone())? == false && is_pack_member(pack.clone(), current_user_username.clone())? == false) {
+                        return Err(ZomeApiError::from("You are not an owner or member of this pack and thus are not allowed to view given information".to_string()))
+                    };
+                    match utils::get_links_and_load_type::<String, app_definitions::UserName>(&pack, "member".to_string()){
+                        Ok(member_vec) => {
+                            return Ok(PackMembers{members: member_vec})
+                        },
+                        Err(err) => return Err(err)
+                    };
+                },
+                Err(_err) => return Err(ZomeApiError::from("Specified pack address is not of type Group".to_string()))
+            }
+        },
+        Some(_) => return Err(ZomeApiError::from("Context address was not an app entry".to_string())),
+        None => return Err(ZomeApiError::from("No context entry at specified address".to_string()))
+    }
+}
+
+pub fn is_pack_owner(pack: Address, user: Address) -> ZomeApiResult<bool>{
+    let pack_entry = hdk::api::get_entry(&pack)?;
+    match pack_entry {
+        Some(Entry::App(_, entry_value)) => {
+            match app_definitions::Group::try_from(&entry_value){
+                Ok(entry) => {
+                    return Ok(entry.owner == user) 
                 },
                 Err(_err) => return Err(ZomeApiError::from("Specified pack address is not of type Group".to_string()))
             }

@@ -57,6 +57,7 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
                         match &hook_descriptor.parameters { //ensure we have the correct parameters for each function
                             FunctionParameters::GlobalTimeToExpression {tag, direction, expression_address} => { //unpack enum into the relevant variables
                                 time::global_time_to_expression(tag, direction, &expression_address)?; //call function
+                                hdk::debug("Ran global_time_to_expression function")?;
                             },
                             _ => return Err(ZomeApiError::from("Global time to expression expects the GlobalTimeToExpression enum value to be present".to_string())) //GlobalTimeToExpression parameters must be present for this function to be ran
                         }
@@ -65,22 +66,25 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
                         match &hook_descriptor.parameters {
                             FunctionParameters::LocalTimeToExpression {tag, direction, expression_address, context} => {
                                 time::local_time_to_expression(tag, direction, &expression_address, &context)?;
+                                hdk::debug("Ran local_time_to_expression function")?;
                             },
                             _ => return Err(ZomeApiError::from("local_time_to_expression expects the LocalTimeToExpression enum value to be present".to_string()))
                         }
                     },
                     &"create_pack" => {
                         match &hook_descriptor.parameters{
-                            FunctionParameters::CreatePack {} =>{
-                                group::create_pack()?;
+                            FunctionParameters::CreatePack {username_address, first_name} =>{
+                                group::create_pack(username_address, first_name.to_string())?;
+                                hdk::debug("Ran create_pack function")?;
                             },
                             _ => return Err(ZomeApiError::from("create_pack expectes the CreatePack enum value to be present".to_string()))
                         }
                     },
                     &"create_den" => {
                         match &hook_descriptor.parameters{
-                            FunctionParameters::CreateDen {} =>{
-                                channel::create_den()?;
+                            FunctionParameters::CreateDen {username_address, first_name} =>{
+                                channel::create_den(username_address, first_name.to_string())?;
+                                hdk::debug("Ran create_den function")?;
                             },
                             _ => return Err(ZomeApiError::from("create_den expectes the CreateDen enum value to be present".to_string()))
                         }
@@ -89,6 +93,7 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
                         match &hook_descriptor.parameters{
                             FunctionParameters::LinkExpression {tag, direction, parent_expression, child_expression} =>{
                                 link_expression(tag, direction, &parent_expression, &child_expression)?;
+                                hdk::debug("Ran link_expression function")?;
                             },
                             _ => return Err(ZomeApiError::from("link_expression expects the LinkExpression enum value to be present".to_string()))
                         }
@@ -97,6 +102,7 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
                         match &hook_descriptor.parameters{
                             FunctionParameters::CreateQueryPoints {query_points, context, privacy, query_type, expression} =>{
                                 indexing::create_query_points(query_points.to_vec(), context, privacy, query_type, expression)?;
+                                hdk::debug("Ran create_query_points function")?;
                             },
                             _ => return Err(ZomeApiError::from("create_query_points expects the CreateQueryPoints enum value to be present".to_string()))
                         }
@@ -140,10 +146,13 @@ pub fn get_as_type<R: TryFrom<AppEntryValue>> (address: HashString) -> ZomeApiRe
 
 //Link two expression objects together in a given direction
 pub fn link_expression(tag: &'static str, direction: &'static str, parent_expression: &Address, child_expression: &Address) -> ZomeApiResult<String>{
+    hdk::debug("Linking expressions")?;
     if (direction == "reverse") | (direction == "both"){
+        hdk::debug(format!("Linking expression: {} to: {} with tag: {}", child_expression.to_string(), parent_expression.to_string(), tag))?;
         hdk::link_entries(&child_expression, &parent_expression, tag)?;
     }
     if (direction == "forward") | (direction == "both"){
+        hdk::debug(format!("Linking expression: {} to: {} with tag: {}", parent_expression.to_string(), child_expression.to_string(), tag))?;
         hdk::link_entries(&parent_expression, &child_expression, tag)?;
     }
     Ok("Links between expressions made with specified tag".to_string())
