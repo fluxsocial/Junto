@@ -47,7 +47,7 @@ Success: {Ok: [{ "entry": { expression entry data }, "address": "address of expr
 Error: {Err: {Error Type: 'Error Message')}}
 ```
 
-**Other Notes**
+**Other Notes**:
 The get_expressions function has a few arguments which might not be easily understandable as to what they do. I will go over each argument here detailing how to use the argument and how they effect the results. Please note this is the first iteration of trying to handle our more advance query functionality into a Holochain application. It is likely this will be refined in the future as we become more comfortable with Holochain/Rust and the optimal designs start to reveal themselves.
 
 **Query Root**: This is the root object where you want to begin the query. In most cases this will either be a channel object or time object. In Holochain all entries are stored "independently" (not related) to each other, in order to create relations between entries you use links. Thus if you want to get expressions you need to start at a given entry and then get links from here.

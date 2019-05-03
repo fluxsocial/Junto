@@ -106,7 +106,7 @@ pub fn get_expression<T: TryFrom<AppEntryValue>>(query_root: Address, query_stri
                             let den_owner_links = utils::get_links_and_load_type::<String, app_definitions::UserName>(&context, "owner".to_string())?;
                             let den_owner_pack_links = utils::get_links_and_load_type::<String, app_definitions::Group>(&den_owner_links[0].address, "pack".to_string())?;
                             let current_user_hash = user::get_user_username_address_by_agent_address()?;
-                            if group::is_pack_member(den_owner_pack_links[0].address.clone(), current_user_hash.clone())? == false{
+                            if group::is_group_member(den_owner_pack_links[0].address.clone(), current_user_hash.clone())? == false{
                                 return Err(ZomeApiError::from("You are attempting to access a shared channel (den). In order to access expressions from this channel you must be in the owners group".to_string()))
                             };
                         };
@@ -117,13 +117,13 @@ pub fn get_expression<T: TryFrom<AppEntryValue>>(query_root: Address, query_stri
                                 privacy = entry.privacy;
                                 if privacy == app_definitions::Privacy::Private {
                                     let current_user_hash = user::get_user_username_address_by_agent_address()?;
-                                    if group::is_pack_owner(context.clone(), current_user_hash.clone())? == false{
+                                    if group::is_group_owner(context.clone(), current_user_hash.clone())? == false{
                                         return Err(ZomeApiError::from("You are attempting to get results from a private pack which you do not own".to_string()))
                                     };
                                 } else if privacy == app_definitions::Privacy::Shared{
                                     //check that user is in group members list
                                     let current_user_hash = user::get_user_username_address_by_agent_address()?;
-                                    if group::is_pack_member(context.clone(), current_user_hash.clone())? == false{
+                                    if group::is_group_member(context.clone(), current_user_hash.clone())? == false{
                                         return Err(ZomeApiError::from("You are attempting to get results from a private pack which you do not own".to_string()))
                                     };
                                 };

@@ -107,15 +107,15 @@ define_zome! {
             outputs: |result: ZomeApiResult<JsonString>|,
             handler: expressions::group::add_member_to_group
         }
-        get_pack_members: {
-            inputs: |pack: Address|,
-            outputs: |result: ZomeApiResult<function_definitions::PackMembers>|,
-            handler: expressions::group::get_pack_members
+        get_group_members: {
+            inputs: |group: Address|,
+            outputs: |result: ZomeApiResult<function_definitions::GroupMembers>|,
+            handler: expressions::group::get_group_members
         }
-        is_pack_member: {
-            inputs: |pack: Address, user: Address|,
+        is_group_member: {
+            inputs: |group: Address, user: Address|,
             outputs: |result: ZomeApiResult<bool>|,
-            handler: expressions::group::is_pack_member
+            handler: expressions::group::is_group_member
         }
         get_expressions: {
             inputs: |query_root: Address, query_string: String, query_options: function_definitions::QueryOptions, 
@@ -148,8 +148,8 @@ define_zome! {
             is_den_owner,
             get_user_pack,
             add_member_to_group,
-            get_pack_members,
-            is_pack_member,
+            get_group_members,
+            is_group_member,
             get_expressions,
             post_expression,
             resonation

@@ -44,33 +44,33 @@ scenario.runTape('Retrieve pack and make pack auth operations', async (t, {josh,
         t.equal(JSON.stringify(get_eric_pack), JSON.stringify({ Ok: '{"address": "QmTevRrtjaaJzNCESubqfZfZjNXxJH4RxFBKFb9Nd7LUWh", "entry": {"parent":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","name":"Eric\'s Pack","owner":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","privacy":"Shared"}}' }));
         console.log("Completed get eric pack\n\n\n");
 
-        const add_pack_member = await josh.callSync('core', 'add_member_to_group', {username_address: 'QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU'}); //add eric to josh's pack
-        t.equal(JSON.stringify(add_pack_member), JSON.stringify({ Ok: { message: 'User added to pack' } }));
-        console.log("add pack member result", add_pack_member);
-        console.log("Completed add pack member to josh's pack\n\n\n");
+        const add_group_member = await josh.callSync('core', 'add_member_to_group', {username_address: 'QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU'}); //add eric to josh's group
+        t.equal(JSON.stringify(add_group_member), JSON.stringify({ Ok: { message: 'User added to group' } }));
+        console.log("add group member result", add_group_member);
+        console.log("Completed add group member to josh's group\n\n\n");
 
-        const get_pack_members_by_owner = await josh.callSync('core', 'get_pack_members', {pack: 'QmW8j2NrAvKzUTQxtYnPGXmz7PgRevrGgvkD21jHC2utHA'});
-        t.equal(JSON.stringify(get_pack_members_by_owner), JSON.stringify({ Ok: '{"members":[{"address":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","entry":{"username":"sunyatax"}}]}' }));
-        console.log("get pack member by owner", get_pack_members_by_owner);
-        console.log("Completed get pack members by owner\n\n\n");
+        const get_group_members_by_owner = await josh.callSync('core', 'get_group_members', {group: 'QmW8j2NrAvKzUTQxtYnPGXmz7PgRevrGgvkD21jHC2utHA'});
+        t.equal(JSON.stringify(get_group_members_by_owner), JSON.stringify({ Ok: '{"members":[{"address":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","entry":{"username":"sunyatax"}}]}' }));
+        console.log("get group member by owner", get_group_members_by_owner);
+        console.log("Completed get group members by owner\n\n\n");
 
-        const get_pack_members_by_member = await eric.callSync('core', 'get_pack_members', {pack: 'QmW8j2NrAvKzUTQxtYnPGXmz7PgRevrGgvkD21jHC2utHA'});
-        t.equal(JSON.stringify(get_pack_members_by_member), JSON.stringify({ Ok: '{"members":[{"address":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","entry":{"username":"sunyatax"}}]}' }));
-        console.log("get pack member by owner", get_pack_members_by_member);
-        console.log("Completed get pack members by owner\n\n\n");
+        const get_group_members_by_member = await eric.callSync('core', 'get_group_members', {group: 'QmW8j2NrAvKzUTQxtYnPGXmz7PgRevrGgvkD21jHC2utHA'});
+        t.equal(JSON.stringify(get_group_members_by_member), JSON.stringify({ Ok: '{"members":[{"address":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","entry":{"username":"sunyatax"}}]}' }));
+        console.log("get group member by owner", get_group_members_by_member);
+        console.log("Completed get group members by owner\n\n\n");
 
-        const get_user_member_non_member_or_owner = await dora.callSync('core', 'get_pack_members', {pack: 'QmW8j2NrAvKzUTQxtYnPGXmz7PgRevrGgvkD21jHC2utHA'});
-        t.equal(JSON.stringify(get_user_member_non_member_or_owner), JSON.stringify({ Err: { Internal: 'You are not an owner or member of this pack and thus are not allowed to view given information' } }));
-        console.log("get pack member by owner", get_user_member_non_member_or_owner);
-        console.log("Completed get pack members by owner\n\n\n");
+        const get_user_member_non_member_or_owner = await dora.callSync('core', 'get_group_members', {group: 'QmW8j2NrAvKzUTQxtYnPGXmz7PgRevrGgvkD21jHC2utHA'});
+        t.equal(JSON.stringify(get_user_member_non_member_or_owner), JSON.stringify({ Err: { Internal: 'You are not an owner or member of this group and thus are not allowed to view given information' } }));
+        console.log("get group member by owner", get_user_member_non_member_or_owner);
+        console.log("Completed get group members by owner\n\n\n");
 
-        const is_pack_member = await dora.callSync('core', 'is_pack_member', {pack: 'QmW8j2NrAvKzUTQxtYnPGXmz7PgRevrGgvkD21jHC2utHA', user: 'QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU'});
-        t.equal(JSON.stringify(is_pack_member), JSON.stringify({Ok: true}));
-        console.log("is pack member result", is_pack_member);
-        console.log("Completed is pack member\n\n\n");
+        const is_group_member = await dora.callSync('core', 'is_group_member', {group: 'QmW8j2NrAvKzUTQxtYnPGXmz7PgRevrGgvkD21jHC2utHA', user: 'QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU'});
+        t.equal(JSON.stringify(is_group_member), JSON.stringify({Ok: true}));
+        console.log("is group member result", is_group_member);
+        console.log("Completed is group member\n\n\n");
 
-        const is_not_pack_member = await dora.callSync('core', 'is_pack_member', {pack: 'QmW8j2NrAvKzUTQxtYnPGXmz7PgRevrGgvkD21jHC2utHA', user: 'QmWAJausHsWxGvpJJrwtiu6nyQyXDMX426NdghjmHrVfSz'});
-        t.equal(JSON.stringify(is_not_pack_member), JSON.stringify({Ok: false}));
-        console.log("is not pack member result", is_not_pack_member);
-        console.log("Completed is not pack member\n\n\n");
+        const is_not_group_member = await dora.callSync('core', 'is_group_member', {group: 'QmW8j2NrAvKzUTQxtYnPGXmz7PgRevrGgvkD21jHC2utHA', user: 'QmWAJausHsWxGvpJJrwtiu6nyQyXDMX426NdghjmHrVfSz'});
+        t.equal(JSON.stringify(is_not_group_member), JSON.stringify({Ok: false}));
+        console.log("is not group member result", is_not_group_member);
+        console.log("Completed is not group member\n\n\n");
 });

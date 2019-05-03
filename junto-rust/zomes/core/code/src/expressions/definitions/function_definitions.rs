@@ -43,7 +43,7 @@ pub struct UserPack{
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-pub struct PackMembers{
+pub struct GroupMembers{
     pub members: Vec<GetLinksLoadElement<app_definitions::UserName>>
 }
 
@@ -98,8 +98,8 @@ impl From<UserDens> for JsonString {
     }
 }
 
-impl From<PackMembers> for JsonString {
-    fn from(result: PackMembers) -> JsonString {
+impl From<GroupMembers> for JsonString {
+    fn from(result: GroupMembers) -> JsonString {
         JsonString::from(json!(default_to_json(result)))
     }
 }
