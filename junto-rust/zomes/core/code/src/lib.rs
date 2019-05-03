@@ -102,10 +102,20 @@ define_zome! {
             outputs: |result: ZomeApiResult<function_definitions::UserPack>|,
             handler: expressions::user::get_user_pack
         }
-        add_member_to_group: {
+        add_pack_member: {
             inputs: |username_address: Address|,
             outputs: |result: ZomeApiResult<JsonString>|,
+            handler: expressions::group::add_pack_member
+        }
+        add_member_to_group: {
+            inputs: |username_address: Address, group: Address|,
+            outputs: |result: ZomeApiResult<JsonString>|,
             handler: expressions::group::add_member_to_group
+        }
+        remove_group_member: {
+            inputs: |username_address: Address, group: Address|,
+            outputs: |result: ZomeApiResult<JsonString>|,
+            handler: expressions::group::remove_group_member
         }
         get_group_members: {
             inputs: |group: Address|,
@@ -147,7 +157,9 @@ define_zome! {
             get_user_dens,
             is_den_owner,
             get_user_pack,
+            add_pack_member,
             add_member_to_group,
+            remove_group_member,
             get_group_members,
             is_group_member,
             get_expressions,

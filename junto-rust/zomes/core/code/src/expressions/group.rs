@@ -54,16 +54,45 @@ pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiRes
     Ok(json!({"pack_address": pack_address}))
 }
 
-pub fn add_member_to_group(username_address: Address) -> ZomeApiResult<JsonString>{
+pub fn add_pack_member(username_address: Address) -> ZomeApiResult<JsonString>{
     let current_user_username = user::get_user_username_address_by_agent_address()?;
-    let group = user::get_user_pack(current_user_username)?.pack;
+    let group = user::get_user_pack(current_user_username)?.pack;   
     match group {
-        Some(group_obj) => {
-            hdk::link_entries(&group_obj.address, &username_address, "member".to_string())?;
-        }, //validation to ensure that current user can add another user to group will happen in validation layer
-        None => return Err(ZomeApiError::from("No group entries on current user".to_string()))
-    };
-    Ok(json!({ "message": "User added to group"}).into())
+        Some(group_obj) => Ok(add_member_to_group(username_address.clone(), group_obj.address.clone())?),
+        None => Err(ZomeApiError::from("No pack entries on current user".to_string()))
+    }
+}
+
+pub fn add_member_to_group(username_address: Address, group: Address) -> ZomeApiResult<JsonString>{
+    let current_user_username = user::get_user_username_address_by_agent_address()?;
+    let group_owner = is_group_owner(group.clone(), current_user_username.clone())?;
+    if group_owner == true{
+        let group_member = is_group_member(group.clone(), username_address.clone())?;
+        if group_member == false{
+            hdk::api::link_entries(&group, &username_address, "member".to_string())?;
+            Ok(json!({ "message": "User added to group" }).into())
+        } else {
+            Err(ZomeApiError::from("User submitted is already a member of given group".to_string()))
+        }
+    } else {
+        Err(ZomeApiError::from("You are not the owner of given group and thus cannot ad/remove members".to_string()))
+    }
+}
+
+pub fn remove_group_member(username_address: Address, group: Address) -> ZomeApiResult<JsonString>{
+    let current_user_username = user::get_user_username_address_by_agent_address()?;
+    let group_owner = is_group_owner(group.clone(), current_user_username.clone())?;
+    if group_owner == true{
+        let group_member = is_group_member(group.clone(), username_address.clone())?;
+        if group_member == true{
+            hdk::api::remove_link(&group, &username_address, "member".to_string())?;
+            Ok(json!({ "message": "User removed from group" }).into())
+        } else {
+            Err(ZomeApiError::from("User submitted is not a group member of given group".to_string()))
+        }
+    } else {
+        Err(ZomeApiError::from("You are not the owner of given group and thus cannot ad/remove members".to_string()))
+    }
 }
 
 pub fn is_group_member(group: Address, user: Address) -> ZomeApiResult<bool>{

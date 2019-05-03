@@ -44,7 +44,7 @@ scenario.runTape('Retrieve pack and make pack auth operations', async (t, {josh,
         t.equal(JSON.stringify(get_eric_pack), JSON.stringify({ Ok: '{"address": "QmTevRrtjaaJzNCESubqfZfZjNXxJH4RxFBKFb9Nd7LUWh", "entry": {"parent":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","name":"Eric\'s Pack","owner":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","privacy":"Shared"}}' }));
         console.log("Completed get eric pack\n\n\n");
 
-        const add_group_member = await josh.callSync('core', 'add_member_to_group', {username_address: 'QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU'}); //add eric to josh's group
+        const add_group_member = await josh.callSync('core', 'add_pack_member', {username_address: 'QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU'}); //add eric to josh's group
         t.equal(JSON.stringify(add_group_member), JSON.stringify({ Ok: { message: 'User added to group' } }));
         console.log("add group member result", add_group_member);
         console.log("Completed add group member to josh's group\n\n\n");
@@ -61,8 +61,8 @@ scenario.runTape('Retrieve pack and make pack auth operations', async (t, {josh,
 
         const get_user_member_non_member_or_owner = await dora.callSync('core', 'get_group_members', {group: 'QmW8j2NrAvKzUTQxtYnPGXmz7PgRevrGgvkD21jHC2utHA'});
         t.equal(JSON.stringify(get_user_member_non_member_or_owner), JSON.stringify({ Err: { Internal: 'You are not an owner or member of this group and thus are not allowed to view given information' } }));
-        console.log("get group member by owner", get_user_member_non_member_or_owner);
-        console.log("Completed get group members by owner\n\n\n");
+        console.log("get group member by non member or owner", get_user_member_non_member_or_owner);
+        console.log("Completed get group members by non member or owner\n\n\n");
 
         const is_group_member = await dora.callSync('core', 'is_group_member', {group: 'QmW8j2NrAvKzUTQxtYnPGXmz7PgRevrGgvkD21jHC2utHA', user: 'QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU'});
         t.equal(JSON.stringify(is_group_member), JSON.stringify({Ok: true}));
@@ -73,4 +73,14 @@ scenario.runTape('Retrieve pack and make pack auth operations', async (t, {josh,
         t.equal(JSON.stringify(is_not_group_member), JSON.stringify({Ok: false}));
         console.log("is not group member result", is_not_group_member);
         console.log("Completed is not group member\n\n\n");
+
+        const remove_group_member = await josh.callSync('core', 'remove_group_member', {username_address: 'QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU', group: 'QmW8j2NrAvKzUTQxtYnPGXmz7PgRevrGgvkD21jHC2utHA'});
+        t.equal(JSON.stringify(remove_group_member), JSON.stringify({ Ok: { "message": "User removed from group" }}));
+        console.log("remove group member result", remove_group_member);
+        console.log("Completed remove group member\n\n\n")
+
+        const check_removed = await josh.callSync('core', 'get_group_members', {group: 'QmW8j2NrAvKzUTQxtYnPGXmz7PgRevrGgvkD21jHC2utHA'});
+        t.equal(JSON.stringify(check_removed), JSON.stringify({ Ok: '{"members":[]}' }));
+        console.log("get group member by owner", check_removed);
+        console.log("Completed get group members by owner\n\n\n"); 
 });
