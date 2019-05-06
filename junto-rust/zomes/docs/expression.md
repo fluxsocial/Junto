@@ -1,11 +1,5 @@
 # Zome API Documentation
 
-## User
-
-## Group
-
-## Channel
-
 ## Expression
 
 **Post Expression**
@@ -63,9 +57,3 @@ The get_expressions function has a few arguments which might not be easily under
 **Query Type**: QueryType is a Rust Enum - the parameters for this enum are as follows: And, Or. This argument details if the query string should be searching using and/or. And signifies that the function will get all expressions which are present in __every__ query paramter. Or signifies that it will get expression from __each__ query parameter no matter if it is present in other query parameters or not.
 
 **Example**: If you are using get_expressions to search for a user. You have two possible options which may not be readily apparent. You can either pass a user object into the query parameter which will do a regular user search using the username. Or you can pass other parameters (and no username parameter); this will do a traditional ExpressionPost search but then get all ExpressionPost owners and then return these users. This is an interesting way to search for users, an example: being able to search via channels/time and then filter this using QueryOptions to see which user is a high contributor for any given time period/channel.
-
-## Errors
-
-###### Types
-
-###### Messages

@@ -58,12 +58,12 @@ define_zome! {
             handler: expressions::user::handle_create_user
         }
         get_username_from_address: {
-            inputs: |user: Address|,
+            inputs: |username_address: Address|,
             outputs: |result: JsonString|,
             handler: expressions::user::get_username_from_address
         }
         get_user_profile_from_address: {
-            inputs: |user: Address|,
+            inputs: |username_address: Address|,
             outputs: |result: ZomeApiResult<app_definitions::User>|,
             handler: expressions::user::get_user_profile_from_address
         }
@@ -87,8 +87,8 @@ define_zome! {
             outputs: |result: ZomeApiResult<Address>|,
             handler: expressions::user::get_user_username_address_by_agent_address
         }
-        get_user_dens: {
-            inputs: |user: Address|,
+        user_dens: {
+            inputs: |username_address: Address|,
             outputs: |result: ZomeApiResult<function_definitions::UserDens>|,
             handler: expressions::user::get_user_dens
         }
@@ -97,7 +97,7 @@ define_zome! {
             outputs: |result: ZomeApiResult<bool>|,
             handler: expressions::channel::is_den_owner
         }
-        get_user_pack: {
+        user_pack: {
             inputs: |username_address: HashString|,
             outputs: |result: ZomeApiResult<function_definitions::UserPack>|,
             handler: expressions::user::get_user_pack
@@ -117,7 +117,7 @@ define_zome! {
             outputs: |result: ZomeApiResult<JsonString>|,
             handler: expressions::group::remove_group_member
         }
-        get_group_members: {
+        group_members: {
             inputs: |group: Address|,
             outputs: |result: ZomeApiResult<function_definitions::GroupMembers>|,
             handler: expressions::group::get_group_members
@@ -154,13 +154,13 @@ define_zome! {
             get_user_profile_address_by_agent_address,
             get_user_username_by_agent_address,
             get_user_username_address_by_agent_address,
-            get_user_dens,
+            user_dens,
             is_den_owner,
-            get_user_pack,
+            user_pack,
             add_pack_member,
             add_member_to_group,
             remove_group_member,
-            get_group_members,
+            group_members,
             is_group_member,
             get_expressions,
             post_expression,

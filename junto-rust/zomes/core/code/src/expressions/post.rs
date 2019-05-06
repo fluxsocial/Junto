@@ -75,6 +75,10 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, chann
     let private_den = den_result.private_den;
     let shared_den = den_result.shared_den;
     let public_den = den_result.public_den;
+    //check if context is any of the dens - if so then just post into den
+    //if context == DNA hash then post into private/shared/public den(s), collective channel and pack(s)
+    //if context is user pack or member pack then just post into pack
+    //if context is a group but not a pack the user is associated with then check if user can post into group - if so just post into group
 
     let user_pack = user::get_user_pack(user_name_address.clone())?;
     let member_results = user::get_user_member_packs(user_name_address.clone())?.iter().map(|pack| user_member_packs.push(pack.address.clone()));

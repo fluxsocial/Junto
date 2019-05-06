@@ -131,15 +131,6 @@ impl From<ExpressionResults<app_definitions::ExpressionPost>> for JsonString {
     }
 }
 
-// impl<T: Into<JsonString>> From<ExpressionResults<T>> for JsonString where T: Debug{
-//     fn from(result: ExpressionResults<T>) -> JsonString{
-//         match result.expressions {
-//             Some(expressions) => JsonString::from(default_to_json(expressions)),
-//             None => JsonString::from(default_to_json("[]"))
-//         }
-//     }
-// }
-
 impl<T: Into<JsonString>> From<GetLinksLoadElement<T>> for JsonString  where T: Serialize{
     fn from(result: GetLinksLoadElement<T>) -> JsonString {
         let entry = serde_json::to_string(&result.entry);

@@ -7,7 +7,7 @@ const dnaPath = "./dist/junto-rust.dna.json";
 const dna = Config.dna(dnaPath);
 const agentJosh = Config.agent("josh");
 const instanceJosh = Config.instance(agentJosh, dna);
-const scenario = new Scenario([instanceJosh], { debugLog: true });
+const scenario = new Scenario([instanceJosh]);
 
 scenario.runTape('Retrieve den(s) and make auth operations on den.', async (t, {josh}) => {
     //create user
@@ -17,7 +17,7 @@ scenario.runTape('Retrieve den(s) and make auth operations on den.', async (t, {
     console.log("Completed register profile\n\n\n");
 
     //get den(s)
-    const get_den = await josh.callSync('core', 'get_user_dens', {user: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn'});
+    const get_den = await josh.callSync('core', 'user_dens', {username_address: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn'});
     console.log("Get den(s) result", get_den);
     t.equal(JSON.stringify(get_den), JSON.stringify({ Ok: 
         { private_den: '{"address":"QmV7H3Mhpdpj9NfFq2pgwzRd83uEjQupsHa5zwVVeCWSd2","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"Josh\'s Den","privacy":"Private","channel_type":"Den"}}',

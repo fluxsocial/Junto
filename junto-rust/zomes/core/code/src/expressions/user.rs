@@ -60,8 +60,8 @@ pub fn handle_create_user(user_data: CreateUserInformation) -> ZomeApiResult<Add
 
 //Get methods 
 //Returns user JsonObject from a given address
-pub fn get_username_from_address(user: Address) -> JsonString {
-    let entry = hdk::get_entry(&user);
+pub fn get_username_from_address(username_address: Address) -> JsonString {
+    let entry = hdk::get_entry(&username_address);
     match entry {
         Ok(Some(Entry::App(_, entry_value))) => {
             match app_definitions::UserName::try_from(&entry_value){
@@ -75,8 +75,8 @@ pub fn get_username_from_address(user: Address) -> JsonString {
     }
 }
 
-pub fn get_user_profile_from_address(user: Address) -> ZomeApiResult<app_definitions::User> {
-    let user_links = utils::get_links_and_load_type::<String, app_definitions::User>(&user, "profile".to_string())?;
+pub fn get_user_profile_from_address(username_address: Address) -> ZomeApiResult<app_definitions::User> {
+    let user_links = utils::get_links_and_load_type::<String, app_definitions::User>(&username_address, "profile".to_string())?;
     if user_links.len() == 0{
         return Err(ZomeApiError::from("User address does not have any profile links".to_string()))
     };

@@ -7,7 +7,7 @@ const dnaPath = "./dist/junto-rust.dna.json"
 const dna = Config.dna(dnaPath)
 const agentJosh = Config.agent("josh")
 const instanceJosh = Config.instance(agentJosh, dna)
-const scenario = new Scenario([instanceJosh], { debugLog: true }) 
+const scenario = new Scenario([instanceJosh]) 
 
 scenario.runTape('Can register a profile and retrieve', async (t, {josh}) => {
   const register_result = await josh.callSync('core', 'create_user', {user_data: {username: "jdeepee", first_name: "Josh", last_name: "Parkin", bio: "Junto Testing", profile_picture: "pictureurl"}})
@@ -15,12 +15,12 @@ scenario.runTape('Can register a profile and retrieve', async (t, {josh}) => {
   t.equal(JSON.stringify(register_result), JSON.stringify({ Ok: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn' }))
   console.log("Completed register profile\n\n\n")
 
-  const get_username_from_address = await josh.callSync('core', 'get_username_from_address', {user: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn'})
+  const get_username_from_address = await josh.callSync('core', 'get_username_from_address', {username_address: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn'})
   console.log("Getting user by address", get_username_from_address) //should return username
   t.equal(JSON.stringify(get_username_from_address), JSON.stringify({ Ok: { username: 'jdeepee' } }))
   console.log("Completed get username by address\n\n\n")
 
-  const get_user_profile_from_address = await josh.callSync('core', 'get_user_profile_from_address', {user: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn'})
+  const get_user_profile_from_address = await josh.callSync('core', 'get_user_profile_from_address', {username_address: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn'})
   console.log("Getting user profile by address", get_user_profile_from_address) //should return profile
   t.equal(JSON.stringify(get_user_profile_from_address), JSON.stringify({ Ok: 
     { parent: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn',
