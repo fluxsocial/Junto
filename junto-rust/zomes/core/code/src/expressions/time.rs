@@ -26,7 +26,7 @@ pub fn global_time_to_expression(tag: &'static str, direction: &'static str, exp
     match expression_entry{
         Some(Entry::ChainHeader(header)) => {
             let iso_timestamp = serde_json::to_string(header.timestamp()).map_err(|err| ZomeApiError::from(err.to_string()))?;
-            timestamps = create_timestamps(&HashString::encode_from_str(&DNA_ADDRESS.to_string(), Hash::SHA2256), iso_timestamp)?;
+            timestamps = create_timestamps(&HashString::from(DNA_ADDRESS.to_string()), iso_timestamp)?;
         },
         Some(_) => {},
         None => return Err(ZomeApiError::from("No such expression at expression_address".to_string()))

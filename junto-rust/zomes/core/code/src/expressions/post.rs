@@ -178,7 +178,7 @@ pub fn build_hooks(contexts: Vec<Address>, address: &Address, query_params: &Vec
                 };
             };
             //Only other context possible is another group which is not a pack - check if current user is memeber - if so then insert to hook definitions
-            if group::is_group_owner(context.clone(), user_name_address.clone())? == true {
+            if (group::is_group_member(context.clone(), user_name_address.clone())? == true) | (group::is_group_owner(context.clone(), user_name_address.clone())? == true) {
                 hook_definitions.push(FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: context.clone()}});
                 hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: context.clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: address.clone()}});   
             };

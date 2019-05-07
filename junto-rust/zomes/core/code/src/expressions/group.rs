@@ -24,6 +24,7 @@ use super::definitions::{
     }
 };
 use super::user;
+use super::channel;
 
 //Creates a user "group" - more specifically in this case a pack
 pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiResult<serde_json::Value> {
@@ -51,6 +52,7 @@ pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiRes
         },
         Err(_hdk_err) => return Err(ZomeApiError::from("Error occured on committing pack entry".to_string()))
     };
+    channel::create_collective_channel(&pack_address)?;
     Ok(json!({"pack_address": pack_address}))
 }
 

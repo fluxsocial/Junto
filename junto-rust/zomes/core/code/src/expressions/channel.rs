@@ -10,6 +10,8 @@ use hdk::{
 };
 
 use super::utils;
+use super::group;
+use super::user;
 use super::definitions::{
     app_definitions,
     function_definitions::{
@@ -87,5 +89,32 @@ pub fn is_den_owner(den: Address, user: Address) -> ZomeApiResult<bool>{
     match utils::get_links_and_load_type::<String, app_definitions::UserName>(&den, "owner".to_string()){
         Ok(result_vec) => return Ok(result_vec[0].address == user),
         Err(err) => return Err(ZomeApiError::from(err))
+    }
+}
+
+pub fn create_collective_channel(context: &Address) -> ZomeApiResult<Address> {
+    let channel_entry: app_definitions::Channel;
+    if context == &Address::from(hdk::api::DNA_ADDRESS.to_string()) {
+        channel_entry = app_definitions::Channel{parent: context.clone(), name: "Collective".to_string(), 
+                                        privacy: app_definitions::Privacy::Public, channel_type: app_definitions::ChannelType::Tag};
+    } else { 
+        let user_name_address = user::get_user_username_address_by_agent_address()?;
+        if (group::is_group_member(context.clone(), user_name_address.clone())? == true) | (group::is_group_owner(context.clone(), user_name_address.clone())? == true) {
+            channel_entry = app_definitions::Channel{parent: context.clone(), name: "Collective".to_string(), 
+                                        privacy: app_definitions::Privacy::Shared, channel_type: app_definitions::ChannelType::Tag};
+        } else {
+            return Err(ZomeApiError::from("You are not a member/owner of given channel".to_string()))
+        };
+    };
+    let channel_collective_entry = Entry::App("channel".into(), channel_entry.into());
+    let collective_address = hdk::entry_address(&channel_collective_entry)?;
+    let collective_check = hdk::get_entry(&collective_address)?;
+
+    match collective_check{
+        Some(address) => Ok(collective_address),
+        None => {
+            let address = hdk::commit_entry(&channel_collective_entry)?;
+            Ok(address)
+        }
     }
 }

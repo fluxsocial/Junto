@@ -23,7 +23,7 @@ use super::definitions::{
 pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: &Address, privacy: &app_definitions::Privacy, 
                             query_type: &String, expression: &Address) -> ZomeApiResult<String>{
     let mut addressed_params: Vec<HashMap<String, String>> = query_points.to_vec();
-    hdk::api::link_entries(&context, &expression, "expression")?;
+    //hdk::api::link_entries(&context, &expression, "expression")?;
     for (i, query_param) in query_points.iter().enumerate(){
         match query_param["type"].as_ref(){
             "Channel" => {
@@ -196,6 +196,11 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
     if query_type == "contextual" {
         create_contextual_links(&addressed_params, expression)?;
     };
+
+    let context_channel = app_definitions::Channel{parent: context.clone(), name: "Collective".to_string(), 
+                                        privacy: privacy.clone(), channel_type: app_definitions::ChannelType::Tag};
+    let collective_address = hdk::entry_address(&Entry::App("channel".into(), context_channel.into()))?;
+    hdk::api::link_entries(&collective_address, expression, "expression")?;
     Ok("ok".to_string())
 }
 
