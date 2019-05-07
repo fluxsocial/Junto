@@ -115,18 +115,12 @@ pub fn get_expression<T: TryFrom<AppEntryValue>>(query_root: Address, query_stri
                         match app_definitions::Group::try_from(&entry_value){
                             Ok(entry) => {
                                 privacy = entry.privacy;
-                                if privacy == app_definitions::Privacy::Private {
+                                if privacy != app_definitions::Privacy::Public {
                                     let current_user_hash = user::get_user_username_address_by_agent_address()?;
-                                    if group::is_group_owner(context.clone(), current_user_hash.clone())? == false{
-                                        return Err(ZomeApiError::from("You are attempting to get results from a private pack which you do not own".to_string()))
+                                    if (group::is_group_owner(context.clone(), current_user_hash.clone())? == false) | (group::is_group_member(context.clone(), current_user_hash.clone())? == false){
+                                        return Err(ZomeApiError::from("You are attempting to post an expression into a group you are not permitted to interact with".to_string()))
                                     };
-                                } else if privacy == app_definitions::Privacy::Shared{
-                                    //check that user is in group members list
-                                    let current_user_hash = user::get_user_username_address_by_agent_address()?;
-                                    if group::is_group_member(context.clone(), current_user_hash.clone())? == false{
-                                        return Err(ZomeApiError::from("You are attempting to get results from a private pack which you do not own".to_string()))
-                                    };
-                                };
+                                }; 
                             },
                             Err(_err) => {return Err(ZomeApiError::from("Context address was not a channel, group (den or pack)".to_string()))}
                         };
