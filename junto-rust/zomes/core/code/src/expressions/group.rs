@@ -129,7 +129,7 @@ pub fn get_group_members(group: Address) -> ZomeApiResult<GroupMembers> {
             match app_definitions::Group::try_from(&entry_value){
                 Ok(entry) => {
                     let current_user_username = user::get_user_username_address_by_agent_address()?;
-                    if (is_group_owner(group.clone(), current_user_username.clone())? == false && is_group_member(group.clone(), current_user_username.clone())? == false) {
+                    if is_group_owner(group.clone(), current_user_username.clone())? == false && is_group_member(group.clone(), current_user_username.clone())? == false {
                         return Err(ZomeApiError::from("You are not an owner or member of this group and thus are not allowed to view given information".to_string()))
                     };
                     match utils::get_links_and_load_type::<String, app_definitions::UserName>(&group, "member".to_string()){

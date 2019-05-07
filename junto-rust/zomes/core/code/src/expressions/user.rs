@@ -143,7 +143,7 @@ pub fn get_user_pack(username_address: HashString) -> ZomeApiResult<UserPack>{
     } else if pack_links.len() == 0{
         return Ok(UserPack{pack: None})
     }
-    Ok(UserPack{pack:Some(pack_links[0].clone())})
+    Ok(UserPack{pack: Some(pack_links[0].clone())})
 }
 
 pub fn get_user_member_packs(username_address: HashString) -> ZomeApiResult<Vec<GetLinksLoadElement<app_definitions::Group>>>{

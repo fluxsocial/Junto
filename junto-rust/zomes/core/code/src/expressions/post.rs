@@ -29,13 +29,13 @@ use super::definitions::{
 
 use super::utils;
 use super::user;
+use super::group;
 
 //Function to handle the posting of an expression - will link to any specified channels and insert into relevant groups/packs
 pub fn handle_post_expression(expression: app_definitions::ExpressionPost, channels: Vec<String>, context: Vec<Address>) -> ZomeApiResult<Address>{
     let expression_type = expression.expression_type.clone();
     let channels_save = channels.clone();
     let mut query_params: Vec<HashMap<String, String>> = channels.iter().map(|channel| hashmap!{"type".to_string() => "Channel".to_string(), "value".to_string() => channel.to_string()}).collect();
-    let mut user_member_packs: Vec<Address> = vec![];
 
     let entry = Entry::App("expression_post".into(), expression.into());
     let address = hdk::commit_entry(&entry)?;
@@ -69,61 +69,7 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, chann
     }
 
     query_params.sort_by(|a, b| b["value"].cmp(&a["value"])); //Order vector in reverse alphabetical order
-    let user_name_address = user::get_user_username_address_by_agent_address()?;
-
-    let den_result = user::get_user_dens(user_name_address.clone())?;
-    let private_den = den_result.private_den;
-    let shared_den = den_result.shared_den;
-    let public_den = den_result.public_den;
-    //check if context is any of the dens - if so then just post into den
-    //if context == DNA hash then post into private/shared/public den(s), collective channel and pack(s)
-    //if context is user pack or member pack then just post into pack
-    //if context is a group but not a pack the user is associated with then check if user can post into group - if so just post into group
-
-    let user_pack = user::get_user_pack(user_name_address.clone())?;
-    let member_results = user::get_user_member_packs(user_name_address.clone())?.iter().map(|pack| user_member_packs.push(pack.address.clone()));
-
-    let expression_local_hashs = vec![
-        match private_den{
-            Some(den) => den.address,
-            None => return Err(ZomeApiError::from("user is missing private den link".to_string()))
-        }, 
-        match shared_den{
-            Some(den) => den.address,
-            None => return Err(ZomeApiError::from("user is missing a shared_den den link".to_string()))
-        }, 
-        match public_den{
-            Some(den) => den.address,
-            None => return Err(ZomeApiError::from("user is missing a public_den den link".to_string()))
-        }, 
-        match user_pack.pack{
-            Some(pack) => pack.address,
-            None => return Err(ZomeApiError::from("user is missing a pack link".to_string()))
-        }
-    ];
-    
-    let query_params_less: Vec<HashMap<String, String>> = query_params.clone().into_iter().filter(|query| query["type"] != "user").collect();
-
-    //Look at using borrows here with lifetime parameters vs clone
-    let mut hook_definitions = vec![FunctionDescriptor{name: "global_time_to_expression", parameters: FunctionParameters::GlobalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone()}}, //Link expression to global time objects
-                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: HashString::encode_from_str(&hdk::api::DNA_ADDRESS.to_string(), Hash::SHA2256), privacy: app_definitions::Privacy::Public, query_type: "Contextual".to_string(), expression: address.clone()}}, //Create contextual query points for expression post
-
-                                    FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: expression_local_hashs[0].clone()}}, //Link expression to private den time objects
-                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: expression_local_hashs[0].clone(), privacy: app_definitions::Privacy::Private, query_type: "Standard".to_string(), expression: address.clone()}}, 
-
-                                    FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: expression_local_hashs[1].clone()}}, //Link expression to shared den time objects
-                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: expression_local_hashs[1].clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: address.clone()}}, 
-
-                                    FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: expression_local_hashs[2].clone()}}, //Link expression to public den time objects
-                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: expression_local_hashs[2].clone(), privacy: app_definitions::Privacy::Public, query_type: "Standard".to_string(), expression: address.clone()}}, 
-
-                                    FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: expression_local_hashs[3].clone()}}, //Link expression to private den time objects
-                                    FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: expression_local_hashs[3].clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: address.clone()}}];
-  
-    for pack in user_member_packs{
-        hook_definitions.push(FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: pack.clone()}});
-        hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: pack.clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: address.clone()}});
-    };
+    let hook_definitions = build_hooks(context, &address, &query_params)?; //build function hooks that need to be ran on expression based on which contexts are being used
 
     utils::handle_hooks("ExpressionPost".to_string(), hook_definitions)?;
     Ok(address)
@@ -158,4 +104,85 @@ pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
                                 FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "resonation", direction: "both", parent_expression: user_pack, child_expression: expression}}];
     utils::handle_hooks("Resonation".to_string(), hook_definitions)?;
     Ok("Resonation Generated".to_string())
+}
+
+pub fn build_hooks(contexts: Vec<Address>, address: &Address, query_params: &Vec<HashMap<String, String>>) -> ZomeApiResult<Vec<FunctionDescriptor>> {
+    let dna_hash_string = HashString::from(hdk::api::DNA_ADDRESS.to_string());
+    let collective_count = contexts.iter().filter(|&c| *c == *&dna_hash_string).count();
+    if collective_count > 1{
+        return Err(ZomeApiError::from("You have submitted more than one DNA address - this would cause duplicate posting of the same post".to_string()))
+    };
+
+    let user_name_address = user::get_user_username_address_by_agent_address()?;
+    let user_pack = user::get_user_pack(user_name_address.clone())?.pack.unwrap().address;
+    let member_results: Vec<Address> = user::get_user_member_packs(user_name_address.clone())?.iter().map(|pack| pack.address.clone()).collect();
+    let den_result = user::get_user_dens(user_name_address.clone())?;
+    let private_den = den_result.private_den.unwrap().address;
+    let shared_den = den_result.shared_den.unwrap().address;
+    let public_den = den_result.public_den.unwrap().address;
+    let mut local_contexts = vec![&private_den, &shared_den, &public_den, &user_pack];
+    local_contexts.extend(&member_results);
+    
+    let mut hook_definitions = vec![];
+
+    for context in &contexts {
+        if context == &dna_hash_string {
+            //Link expression to public area
+            hook_definitions.push(FunctionDescriptor{name: "global_time_to_expression", parameters: FunctionParameters::GlobalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone()}});
+            hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: dna_hash_string.clone(), privacy: app_definitions::Privacy::Public, query_type: "Contextual".to_string(), expression: address.clone()}});
+            //Link expression to private den
+            hook_definitions.push(FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: private_den.clone()}});
+            hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: private_den.clone(), privacy: app_definitions::Privacy::Private, query_type: "Standard".to_string(), expression: address.clone()}});
+            //Link expression to shared den
+            hook_definitions.push(FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: shared_den.clone()}});
+            hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: shared_den.clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: address.clone()}});
+            //Link expression to public den
+            hook_definitions.push(FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: public_den.clone()}});
+            hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: public_den.clone(), privacy: app_definitions::Privacy::Public, query_type: "Standard".to_string(), expression: address.clone()}});
+            //Link expression to user pack
+            hook_definitions.push(FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: user_pack.clone()}});
+            hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: user_pack.clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: address.clone()}});
+            for pack in &member_results{ //Link expression to each pack user is a member of
+                hook_definitions.push(FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: pack.clone()}});
+                hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: pack.clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: address.clone()}});
+            };        
+        } else {
+            if local_contexts.contains(&context){
+                if collective_count == 0 { //avoid duplicate posting into private den if already posted in by global context
+                    match &context{
+                        &private_den => { //private den match
+                            //Link expression to private den
+                            hook_definitions.push(FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: private_den.clone()}});
+                            hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: private_den.clone(), privacy: app_definitions::Privacy::Private, query_type: "Standard".to_string(), expression: address.clone()}});
+                        },
+                        &shared_den => { //shared den match
+                            //Link expression to shared den
+                            hook_definitions.push(FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: shared_den.clone()}});
+                            hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: shared_den.clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: address.clone()}});     
+                        },
+                        &public_den => { //public den match
+                            //Link expression to public den
+                            hook_definitions.push(FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: public_den.clone()}});
+                            hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: public_den.clone(), privacy: app_definitions::Privacy::Public, query_type: "Standard".to_string(), expression: address.clone()}});
+                        },
+                        &user_pack => { //pack match
+                            //Link expression to user pack
+                            hook_definitions.push(FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: user_pack.clone()}});
+                            hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: user_pack.clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: address.clone()}});    
+                        },
+                        &_ => { //only other possible match is in pack_member results
+                            hook_definitions.push(FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: context.clone()}});
+                            hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: context.clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: address.clone()}});
+                        }
+                    };
+                };
+            };
+            //Only other context possible is another group which is not a pack - check if current user is memeber - if so then insert to hook definitions
+            if group::is_group_owner(context.clone(), user_name_address.clone())? == true {
+                hook_definitions.push(FunctionDescriptor{name: "local_time_to_expression", parameters: FunctionParameters::LocalTimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: context.clone()}});
+                hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: context.clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: address.clone()}});   
+            };
+        }
+    }
+    Ok(hook_definitions)
 }
