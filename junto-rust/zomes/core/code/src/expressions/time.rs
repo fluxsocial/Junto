@@ -29,7 +29,7 @@ pub fn time_to_expression(tag: &'static str, direction: &'static str, expression
             return Err(ZomeApiError::from("EntryResultType not of enum variant Single".to_string()))
         }
     };
-    if iso_timestamp.len() == 0{
+    if timestamps.clone().len() == 0{
         return Err(ZomeApiError::from("Timestamps not found on header".to_string()))
     };
 

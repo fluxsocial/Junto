@@ -103,7 +103,7 @@ pub fn is_group_member(group: Address, user: Address) -> ZomeApiResult<bool>{
     match group_entry {
         Some(Entry::App(_, entry_value)) => {
             match app_definitions::Group::try_from(&entry_value){
-                Ok(entry) => {
+                Ok(_entry) => {
                     match utils::get_links_and_load_type::<String, app_definitions::UserName>(&group, "member".to_string()){
                         Ok(member_vec) => {
                             for member in member_vec {
@@ -130,7 +130,7 @@ pub fn get_group_members(group: Address) -> ZomeApiResult<GroupMembers> {
     match group_entry {
         Some(Entry::App(_, entry_value)) => {
             match app_definitions::Group::try_from(&entry_value){
-                Ok(entry) => {
+                Ok(_entry) => {
                     let current_user_username = user::get_user_username_address_by_agent_address()?;
                     if is_group_owner(group.clone(), current_user_username.clone())? == false && is_group_member(group.clone(), current_user_username.clone())? == false {
                         return Err(ZomeApiError::from("You are not an owner or member of this group and thus are not allowed to view given information".to_string()))

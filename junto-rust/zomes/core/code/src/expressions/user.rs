@@ -48,7 +48,7 @@ pub fn handle_create_user(user_data: CreateUserInformation) -> ZomeApiResult<Add
                                         FunctionDescriptor{name: "create_den", parameters: FunctionParameters::CreateDen{username_address: username_address.clone(), first_name: user_data.first_name}}];
 
             match utils::handle_hooks("User".to_string(), hook_definitions){
-                Ok(result) => {
+                Ok(_result) => {
                     Ok(username_address) 
                 },
                 Err(hdk_err) => return Err(ZomeApiError::from(hdk_err.to_string()))

@@ -49,7 +49,7 @@ pub struct GroupMembers{
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ExpressionResults<T>{
-    pub expressions: Option<Vec<GetLinksLoadElement<T>>>
+    pub expressions: Vec<GetLinksLoadElement<T>>
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -115,19 +115,21 @@ impl From<UserPack> for JsonString {
 
 impl From<ExpressionResults<app_definitions::UserName>> for JsonString {
     fn from(result: ExpressionResults<app_definitions::UserName>) -> JsonString{
-        match result.expressions {
-            Some(expressions) => JsonString::from(default_to_json(expressions)),
-            None => JsonString::from(default_to_json("[]"))
-        }
+        // match result.expressions {
+        //     Some(expressions) => JsonString::from(default_to_json(expressions)),
+        //     None => JsonString::from(default_to_json("[]"))
+        // }
+        JsonString::from(default_to_json(result.expressions))
     }
 }
 
 impl From<ExpressionResults<app_definitions::ExpressionPost>> for JsonString {
     fn from(result: ExpressionResults<app_definitions::ExpressionPost>) -> JsonString{
-         match result.expressions {
-            Some(expressions) => JsonString::from(default_to_json(expressions)),
-            None => JsonString::from(default_to_json("[]"))
-         }
+        //  match result.expressions {
+        //     Some(expressions) => JsonString::from(default_to_json(expressions)),
+        //     None => JsonString::from(default_to_json("[]"))
+        //  }
+        JsonString::from(default_to_json(result.expressions))
     }
 }
 
@@ -177,11 +179,6 @@ pub enum FunctionParameters{
         direction: &'static str, 
         parent_expression: Address, 
         child_expression: Address
-    },
-    CreateChannels{
-        channels: Vec<String>,
-        parent: Address,
-        privacy: app_definitions::Privacy
     },
     CreateQueryPoints{
         query_points: Vec<HashMap<String, String>>, 

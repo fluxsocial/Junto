@@ -111,7 +111,7 @@ pub fn create_collective_channel(context: &Address) -> ZomeApiResult<Address> {
     let collective_check = hdk::get_entry(&collective_address)?;
 
     match collective_check{
-        Some(address) => Ok(collective_address),
+        Some(_address) => Ok(collective_address),
         None => {
             let address = hdk::commit_entry(&channel_collective_entry)?;
             Ok(address)
