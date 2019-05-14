@@ -140,6 +140,16 @@ define_zome! {
             outputs: |result: ZomeApiResult<String>|,
             handler: expressions::post::handle_resonation
         }
+        get_channel_address: {
+            inputs: |channel: app_definitions::Channel|,
+            outputs: |result: ZomeApiResult<Address>|,
+            handler: expressions::channel::get_channel_address
+        }
+        get_time_address: {
+            inputs: |time: app_definitions::Time|,
+            outputs: |result: ZomeApiResult<Address>|,
+            handler: expressions::time::get_time_address
+        }
     ]
 
     traits: {

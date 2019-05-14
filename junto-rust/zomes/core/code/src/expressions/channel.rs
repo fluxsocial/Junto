@@ -118,3 +118,7 @@ pub fn create_collective_channel(context: &Address) -> ZomeApiResult<Address> {
         }
     }
 }
+
+pub fn get_channel_address(channel: app_definitions::Channel) -> ZomeApiResult<Address> {
+    Ok(hdk::api::entry_address(&Entry::App("channel".into(), channel.into()))?)
+}

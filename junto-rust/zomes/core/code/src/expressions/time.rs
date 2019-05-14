@@ -64,3 +64,7 @@ pub fn create_timestamps(parent: &Address, iso_timestamp: &String) -> ZomeApiRes
 
     Ok(timestamp_address)
 }
+
+pub fn get_time_address(time: app_definitions::Time) -> ZomeApiResult<Address> {
+    Ok(hdk::api::entry_address(&Entry::App("time".into(), time.into()))?)
+}
