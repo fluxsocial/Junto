@@ -53,22 +53,13 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
         for hook_descriptor in hooks.iter(){ //iterate over hook function names provided in function call
             if hook_functions.contains(&hook_descriptor.name){ //Check that is allowed on expression type
                 match &hook_descriptor.name{ //Match function names
-                    &"global_time_to_expression" => {
-                        match &hook_descriptor.parameters { //ensure we have the correct parameters for each function
-                            FunctionParameters::GlobalTimeToExpression {tag, direction, expression_address} => { //unpack enum into the relevant variables
-                                time::global_time_to_expression(tag, direction, &expression_address)?; //call function
-                                hdk::debug("Ran global_time_to_expression function")?;
+                    &"time_to_expression" => {
+                        match &hook_descriptor.parameters{
+                            FunctionParameters::TimeToExpression {tag, direction, expression_address, context} => {
+                                time::time_to_expression(tag, direction, &expression_address, &context)?;
+                                hdk::debug("Ran time_to_expression function")?;
                             },
-                            _ => return Err(ZomeApiError::from("Global time to expression expects the GlobalTimeToExpression enum value to be present".to_string())) //GlobalTimeToExpression parameters must be present for this function to be ran
-                        }
-                    },
-                    &"local_time_to_expression" => {
-                        match &hook_descriptor.parameters {
-                            FunctionParameters::LocalTimeToExpression {tag, direction, expression_address, context} => {
-                                time::local_time_to_expression(tag, direction, &expression_address, &context)?;
-                                hdk::debug("Ran local_time_to_expression function")?;
-                            },
-                            _ => return Err(ZomeApiError::from("local_time_to_expression expects the LocalTimeToExpression enum value to be present".to_string()))
+                            _ => return Err(ZomeApiError::from("time_to_expresssion expects the LocalTimeToExpression enum value to be present".to_string()))
                         }
                     },
                     &"create_pack" => {

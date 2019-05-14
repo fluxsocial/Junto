@@ -244,7 +244,6 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
 }
 
 //Only expression posts are being indexed using contextual_links
-//any other information must be found using "normal" link querying - users can be found by getting owners of expression posts
 pub fn create_contextual_links(query_points: &Vec<HashMap<String, String>>, expression: &Address) -> ZomeApiResult<String>{
     let mut link_combinations = vec![]; //Vector for link combinations on expression
 

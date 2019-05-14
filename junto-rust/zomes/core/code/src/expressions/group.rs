@@ -8,7 +8,8 @@ use hdk::{
         cas::content::Address,
         json::JsonString,
         hash::HashString
-    }
+    },
+    api::DNA_ADDRESS
 };
 
 use std::convert::TryFrom;
@@ -40,8 +41,8 @@ pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiRes
     match hdk::commit_entry(&entry){
         Ok(address) => {
             pack_address = address.clone();
-            let hook_definitions = vec![FunctionDescriptor{name: "global_time_to_expression", parameters: FunctionParameters::GlobalTimeToExpression{tag: "group", direction: "reverse", expression_address: address.clone()}},
-                                        FunctionDescriptor{name: "global_time_to_expression", parameters: FunctionParameters::GlobalTimeToExpression{tag: "pack", direction: "reverse", expression_address: address.clone()}},
+            let hook_definitions = vec![FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{tag: "group", direction: "reverse", expression_address: address.clone(), context: Address::from(DNA_ADDRESS.to_string())}},
+                                        FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{tag: "pack", direction: "reverse", expression_address: address.clone(), context: Address::from(DNA_ADDRESS.to_string())}},
                                         FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "pack", direction: "reverse", parent_expression: address.clone(), child_expression: username_address.clone()}},
                                         FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "owner", direction: "forward", parent_expression: address.clone(), child_expression: username_address.clone()}}];
 

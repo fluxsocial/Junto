@@ -158,12 +158,7 @@ impl<T> PartialEq for GetLinksLoadElement<T>{
 
 //Parameters for each function in holochain application
 pub enum FunctionParameters{
-    GlobalTimeToExpression{
-        tag: &'static str, 
-        direction: &'static str, 
-        expression_address: Address,
-    },
-    LocalTimeToExpression{
+    TimeToExpression{
         tag: &'static str, 
         direction: &'static str, 
         expression_address: Address,
