@@ -1,13 +1,11 @@
 use hdk::{
-    AGENT_ADDRESS,
     error::ZomeApiResult,
     error::ZomeApiError,
     holochain_core_types::{
         cas::content::Address,
         entry::Entry, 
         json::JsonString,
-        entry::AppEntryValue,
-        hash::HashString
+        entry::AppEntryValue
     }
 };
 

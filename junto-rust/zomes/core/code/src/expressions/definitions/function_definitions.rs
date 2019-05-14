@@ -6,7 +6,8 @@ use hdk::{
             JsonString,
             default_to_json
         },
-        error::HolochainError
+        error::HolochainError,
+        dna::capabilities::CapabilityRequest
     }
 };
 
@@ -14,6 +15,15 @@ use std::collections::HashMap;
 use serde::Serialize;
 
 use super::app_definitions;
+
+#[derive(Serialize, Deserialize, Debug, DefaultJson)]
+pub struct Env {
+    pub dna_name: String,
+    pub dna_address: String,
+    pub agent_id: String,
+    pub agent_address: String,
+    pub cap_request: CapabilityRequest,
+}
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
 pub struct CreateUserInformation{

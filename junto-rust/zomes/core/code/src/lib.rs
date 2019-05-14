@@ -150,6 +150,11 @@ define_zome! {
             outputs: |result: ZomeApiResult<Address>|,
             handler: expressions::time::get_time_address
         }
+        show_env: {
+            inputs: | |,
+            outputs: |result: ZomeApiResult<function_definitions::Env>|,
+            handler: expressions::user::show_env
+        }
     ]
 
     traits: {
@@ -171,7 +176,10 @@ define_zome! {
             is_group_member,
             get_expressions,
             post_expression,
-            resonation
+            resonation,
+            get_channel_address,
+            get_time_address,
+            show_env
         ]
     }
 }

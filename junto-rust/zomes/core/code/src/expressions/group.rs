@@ -1,13 +1,11 @@
 //Module to handle all group related operations
 use hdk::{
-    AGENT_ADDRESS,
     error::ZomeApiResult,
     error::ZomeApiError,
     holochain_core_types::{
         entry::Entry, 
         cas::content::Address,
-        json::JsonString,
-        hash::HashString
+        json::JsonString
     },
     api::DNA_ADDRESS
 };

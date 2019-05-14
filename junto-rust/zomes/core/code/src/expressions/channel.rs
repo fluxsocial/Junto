@@ -1,6 +1,5 @@
 //Module to handle all channel related operations
 use hdk::{
-    AGENT_ADDRESS,
     error::ZomeApiResult,
     error::ZomeApiError,
     holochain_core_types::{
