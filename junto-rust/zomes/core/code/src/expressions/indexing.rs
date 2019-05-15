@@ -258,7 +258,7 @@ pub fn create_contextual_links(query_points: &Vec<HashMap<String, String>>, expr
 
     for link in link_combinations{ //Create link combinations for expression indexing
         let start = link[0];
-        let link_strings: Vec<String> = link.iter().map(|link_value| format!("{}<{}>", link_value["value"].to_lowercase(), link_value["type"].to_lowercase(),) ).collect();
+        let link_strings: Vec<String> = link.iter().map(|link_value| format!("{}<{}>", link_value["value"], link_value["type"],) ).collect();
         let link_string = link_strings.join(":");
         hdk::api::link_entries(&HashString::from(start["address"].clone()), expression, link_string)?;
     };

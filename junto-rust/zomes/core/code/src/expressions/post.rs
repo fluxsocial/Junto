@@ -32,7 +32,7 @@ use super::group;
 //Function to handle the posting of an expression - will link to any specified channels and insert into relevant groups/packs
 pub fn handle_post_expression(expression: app_definitions::ExpressionPost, channels: Vec<String>, context: Vec<Address>) -> ZomeApiResult<Address>{
     let expression_type = expression.expression_type.clone();
-    let mut query_params: Vec<HashMap<String, String>> = channels.iter().map(|channel| hashmap!{"type".to_string() => "Channel".to_string(), "value".to_string() => channel.to_string()}).collect();
+    let mut query_params: Vec<HashMap<String, String>> = channels.iter().map(|channel| hashmap!{"type".to_string() => "Channel".to_string(), "value".to_string() => channel.to_string().to_lowercase()}).collect();
 
     let entry = Entry::App("expression_post".into(), expression.into());
     let address = hdk::commit_entry(&entry)?;
@@ -43,28 +43,27 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, chann
                 return Err(ZomeApiError::from("Post Failed links on user greater than 1".to_string()))
             }
             hdk::api::link_entries(&address, &result_vec[0].address, "owner".to_string())?;
-            query_params.push(hashmap!{"type".to_string() => "User".to_string(), "value".to_string() => result_vec[0].entry.username.to_string()});
+            query_params.push(hashmap!{"type".to_string() => "User".to_string(), "value".to_string() => result_vec[0].entry.username.to_string().to_lowercase()});
         },
         Err(hdk_err) => return Err(hdk_err)
     };
-    query_params.push(hashmap!{"type".to_string() => "Type".to_string(), "value".to_string() => expression_type.to_string()});
+    query_params.push(hashmap!{"type".to_string() => "Type".to_string(), "value".to_string() => expression_type.to_string().to_lowercase()});
     
     match entry{
         Entry::ChainHeader(header) => {
             let iso_timestamp = serde_json::to_string(header.timestamp());
             match iso_timestamp{
                 Ok(iso_timestamp) => {
-                    query_params.push(hashmap!{"type".to_string() => "Time:Y".to_string(), "value".to_string() => iso_timestamp[0..4].to_string()}); //add year slice to query params
-                    query_params.push(hashmap!{"type".to_string() => "Time:M".to_string(), "value".to_string() => iso_timestamp[5..7].to_string()}); //add month slice to query params
-                    query_params.push(hashmap!{"type".to_string() => "Time:D".to_string(), "value".to_string() => iso_timestamp[8..10].to_string()}); //add day slice to query params
-                    query_params.push(hashmap!{"type".to_string() => "Time:H".to_string(), "value".to_string() => iso_timestamp[11..13].to_string()}) //add hour slice to query params
+                    query_params.push(hashmap!{"type".to_string() => "Time:Y".to_string(), "value".to_string() => iso_timestamp[0..4].to_string().to_lowercase()}); //add year slice to query params
+                    query_params.push(hashmap!{"type".to_string() => "Time:M".to_string(), "value".to_string() => iso_timestamp[5..7].to_string().to_lowercase()}); //add month slice to query params
+                    query_params.push(hashmap!{"type".to_string() => "Time:D".to_string(), "value".to_string() => iso_timestamp[8..10].to_string().to_lowercase()}); //add day slice to query params
+                    query_params.push(hashmap!{"type".to_string() => "Time:H".to_string(), "value".to_string() => iso_timestamp[11..13].to_string().to_lowercase()}) //add hour slice to query params
                 },
                 Err(hdk_err) => return Err(ZomeApiError::from(hdk_err.to_string()))
             }
         },
         _ => {}
     }
-
     query_params.sort_by(|a, b| b["value"].cmp(&a["value"])); //Order vector in reverse alphabetical order
     let hook_definitions = build_hooks(context, &address, &query_params)?; //build function hooks that need to be ran on expression based on which contexts are being used
 
