@@ -29,37 +29,26 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
     let mut addressed_params: Vec<HashMap<String, String>> = query_points.to_vec();
     //hdk::api::link_entries(&context, &expression, "expression")?;
     if context != &HashString::from(hdk::api::DNA_ADDRESS.to_string()){
-        let context_entry = hdk::get_entry(&context)?;
-        match context_entry {
-            Some(Entry::App(_, entry_value)) => {
-                match app_definitions::Channel::try_from(&entry_value){
-                    Ok(entry) => {
-                        if entry.channel_type != app_definitions::ChannelType::Den{
-                            return Err(ZomeApiError::from("When context is a channel it must be of type den - you cannot post into normal public channels".to_string()))
-                        };
-                        let current_user_hash = user::get_user_username_address_by_agent_address()?;
-                        //check that current user making post is owner of den they are trying to post into
-                        if channel::is_den_owner(context.clone(), current_user_hash.clone())? == false{
-                            return Err(ZomeApiError::from("You are attempting to get results from a private channel which you do not own".to_string()))
-                        };
-                    },
-                    Err(_err) => {
-                        match app_definitions::Group::try_from(&entry_value){
-                            Ok(entry) => {
-                                if entry.privacy != app_definitions::Privacy::Public {
-                                    let current_user_hash = user::get_user_username_address_by_agent_address()?;
-                                    if (group::is_group_owner(context.clone(), current_user_hash.clone())? == false) | (group::is_group_member(context.clone(), current_user_hash.clone())? == false){
-                                        return Err(ZomeApiError::from("You are attempting to post an expression into a group you are not permitted to interact with".to_string()))
-                                    };
-                                }; 
-                            },
-                            Err(_err) => {return Err(ZomeApiError::from("Context address was not a channel, group or dna address (global context)".to_string()))}
-                        };
-                    }
+        match hdk::utils::get_as_type::<app_definitions::Channel>(context.clone()) {
+            Ok(context_entry) => {
+                if context_entry.channel_type != app_definitions::ChannelType::Den{
+                    return Err(ZomeApiError::from("When context is a channel it must be of type den - you cannot post into normal public channels".to_string()))
+                }
+                let current_user_hash = user::get_user_username_address_by_agent_address()?;
+                //check that current user making post is owner of den they are trying to post into
+                if channel::is_den_owner(context.clone(), current_user_hash.clone())? == false{
+                    return Err(ZomeApiError::from("You are attempting to get results from a private channel which you do not own".to_string()))
                 }
             },
-            Some(_) => {return Err(ZomeApiError::from("Context address was not an app entry".to_string()))},
-            None => return Err(ZomeApiError::from("No context entry at specified address".to_string()))
+            Err(_err) => {
+                let context_entry = hdk::utils::get_as_type::<app_definitions::Group>(context.clone()).map_err(|_err| ZomeApiError::from("Context address was not a channel, group or dna address (global context)".to_string()))?;
+                if context_entry.privacy != app_definitions::Privacy::Public {
+                    let current_user_hash = user::get_user_username_address_by_agent_address()?;
+                    if (group::is_group_owner(context.clone(), current_user_hash.clone())? == false) | (group::is_group_member(context.clone(), current_user_hash.clone())? == false){
+                        return Err(ZomeApiError::from("You are attempting to post an expression into a group you are not permitted to interact with".to_string()))
+                    }
+                }
+            }
         };
     };
 

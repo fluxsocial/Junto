@@ -84,7 +84,7 @@ pub enum QueryType {
 pub type GetLinksLoadResult<T> = Vec<GetLinksLoadElement<T>>;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct GetLinksLoadElement<T> {
+pub struct GetLinksLoadElement<T>{
 	pub address: HashString,
 	pub entry: T
 }

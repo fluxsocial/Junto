@@ -29,7 +29,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                 tag: "den",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -41,7 +41,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                 tag: "*",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -53,7 +53,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                 tag: "*",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -65,7 +65,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                 tag: "*",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -77,7 +77,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                 tag: "*",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -89,7 +89,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                 tag: "*",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -101,7 +101,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                 tag: "*", //Any tag or expression tag
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -113,7 +113,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                 tag: "*", //Any tag or resonation tag
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -125,7 +125,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                 tag: "*", //Any tag or user tag
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -137,7 +137,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                 tag: "owner", //Any tag or user tag
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -149,7 +149,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                 tag: "*",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -161,7 +161,7 @@ pub fn channel_definition() -> ValidatingEntryType {
                 tag: "*", //Any tag or time tag
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {

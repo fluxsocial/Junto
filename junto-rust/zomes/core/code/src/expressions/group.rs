@@ -100,25 +100,17 @@ pub fn is_group_member(group: Address, user: Address) -> ZomeApiResult<bool>{
     let group_entry = hdk::api::get_entry(&group)?;
     match group_entry {
         Some(Entry::App(_, entry_value)) => {
-            match app_definitions::Group::try_from(&entry_value){
-                Ok(_entry) => {
-                    match utils::get_links_and_load_type::<String, app_definitions::UserName>(&group, "member".to_string()){
-                        Ok(member_vec) => {
-                            for member in member_vec {
-                                if member.address == user{
-                                    return Ok(true)
-                                };
-                            };
-                            return Ok(false)
-                        },
-                        Err(err) => return Err(err)
-                    };
-                },
-                Err(_err) => return Err(ZomeApiError::from("Specified group address is not of type Group".to_string()))
+            let _entry = app_definitions::Group::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Specified group address is not of type Group".to_string()))?; //will return error here if cannot ser entry to group
+            let member_vec = utils::get_links_and_load_type::<String, app_definitions::UserName>(&group, "member".to_string())?;
+            for member in member_vec {
+                if member.address == user{
+                    return Ok(true)
+                }
             }
+            Ok(false)
         },
-        Some(_) => return Err(ZomeApiError::from("Context address was not an app entry".to_string())),
-        None => return Err(ZomeApiError::from("No context entry at specified address".to_string()))
+        Some(_) => Err(ZomeApiError::from("Group address was not an app entry".to_string())),
+        None => Err(ZomeApiError::from("No group entry at specified address".to_string()))
     }
 }
 
@@ -127,24 +119,16 @@ pub fn get_group_members(group: Address) -> ZomeApiResult<GroupMembers> {
     let group_entry = hdk::api::get_entry(&group)?;
     match group_entry {
         Some(Entry::App(_, entry_value)) => {
-            match app_definitions::Group::try_from(&entry_value){
-                Ok(_entry) => {
-                    let current_user_username = user::get_user_username_address_by_agent_address()?;
-                    if is_group_owner(group.clone(), current_user_username.clone())? == false && is_group_member(group.clone(), current_user_username.clone())? == false {
-                        return Err(ZomeApiError::from("You are not an owner or member of this group and thus are not allowed to view given information".to_string()))
-                    };
-                    match utils::get_links_and_load_type::<String, app_definitions::UserName>(&group, "member".to_string()){
-                        Ok(member_vec) => {
-                            return Ok(GroupMembers{members: member_vec})
-                        },
-                        Err(err) => return Err(err)
-                    };
-                },
-                Err(_err) => return Err(ZomeApiError::from("Specified group address is not of type Group".to_string()))
-            }
+            let _entry = app_definitions::Group::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Specified group address is not of type Group".to_string()))?; //will return error here if cannot ser entry to group
+            let current_user_username = user::get_user_username_address_by_agent_address()?;
+            if is_group_owner(group.clone(), current_user_username.clone())? == false && is_group_member(group.clone(), current_user_username.clone())? == false {
+                return Err(ZomeApiError::from("You are not an owner or member of this group and thus are not allowed to view given information".to_string()))
+            };
+            let member_vec = utils::get_links_and_load_type::<String, app_definitions::UserName>(&group, "member".to_string())?;
+            Ok(GroupMembers{members: member_vec})
         },
-        Some(_) => return Err(ZomeApiError::from("Context address was not an app entry".to_string())),
-        None => return Err(ZomeApiError::from("No context entry at specified address".to_string()))
+        Some(_) => Err(ZomeApiError::from("Context address was not an app entry".to_string())),
+        None => Err(ZomeApiError::from("No context entry at specified address".to_string()))
     }
 }
 
@@ -152,12 +136,8 @@ pub fn is_group_owner(group: Address, user: Address) -> ZomeApiResult<bool>{
     let group_entry = hdk::api::get_entry(&group)?;
     match group_entry {
         Some(Entry::App(_, entry_value)) => {
-            match app_definitions::Group::try_from(&entry_value){
-                Ok(entry) => {
-                    return Ok(entry.owner == user) 
-                },
-                Err(_err) => return Err(ZomeApiError::from("Specified group address is not of type Group".to_string()))
-            }
+            let entry = app_definitions::Group::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Specified group address is not of type Group".to_string()))?;
+            Ok(entry.owner == user) 
         },
         Some(_) => return Err(ZomeApiError::from("Context address was not an app entry".to_string())),
         None => return Err(ZomeApiError::from("No context entry at specified address".to_string()))

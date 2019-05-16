@@ -118,23 +118,6 @@ pub fn catch_query_string_types(re: &Regex, query_string: &String) -> Vec<String
     caps
 }
 
-//Get entry as a given entry type
-// pub fn get_as_type<R: TryFrom<AppEntryValue>> (address: HashString) -> ZomeApiResult<R> {
-//     let get_result = hdk::get_entry(&address)?;
-//     let entry = get_result.ok_or(ZomeApiError::Internal("No entry at this address".into()))?;
-//     match entry {
-//         Entry::App(_, entry_value) => {
-//             R::try_from(entry_value.to_owned())
-//                 .map_err(|_| ZomeApiError::Internal(
-//                     "Could not convert get_links result to requested type".to_string())
-//                 )
-//         },
-//         _ => Err(ZomeApiError::Internal(
-//             "get_links did not return an app entry".to_string())
-//         )
-//     }
-// }
-
 //Link two expression objects together in a given direction
 pub fn link_expression(tag: &'static str, direction: &'static str, parent_expression: &Address, child_expression: &Address) -> ZomeApiResult<String>{
     hdk::debug("Linking expressions")?;

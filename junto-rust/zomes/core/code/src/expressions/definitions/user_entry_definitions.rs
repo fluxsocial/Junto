@@ -29,7 +29,7 @@ pub fn user_name_definition() -> ValidatingEntryType {
                 tag: "username",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -41,7 +41,7 @@ pub fn user_name_definition() -> ValidatingEntryType {
                 tag: "user",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -53,7 +53,7 @@ pub fn user_name_definition() -> ValidatingEntryType {
                 tag: "owner",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -65,7 +65,7 @@ pub fn user_name_definition() -> ValidatingEntryType {
                 tag: "member",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -77,7 +77,7 @@ pub fn user_name_definition() -> ValidatingEntryType {
                 tag: "time",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -89,7 +89,7 @@ pub fn user_name_definition() -> ValidatingEntryType {
                 tag: "profile",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -101,7 +101,7 @@ pub fn user_name_definition() -> ValidatingEntryType {
                 tag: "pack",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -132,7 +132,7 @@ pub fn user_definition() -> ValidatingEntryType {
                 tag: "profile",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -144,7 +144,7 @@ pub fn user_definition() -> ValidatingEntryType {
                 tag: "user",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -156,7 +156,7 @@ pub fn user_definition() -> ValidatingEntryType {
                 tag: "owner",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -168,7 +168,7 @@ pub fn user_definition() -> ValidatingEntryType {
                 tag: "member",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -180,7 +180,7 @@ pub fn user_definition() -> ValidatingEntryType {
                 tag: "owner",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -192,7 +192,7 @@ pub fn user_definition() -> ValidatingEntryType {
                 tag: "user",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -204,7 +204,7 @@ pub fn user_definition() -> ValidatingEntryType {
                 tag: "user",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -216,7 +216,7 @@ pub fn user_definition() -> ValidatingEntryType {
                 tag: "expression",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -228,7 +228,7 @@ pub fn user_definition() -> ValidatingEntryType {
                 tag: "resonation",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -240,7 +240,7 @@ pub fn user_definition() -> ValidatingEntryType {
                 tag: "*", //Any link & Den
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -252,7 +252,7 @@ pub fn user_definition() -> ValidatingEntryType {
                 tag: "time",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -264,7 +264,7 @@ pub fn user_definition() -> ValidatingEntryType {
                 tag: "pack",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {

@@ -29,7 +29,7 @@ pub fn time_definiton() -> ValidatingEntryType {
                 tag: "time", 
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -41,7 +41,7 @@ pub fn time_definiton() -> ValidatingEntryType {
                 tag: "time",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -53,7 +53,7 @@ pub fn time_definiton() -> ValidatingEntryType {
                 tag: "*",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -65,7 +65,7 @@ pub fn time_definiton() -> ValidatingEntryType {
                 tag: "*", 
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -77,7 +77,7 @@ pub fn time_definiton() -> ValidatingEntryType {
                 tag: "user", 
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -89,7 +89,7 @@ pub fn time_definiton() -> ValidatingEntryType {
                 tag: "*", 
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -101,7 +101,7 @@ pub fn time_definiton() -> ValidatingEntryType {
                 tag: "*", 
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -113,7 +113,7 @@ pub fn time_definiton() -> ValidatingEntryType {
                 tag: "*", 
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {

@@ -29,7 +29,7 @@ pub fn post_definition() -> ValidatingEntryType {
                 tag: "expression",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -41,7 +41,7 @@ pub fn post_definition() -> ValidatingEntryType {
                 tag: "*", //Any tag or expression tag
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -53,7 +53,7 @@ pub fn post_definition() -> ValidatingEntryType {
                 tag: "*", //Any tag or expression tag
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -65,7 +65,7 @@ pub fn post_definition() -> ValidatingEntryType {
                 tag: "*", //Any tag or expression tag
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -77,7 +77,7 @@ pub fn post_definition() -> ValidatingEntryType {
                 tag: "expression",
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -89,7 +89,7 @@ pub fn post_definition() -> ValidatingEntryType {
                 tag: "owner", 
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -101,7 +101,7 @@ pub fn post_definition() -> ValidatingEntryType {
                 tag: "comment", 
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -113,7 +113,7 @@ pub fn post_definition() -> ValidatingEntryType {
                 tag: "*", //Any tag to help make resonation colour searchable or just resonation tag 
 
                 validation_package: || {
-                    hdk::ValidationPackageDefinition::ChainFull
+                    hdk::ValidationPackageDefinition::Entry
                 },
 
                 validation: |_validation_data: hdk::LinkValidationData| {
@@ -144,7 +144,7 @@ pub fn post_definition() -> ValidatingEntryType {
 //                 tag: "*", //Either any tag containing resonation colour/search query through expression or just resonation tag
 
 //                 validation_package: || {
-//                     hdk::ValidationPackageDefinition::ChainFull
+//                     hdk::ValidationPackageDefinition::Entry
 //                 },
 
 //                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
@@ -156,7 +156,7 @@ pub fn post_definition() -> ValidatingEntryType {
 //                 tag: "*", //Either any tag containing resonation colour/search query through expression or just resonation tag
 
 //                 validation_package: || {
-//                     hdk::ValidationPackageDefinition::ChainFull
+//                     hdk::ValidationPackageDefinition::Entry
 //                 },
 
 //                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
@@ -168,7 +168,7 @@ pub fn post_definition() -> ValidatingEntryType {
 //                 tag: "*",//Either any tag containing resonation colour/search query through expression or just resonation tag
 
 //                 validation_package: || {
-//                     hdk::ValidationPackageDefinition::ChainFull
+//                     hdk::ValidationPackageDefinition::Entry
 //                 },
 
 //                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
@@ -180,7 +180,7 @@ pub fn post_definition() -> ValidatingEntryType {
 //                 tag: "*",//Either any tag containing resonation colour/search query through expression or just resonation tag
 
 //                 validation_package: || {
-//                     hdk::ValidationPackageDefinition::ChainFull
+//                     hdk::ValidationPackageDefinition::Entry
 //                 },
 
 //                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
@@ -192,7 +192,7 @@ pub fn post_definition() -> ValidatingEntryType {
 //                 tag: "*",//Either any tag containing resonation colour/search query through expression or just resonation tag
 
 //                 validation_package: || {
-//                     hdk::ValidationPackageDefinition::ChainFull
+//                     hdk::ValidationPackageDefinition::Entry
 //                 },
 
 //                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
@@ -204,7 +204,7 @@ pub fn post_definition() -> ValidatingEntryType {
 //                 tag: "expression", 
 
 //                 validation_package: || {
-//                     hdk::ValidationPackageDefinition::ChainFull
+//                     hdk::ValidationPackageDefinition::Entry
 //                 },
 
 //                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
@@ -216,7 +216,7 @@ pub fn post_definition() -> ValidatingEntryType {
 //                 tag: "*", //Any tag to provide searchable trees 
 
 //                 validation_package: || {
-//                     hdk::ValidationPackageDefinition::ChainFull
+//                     hdk::ValidationPackageDefinition::Entry
 //                 },
 
 //                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {

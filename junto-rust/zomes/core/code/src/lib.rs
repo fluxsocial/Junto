@@ -13,7 +13,6 @@ extern crate holochain_core_types_derive;
 extern crate chrono;
 extern crate regex;
 
-use multihash::Hash;
 use hdk::{
     api::DNA_ADDRESS,
     error::ZomeApiResult,
@@ -43,7 +42,7 @@ define_zome! {
 
     genesis: || { 
         {
-            expressions::channel::create_collective_channel(&Address::from(hdk::api::DNA_ADDRESS.to_string()))?;
+            //expressions::channel::create_collective_channel(&Address::from(hdk::api::DNA_ADDRESS.to_string()))?; - this should not happen here but instead in the future callback function initialize
             Ok(())
         }
     }
