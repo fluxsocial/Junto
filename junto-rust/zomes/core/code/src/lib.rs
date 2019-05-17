@@ -124,8 +124,9 @@ define_zome! {
             handler: expressions::group::is_group_member
         }
         get_expressions: {
-            inputs: |query_root: Address, query_string: String, query_options: function_definitions::QueryOptions, 
-                     context: Address, target_type: function_definitions::QueryTarget, query_type: function_definitions::QueryType|,
+            inputs: |query_root: Address, query_points: Vec<String>, context: Address,  
+                        query_options: function_definitions::QueryOptions, target_type: function_definitions::QueryTarget, 
+                        query_type: function_definitions::QueryType|,
             outputs: |result: ZomeApiResult<JsonString>|,
             handler: expressions::query::handle_get_expression
         }

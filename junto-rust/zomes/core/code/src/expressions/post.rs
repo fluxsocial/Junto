@@ -32,7 +32,7 @@ use super::group;
 //Function to handle the posting of an expression - will link to any specified channels and insert into relevant groups/packs
 pub fn handle_post_expression(expression: app_definitions::ExpressionPost, channels: Vec<String>, context: Vec<Address>) -> ZomeApiResult<Address>{
     let expression_type = expression.expression_type.clone();
-    let mut query_params: Vec<HashMap<String, String>> = channels.iter().map(|channel| hashmap!{"type".to_string() => "Channel".to_string(), "value".to_string() => channel.to_string().to_lowercase()}).collect();
+    let mut query_params: Vec<HashMap<String, String>> = channels.iter().map(|channel| hashmap!{"type".to_string() => "channel".to_string(), "value".to_string() => channel.to_string().to_lowercase()}).collect();
 
     let entry = Entry::App("expression_post".into(), expression.into());
     let address = hdk::commit_entry(&entry)?;
@@ -43,21 +43,21 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, chann
                 return Err(ZomeApiError::from("Post Failed links on user greater than 1".to_string()))
             }
             hdk::api::link_entries(&address, &result_vec[0].address, "owner".to_string())?;
-            query_params.push(hashmap!{"type".to_string() => "User".to_string(), "value".to_string() => result_vec[0].entry.username.to_string().to_lowercase()});
+            query_params.push(hashmap!{"type".to_string() => "user".to_string(), "value".to_string() => result_vec[0].entry.username.to_string().to_lowercase()});
         },
         Err(hdk_err) => return Err(hdk_err)
     };
-    query_params.push(hashmap!{"type".to_string() => "Type".to_string(), "value".to_string() => expression_type.to_string().to_lowercase()});
+    query_params.push(hashmap!{"type".to_string() => "type".to_string(), "value".to_string() => expression_type.to_string().to_lowercase()});
     
     match entry{
         Entry::ChainHeader(header) => {
             let iso_timestamp = serde_json::to_string(header.timestamp());
             match iso_timestamp{
                 Ok(iso_timestamp) => {
-                    query_params.push(hashmap!{"type".to_string() => "Time:Y".to_string(), "value".to_string() => iso_timestamp[0..4].to_string().to_lowercase()}); //add year slice to query params
-                    query_params.push(hashmap!{"type".to_string() => "Time:M".to_string(), "value".to_string() => iso_timestamp[5..7].to_string().to_lowercase()}); //add month slice to query params
-                    query_params.push(hashmap!{"type".to_string() => "Time:D".to_string(), "value".to_string() => iso_timestamp[8..10].to_string().to_lowercase()}); //add day slice to query params
-                    query_params.push(hashmap!{"type".to_string() => "Time:H".to_string(), "value".to_string() => iso_timestamp[11..13].to_string().to_lowercase()}) //add hour slice to query params
+                    query_params.push(hashmap!{"type".to_string() => "time:Y".to_string(), "value".to_string() => iso_timestamp[0..4].to_string().to_lowercase()}); //add year slice to query params
+                    query_params.push(hashmap!{"type".to_string() => "time:M".to_string(), "value".to_string() => iso_timestamp[5..7].to_string().to_lowercase()}); //add month slice to query params
+                    query_params.push(hashmap!{"type".to_string() => "time:D".to_string(), "value".to_string() => iso_timestamp[8..10].to_string().to_lowercase()}); //add day slice to query params
+                    query_params.push(hashmap!{"type".to_string() => "time:H".to_string(), "value".to_string() => iso_timestamp[11..13].to_string().to_lowercase()}) //add hour slice to query params
                 },
                 Err(hdk_err) => return Err(ZomeApiError::from(hdk_err.to_string()))
             }
@@ -164,16 +164,16 @@ pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
     let times = utils::get_links_and_load_type::<String, app_definitions::Time>(&expression, "time".to_string())?;
     let exp_type = utils::get_links_and_load_type::<String, app_definitions::Channel>(&expression, "type".to_string())?;
     
-    let mut query_points: Vec<HashMap<String, String>> = channels.iter().map(|channel| hashmap!{"value".to_string() => channel.entry.name.clone(), "type".to_string() => "Channel".to_string()}).collect();
+    let mut query_points: Vec<HashMap<String, String>> = channels.iter().map(|channel| hashmap!{"value".to_string() => channel.entry.name.clone(), "type".to_string() => "channel".to_string()}).collect();
     for time in times{
         match time.entry.time_type{
-            app_definitions::TimeType::Year => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "Time:Y".to_string()});},
-            app_definitions::TimeType::Month => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "Time:M".to_string()});},
-            app_definitions::TimeType::Day => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "Time:D".to_string()});},
-            app_definitions::TimeType::Hour => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "Time:H".to_string()});}
+            app_definitions::TimeType::Year => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "time:Y".to_string()});},
+            app_definitions::TimeType::Month => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "time:M".to_string()});},
+            app_definitions::TimeType::Day => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "time:D".to_string()});},
+            app_definitions::TimeType::Hour => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "time:H".to_string()});}
         };
     }
-    query_points.push(hashmap!{"value".to_string() => exp_type[0].entry.name.clone(), "type".to_string() => "Type".to_string()});
+    query_points.push(hashmap!{"value".to_string() => exp_type[0].entry.name.clone(), "type".to_string() => "type".to_string()});
     
     let hook_definitions = vec![FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_points.clone(), context: user_pack.clone(), privacy: app_definitions::Privacy::Shared, query_type: "Standard".to_string(), expression: expression.clone()}},
                                 FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "resonation", direction: "both", parent_expression: user_pack, child_expression: expression}}];

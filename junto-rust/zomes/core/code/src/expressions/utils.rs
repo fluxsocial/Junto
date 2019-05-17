@@ -110,14 +110,6 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
     Ok("Hooks created".to_string()) //success
 }
 
-pub fn catch_query_string_types(re: &Regex, query_string: &String) -> Vec<String> {
-    let mut caps: Vec<String> = vec![];
-    for cap in re.captures_iter(&query_string.as_ref()){
-        caps.push(cap[0].to_string());
-    };
-    caps
-}
-
 //Link two expression objects together in a given direction
 pub fn link_expression(tag: &'static str, direction: &'static str, parent_expression: &Address, child_expression: &Address) -> ZomeApiResult<String>{
     hdk::debug("Linking expressions")?;
