@@ -25,7 +25,7 @@ pub struct Env {
     pub cap_request: CapabilityRequest,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Clone)]
+#[derive(Serialize, Deserialize, Debug, PartialEq, Clone, DefaultJson)]
 pub struct CreateUserInformation{
     pub username: String,
     pub first_name: String,
