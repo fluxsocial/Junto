@@ -73,7 +73,31 @@ pub fn time_definiton() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "user",
+                "group",
+                tag: "group",
+    
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }            
+            ),
+            to!(
+                "group",
+                tag: "pack",
+    
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }            
+            ),
+            to!(
+                "username",
                 tag: "user", 
 
                 validation_package: || {

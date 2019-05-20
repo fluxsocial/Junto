@@ -26,7 +26,7 @@ use super::user;
 use super::channel;
 
 //Creates a user "group" - more specifically in this case a pack
-pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiResult<serde_json::Value> {
+pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiResult<Address> {
     hdk::debug("Creating pack")?;
     let pack = app_definitions::Group{ //Create default pack data
         parent: username_address.clone(),
@@ -39,8 +39,8 @@ pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiRes
     match hdk::commit_entry(&entry){
         Ok(address) => {
             pack_address = address.clone();
-            let hook_definitions = vec![FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{tag: "group", direction: "reverse", expression_address: address.clone(), context: Address::from(DNA_ADDRESS.to_string())}},
-                                        FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{tag: "pack", direction: "reverse", expression_address: address.clone(), context: Address::from(DNA_ADDRESS.to_string())}},
+            let hook_definitions = vec![FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{tag: "group", direction: "forward", expression_address: address.clone(), context: Address::from(DNA_ADDRESS.to_string())}},
+                                        FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{tag: "pack", direction: "forward", expression_address: address.clone(), context: Address::from(DNA_ADDRESS.to_string())}},
                                         FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "pack", direction: "reverse", parent_expression: address.clone(), child_expression: username_address.clone()}},
                                         FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "owner", direction: "forward", parent_expression: address.clone(), child_expression: username_address.clone()}}];
 
@@ -52,7 +52,7 @@ pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiRes
         Err(_hdk_err) => return Err(ZomeApiError::from("Error occured on committing pack entry".to_string()))
     };
     channel::create_collective_channel(&pack_address)?;
-    Ok(json!({"pack_address": pack_address}))
+    Ok(pack_address)
 }
 
 pub fn add_pack_member(username_address: Address) -> ZomeApiResult<JsonString>{
