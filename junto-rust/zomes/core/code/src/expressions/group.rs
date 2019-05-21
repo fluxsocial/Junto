@@ -19,14 +19,15 @@ use super::definitions::{
         FunctionDescriptor,
         FunctionParameters,
         GroupMembers,
-        GetLinksLoadResult
+        EntryAndAddress,
+        UserPack
     }
 };
 use super::user;
 use super::channel;
 
 //Creates a user "group" - more specifically in this case a pack
-pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiResult<Address> {
+pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiResult<UserPack> {
     hdk::debug("Creating pack")?;
     let pack = app_definitions::Group{ //Create default pack data
         parent: username_address.clone(),
@@ -34,34 +35,22 @@ pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiRes
         owner: username_address.clone(),
         privacy: app_definitions::Privacy::Shared 
     };
-    let entry = Entry::App("group".into(), pack.into());
-    let pack_address: Address;
-    match hdk::commit_entry(&entry){
-        Ok(address) => {
-            pack_address = address.clone();
-            let hook_definitions = vec![FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{tag: "group", direction: "forward", expression_address: address.clone(), context: Address::from(DNA_ADDRESS.to_string())}},
-                                        FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{tag: "pack", direction: "forward", expression_address: address.clone(), context: Address::from(DNA_ADDRESS.to_string())}},
-                                        FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "pack", direction: "reverse", parent_expression: address.clone(), child_expression: username_address.clone()}},
-                                        FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "owner", direction: "forward", parent_expression: address.clone(), child_expression: username_address.clone()}}];
+    let entry = Entry::App("group".into(), pack.clone().into());
+    let address = hdk::commit_entry(&entry)?;
+    let hook_definitions = vec![FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{tag: "group", direction: "forward", expression_address: address.clone(), context: Address::from(DNA_ADDRESS.to_string())}},
+                                FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{tag: "pack", direction: "forward", expression_address: address.clone(), context: Address::from(DNA_ADDRESS.to_string())}},
+                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "pack", direction: "reverse", parent_expression: address.clone(), child_expression: username_address.clone()}},
+                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "owner", direction: "forward", parent_expression: address.clone(), child_expression: username_address.clone()}}];
 
-            match utils::handle_hooks("Group".to_string(), hook_definitions){
-                Ok(_result) => {},
-                Err(hdk_err) => return Err(hdk_err.into()),
-            }
-        },
-        Err(_hdk_err) => return Err(ZomeApiError::from("Error occured on committing pack entry".to_string()))
-    };
-    channel::create_collective_channel(&pack_address)?;
-    Ok(pack_address)
+    let _hook_result = utils::handle_hooks("Group".to_string(), hook_definitions)?;
+    channel::create_collective_channel(&address)?;
+    Ok(UserPack{pack: EntryAndAddress{entry: pack, address: address}})
 }
 
 pub fn add_pack_member(username_address: Address) -> ZomeApiResult<JsonString>{
     let current_user_username = user::get_user_username_address_by_agent_address()?;
     let group = user::get_user_pack(current_user_username)?.pack;   
-    match group {
-        Some(group_obj) => Ok(add_member_to_group(username_address.clone(), group_obj.address.clone())?),
-        None => Err(ZomeApiError::from("No pack entries on current user".to_string()))
-    }
+    add_member_to_group(username_address.clone(), group.address.clone())
 }
 
 pub fn add_member_to_group(username_address: Address, group: Address) -> ZomeApiResult<JsonString>{
@@ -144,6 +133,6 @@ pub fn is_group_owner(group: Address, user: Address) -> ZomeApiResult<bool>{
     }
 }
 
-// pub fn search_groups(query_string: String) -> ZomeApiResult<Vec<GetLinksLoadResult<app_definitions::Group>>>{
+// pub fn search_groups(query_string: String) -> ZomeApiResult<EntryAndAddressResult<app_definitions::Group>>>{
 
 // }
