@@ -26,19 +26,7 @@ pub fn time_definiton() -> ValidatingEntryType {
         links: [
             from!(
                 "group",
-                tag: "time", 
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            from!(
-                "user",
-                tag: "time",
+                link_type: "group_time", //Time entry in group to be used to associate group actions to given time entries
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -50,7 +38,7 @@ pub fn time_definiton() -> ValidatingEntryType {
             ),
             from!(
                 "channel",
-                tag: "*",
+                link_type: "channel_time", //Link for channels which are being used as an anchor for users to store a collection of private/shared/public posts
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -62,7 +50,19 @@ pub fn time_definiton() -> ValidatingEntryType {
             ),
             from!(
                 "expression_post",
-                tag: "*", 
+                link_type: "time", //time entries which the expression is associated to
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "expression_post",
+                link_type: "expression_post", //expression posts which are associated to this time
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -74,19 +74,7 @@ pub fn time_definiton() -> ValidatingEntryType {
             ),
             to!(
                 "group",
-                tag: "group",
-    
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }            
-            ),
-            to!(
-                "group",
-                tag: "pack",
+                link_type: "group", //Link groups to time which they are created
     
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -98,43 +86,7 @@ pub fn time_definiton() -> ValidatingEntryType {
             ),
             to!(
                 "username",
-                tag: "user", 
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
-                "channel",
-                tag: "*", 
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
-                "expression_post",
-                tag: "*", 
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
-                "resonation",
-                tag: "*", 
+                link_type: "user", //Link user to time which they are created
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

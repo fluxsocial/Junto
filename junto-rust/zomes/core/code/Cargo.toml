@@ -11,9 +11,9 @@ serde_derive = "=1.0.89"
 chrono = "0.4"
 multihash = "*"
 maplit = "1.0.1"
-hdk = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.15-alpha1" }
-holochain_wasm_utils = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.15-alpha1" }
-holochain_core_types_derive = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.15-alpha1" }
+hdk = { git = "https://github.com/holochain/holochain-rust", branch = "add-dynamic-link-tag-core" }
+holochain_wasm_utils = { git = "https://github.com/holochain/holochain-rust", branch = "add-dynamic-link-tag-core" }
+holochain_core_types_derive = { git = "https://github.com/holochain/holochain-rust", branch = "add-dynamic-link-tag-core" }
 itertools = "0.8"
 regex = "*"
 lazy_static = "1.2.0"
