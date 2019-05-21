@@ -79,12 +79,12 @@ pub fn build_hooks(contexts: Vec<Address>, address: &Address, query_params: &Vec
     };
 
     let user_name_address = user::get_user_username_address_by_agent_address()?;
-    let user_pack = user::get_user_pack(user_name_address.clone())?.pack.unwrap().address;
+    let user_pack = user::get_user_pack(user_name_address.clone())?.pack.address;
     let member_results: Vec<Address> = user::get_user_member_packs(user_name_address.clone())?.iter().map(|pack| pack.address.clone()).collect();
     let den_result = user::get_user_dens(user_name_address.clone())?;
-    let private_den = den_result.private_den.unwrap().address;
-    let shared_den = den_result.shared_den.unwrap().address;
-    let public_den = den_result.public_den.unwrap().address;
+    let private_den = den_result.private_den.address;
+    let shared_den = den_result.shared_den.address;
+    let public_den = den_result.public_den.address;
     let mut local_contexts = vec![&private_den, &shared_den, &public_den, &user_pack];
     local_contexts.extend(&member_results);
     
@@ -154,11 +154,7 @@ pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
         _ => {}
     };
     let user_name_address = user::get_user_username_address_by_agent_address()?;
-    let user_pack;
-    match user::get_user_pack(user_name_address.clone())?.pack{
-        Some(pack) => {user_pack = pack.address;},
-        None => return Err(ZomeApiError::from("User has no packs".to_string()))
-    };
+    let user_pack = user::get_user_pack(user_name_address.clone())?.pack.address;
 
     let channels = utils::get_links_and_load_type::<String, app_definitions::Channel>(&expression, "channel".to_string())?;
     let times = utils::get_links_and_load_type::<String, app_definitions::Time>(&expression, "time".to_string())?;

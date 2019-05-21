@@ -21,7 +21,7 @@ use super::definitions::{
         FunctionParameters,
         QueryTarget,
         QueryOptions,
-        GetLinksLoadElement,
+        EntryAndAddress,
         ExpressionResults,
         QueryType
     }
@@ -139,7 +139,7 @@ pub fn get_expression<T: TryFrom<AppEntryValue>>(query_root: Address, mut query_
 
 //handle local query will just use simple getting of links per query in query string and then cross reference results
 pub fn handle_local_query<T: TryFrom<AppEntryValue>>(context: Address, query_points: Vec<String>, privacy: app_definitions::Privacy,
-                          _target_type: QueryTarget) -> ZomeApiResult<Vec<GetLinksLoadElement<T>>> where T: Clone {
+                          _target_type: QueryTarget) -> ZomeApiResult<Vec<EntryAndAddress<T>>> where T: Clone {
     let mut expression_results = vec![];
 
     for query_point in query_points{

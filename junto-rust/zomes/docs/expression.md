@@ -32,7 +32,7 @@ Error: {Err:  {Error Type: 'Error Message'} }
 ###### Request: 
 ```
 Endpoint: /get_expressions
-Arguments: { query_root: "address of query root", query_string: "query string to build expression query", query_options: QueryOptions, context: "address of context in which expression exists", target_type: QueryTarget, query_type: QueryType) }
+Arguments: { query_root: "address of query root", query_points: ["point-to-query-with", ...], query_options: QueryOptions, context: "address of context in which expression exists", target_type: QueryTarget, query_type: QueryType) }
 ```
 
 ###### Response:
@@ -46,7 +46,7 @@ The get_expressions function has a few arguments which might not be easily under
 
 **Query Root**: This is the root object where you want to begin the query. In most cases this will either be a channel object or time object. In Holochain all entries are stored "independently" (not related) to each other, in order to create relations between entries you use links. Thus if you want to get expressions you need to start at a given entry and then get links from here.
 
-**Query String**: This is the parameter which defines how your query will be run in the function. The query parameter should be in the following format: "query_object_value<query_object_type>:query_object_value2<query_object_type2>:... (and so on for each parameter)". Each parameter will confine expression result(s) to only those objects. 
+**Query Points**: This is the parameter which defines how your query will be run in the function. The query parameter should be in the following format: ["query_value<query_type>", ...] (and so on for each parameter)". Each parameter will confine expression result(s) to only those objects. 
 
 **Query Options**: QueryOptions is a Rust Enum - the parameters for this enum are as follows: FilterPopular, FilterNew, FilterOld. Any of these enum value(s) should be passed as a string exactly as seen above. Other enum value in subsequent arguments should also be passed as strings exactly matching the enum variant.
 

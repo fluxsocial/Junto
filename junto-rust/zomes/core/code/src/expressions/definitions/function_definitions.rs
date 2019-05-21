@@ -1,4 +1,8 @@
 use hdk::{
+    error::{
+        ZomeApiResult,
+        ZomeApiError
+    },
     holochain_core_types::{
         cas::content::Address, 
         hash::HashString,
@@ -40,26 +44,45 @@ pub struct FunctionDescriptor{
     pub parameters: FunctionParameters,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct UserDens{
-    pub private_den: Option<GetLinksLoadElement<app_definitions::Channel>>,
-    pub shared_den: Option<GetLinksLoadElement<app_definitions::Channel>>,
-    pub public_den: Option<GetLinksLoadElement<app_definitions::Channel>>
+    pub private_den: EntryAndAddress<app_definitions::Channel>,
+    pub shared_den: EntryAndAddress<app_definitions::Channel>,
+    pub public_den: EntryAndAddress<app_definitions::Channel>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug, DefaultJson)]
+pub struct JuntoUser{
+    pub private_den: EntryAndAddress<app_definitions::Channel>,
+    pub shared_den: EntryAndAddress<app_definitions::Channel>,
+    pub public_den: EntryAndAddress<app_definitions::Channel>,
+    pub pack: EntryAndAddress<app_definitions::Group>,
+    pub profile: EntryAndAddress<app_definitions::User>,
+    pub username: EntryAndAddress<app_definitions::UserName>,
+}
+
+#[derive(Serialize, Deserialize, DefaultJson, Debug, Clone)]
 pub struct UserPack{
-    pub pack: Option<GetLinksLoadElement<app_definitions::Group>>
+    pub pack: EntryAndAddress<app_definitions::Group>
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GroupMembers{
-    pub members: Vec<GetLinksLoadElement<app_definitions::UserName>>
+    pub members: Vec<EntryAndAddress<app_definitions::UserName>>
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ExpressionResults<T>{
-    pub expressions: Vec<GetLinksLoadElement<T>>
+    pub expressions: Vec<EntryAndAddress<T>>
+}
+
+#[derive(Clone)]
+pub enum HooksResultTypes{
+    TimeToExpression(Vec<Address>),
+    CreatePack(UserPack),
+    CreateDen(UserDens),
+    LinkExpression(String),
+    CreateQueryPoints(String)
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -81,30 +104,50 @@ pub enum QueryType {
     Or
 }
 
-pub type GetLinksLoadResult<T> = Vec<GetLinksLoadElement<T>>;
+pub type EntryAndAddressResult<T> = Vec<EntryAndAddress<T>>;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
-pub struct GetLinksLoadElement<T>{
+pub struct EntryAndAddress<T>{
 	pub address: HashString,
 	pub entry: T
 }
 
-impl From<UserDens> for JsonString {
-    fn from(result: UserDens) -> JsonString {
-        JsonString::from(json!({
-            "private_den": match result.private_den{ 
-                Some(den) => default_to_json(den),
-                None => default_to_json("{}")
-            },
-            "shared_den": match result.shared_den{
-                Some(den) => default_to_json(den),
-                None => default_to_json("{}")
-            },
-            "public_den": match result.public_den{
-                Some(den) => default_to_json(den),
-                None => default_to_json("{}")
-            }
-        }))
+impl HooksResultTypes{
+    pub fn time_to_expression_result(self) -> ZomeApiResult<Vec<Address>> {
+        match self {
+            HooksResultTypes::TimeToExpression(r) => Ok(r),
+            _ => Err(ZomeApiError::from("Hook result enum value not: TimeToExpression".to_string())),
+        }
+    }
+    pub fn create_pack_result(self) -> ZomeApiResult<UserPack> {
+        match self {
+            HooksResultTypes::CreatePack(r) => Ok(r),
+            _ => Err(ZomeApiError::from("Hook result enum value not: CreatePack".to_string())),
+        }
+    }
+    pub fn create_den_result(self) -> ZomeApiResult<UserDens> {
+        match self {
+            HooksResultTypes::CreateDen(r) => Ok(r),
+            _ => Err(ZomeApiError::from("Hook result enum value not: CreateDen".to_string())),
+        }
+    }
+    pub fn link_expression_result(self) -> ZomeApiResult<String> {
+        match self {
+            HooksResultTypes::LinkExpression(r) => Ok(r),
+            _ => Err(ZomeApiError::from("Hook result enum value not: LinkExpression".to_string())),
+        }
+    }
+    pub fn create_query_points_result(self) -> ZomeApiResult<String> {
+        match self {
+            HooksResultTypes::CreateQueryPoints(r) => Ok(r),
+            _ => Err(ZomeApiError::from("Hook result enum value not: CreateQueryPoints".to_string())),
+        }
+    }
+}
+
+impl<T> PartialEq for EntryAndAddress<T>{
+    fn eq(self: &Self, other: &EntryAndAddress<T>) -> bool {
+        self.address == other.address
     }
 }
 
@@ -114,37 +157,20 @@ impl From<GroupMembers> for JsonString {
     }
 }
 
-impl From<UserPack> for JsonString {
-    fn from(result: UserPack) -> JsonString {
-        match result.pack{
-            Some(group) => JsonString::from(group),
-            None => JsonString::from_json("{}")
-        }
-    }
-}
-
 impl From<ExpressionResults<app_definitions::UserName>> for JsonString {
     fn from(result: ExpressionResults<app_definitions::UserName>) -> JsonString{
-        // match result.expressions {
-        //     Some(expressions) => JsonString::from(default_to_json(expressions)),
-        //     None => JsonString::from(default_to_json("[]"))
-        // }
         JsonString::from(default_to_json(result.expressions))
     }
 }
 
 impl From<ExpressionResults<app_definitions::ExpressionPost>> for JsonString {
     fn from(result: ExpressionResults<app_definitions::ExpressionPost>) -> JsonString{
-        //  match result.expressions {
-        //     Some(expressions) => JsonString::from(default_to_json(expressions)),
-        //     None => JsonString::from(default_to_json("[]"))
-        //  }
         JsonString::from(default_to_json(result.expressions))
     }
 }
 
-impl<T: Into<JsonString>> From<GetLinksLoadElement<T>> for JsonString  where T: Serialize{
-    fn from(result: GetLinksLoadElement<T>) -> JsonString {
+impl<T: Into<JsonString>> From<EntryAndAddress<T>> for JsonString  where T: Serialize{
+    fn from(result: EntryAndAddress<T>) -> JsonString {
         let entry = serde_json::to_string(&result.entry);
         let entry_string: String;
         match entry {
@@ -159,12 +185,6 @@ impl<T: Into<JsonString>> From<GetLinksLoadElement<T>> for JsonString  where T: 
         }
 
         json!(&format!("{{\"address\": {}, \"entry\": {}}}", address_string, entry_string)).into()
-    }
-}
-
-impl<T> PartialEq for GetLinksLoadElement<T>{
-    fn eq(self: &Self, other: &GetLinksLoadElement<T>) -> bool {
-        self.address == other.address
     }
 }
 
