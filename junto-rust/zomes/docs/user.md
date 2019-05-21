@@ -11,7 +11,15 @@ Arguments: { user_data: {username: "username", first_name: "first_name", last_na
 
 ###### Response: 
 ```
-Success: {Ok: "address of user"}
+Success: {Ok: {
+    private_den: {address: address, entry: {"parent":"parent object (user address)", "name": "den_name", "privacy": "Private", "channel_type": "Den"}},
+    shared_den: {address: address, entry: {"parent":"parent object (user address)", "name": "den_name", "privacy": "Shared", "channel_type": "Den"}},
+    public_den: {address: address, entry:  {"parent":"parent object (user address)", "name": "den_name", "privacy": "Public", "channel_type": "Den"},
+    pack: {address: address, entry: {"parent": "parent object(user address)", "name": "pack name", "owner": "user address", "privacy": "Shared"}},
+    profile:  {address: address, entry:{ parent: 'parent object (user address)', first_name: 'first_name', last_name: 'last_name', bio: 'bio', profile_picture: 'profile_picture',verified: true/false }},
+    username: {address: address, entry: { username: 'username' }}
+    }
+}
 Error: {Err:  {Error Type: 'Error Message'} }
 ```
 
