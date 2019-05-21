@@ -50,7 +50,7 @@ define_zome! {
     functions: [
         create_user: {
             inputs: |user_data: function_definitions::CreateUserInformation|,
-            outputs: |result: ZomeApiResult<Address>|,
+            outputs: |result: ZomeApiResult<function_definitions::JuntoUser>|,
             handler: expressions::user::handle_create_user
         }
         get_username_from_address: {

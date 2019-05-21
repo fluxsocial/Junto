@@ -16,7 +16,7 @@ use super::definitions::{
     app_definitions
 };
 
-pub fn time_to_expression(tag: &'static str, direction: &'static str, expression_address: &Address, context: &Address) -> ZomeApiResult<String> {
+pub fn time_to_expression(tag: &'static str, direction: &'static str, expression_address: &Address, context: &Address) -> ZomeApiResult<Vec<Address>> {
     let mut timestamps: Vec<Address> = vec![];
     let iso_timestamp;
     match hdk::get_entry_result(expression_address, GetEntryOptions {headers: true, ..Default::default()},)?.result {
@@ -35,7 +35,7 @@ pub fn time_to_expression(tag: &'static str, direction: &'static str, expression
         utils::link_expression(tag, direction, timestamp, expression_address)?;
     };
 
-    Ok("Expression linked to global time object(s)".to_string())  
+    Ok(timestamps)  
 }
 
 //Create timestamp functions should not use datatime but instead should use the timestamp in the entry header for the expression that will be linked to the timestamp

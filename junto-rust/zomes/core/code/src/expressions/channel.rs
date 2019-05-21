@@ -15,7 +15,9 @@ use super::definitions::{
     app_definitions,
     function_definitions::{
         FunctionDescriptor,
-        FunctionParameters
+        FunctionParameters,
+        UserDens,
+        EntryAndAddress
     }
 };
 
@@ -31,7 +33,7 @@ pub fn commit_den(entry: &Entry, user: &Address) -> ZomeApiResult<Address> {
 }
 
 //Create den(s) (multiple dens as signified by app_definitions data) and link to user with required tags as defined by definitons data
-pub fn create_den(username_address: &Address, first_name: String) -> ZomeApiResult<serde_json::Value> {
+pub fn create_den(username_address: &Address, first_name: String) -> ZomeApiResult<UserDens> {
     hdk::debug("Creating dens")?;
     let private_den = app_definitions::Channel{ //Create private den
         parent: username_address.clone(),
@@ -51,15 +53,17 @@ pub fn create_den(username_address: &Address, first_name: String) -> ZomeApiResu
         privacy: app_definitions::Privacy::Public,
         channel_type: app_definitions::ChannelType::Den
     };
-    let private_entry = Entry::App("channel".into(), private_den.into());
-    let shared_entry = Entry::App("channel".into(), shared_den.into());
-    let public_entry = Entry::App("channel".into(), public_den.into());
+    let private_entry = Entry::App("channel".into(), private_den.clone().into());
+    let shared_entry = Entry::App("channel".into(), shared_den.clone().into());
+    let public_entry = Entry::App("channel".into(), public_den.clone().into());
 
     let private_den_address = commit_den(&private_entry, &username_address)?;
     let shared_den_address = commit_den(&shared_entry, &username_address)?;
     let public_den_address = commit_den(&public_entry, &username_address)?;
 
-    Ok(json!({"private_den_address": private_den_address, "shared_den_address": shared_den_address, "public_den_address": public_den_address}))
+    Ok(UserDens{private_den: EntryAndAddress{address: private_den_address, entry: private_den}, 
+                        shared_den: EntryAndAddress{address: shared_den_address, entry: shared_den}, 
+                        public_den: EntryAndAddress{address: public_den_address, entry: public_den}})
 }
 
 pub fn is_den_owner(den: Address, user: Address) -> ZomeApiResult<bool>{
