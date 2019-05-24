@@ -25,8 +25,8 @@ use super::definitions::{
 pub fn commit_den(entry: &Entry, user: &Address) -> ZomeApiResult<Address> {
     let address = hdk::commit_entry(&entry)?;
     //Build vector describing hook functions which should run to correctly link this data
-    let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "den", direction: "reverse", parent_expression: address.clone(), child_expression: user.clone()}},
-                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "owner", direction: "forward", parent_expression: address.clone(), child_expression: user.clone()}}];
+    let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "channel", tag: "den", direction: "reverse", parent_expression: address.clone(), child_expression: user.clone()}},
+                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "auth", tag: "owner", direction: "forward", parent_expression: address.clone(), child_expression: user.clone()}}];
 
     utils::handle_hooks("Channel".to_string(), hook_definitions)?;
     Ok(address)
@@ -67,7 +67,7 @@ pub fn create_den(username_address: &Address, first_name: String) -> ZomeApiResu
 }
 
 pub fn is_den_owner(den: Address, user: Address) -> ZomeApiResult<bool>{
-    let den_owner_results = utils::get_links_and_load_type::<String, app_definitions::UserName>(&den, "owner".to_string())?;
+    let den_owner_results = utils::get_links_and_load_type::<app_definitions::UserName>(&den, Some("auth".to_string()), Some("owner".to_string()))?;
     Ok(den_owner_results[0].address == user)
 }
 
