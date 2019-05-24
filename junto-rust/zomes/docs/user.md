@@ -71,7 +71,7 @@ Error: {Err:  {Error Type: 'Error Message'} }
 **Get Profile From Address**
 ###### Request: 
 ```
-Endpoint: /get_profile_from_address
+Endpoint: /get_user_profile_from_address
 Arguments: { username_address: "address of user"}
 ```
 
