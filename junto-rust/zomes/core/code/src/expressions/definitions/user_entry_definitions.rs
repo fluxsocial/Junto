@@ -37,6 +37,18 @@ pub fn user_name_definition() -> ValidatingEntryType {
                 }
             ),
             from!(
+                "%dna_addresss",
+                link_type: "username", //links username object to agent_id
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            from!(
                 "time",
                 link_type: "user", //Link user to time which they are created
 
@@ -111,18 +123,6 @@ pub fn user_name_definition() -> ValidatingEntryType {
             to!(
                 "user",
                 link_type: "profile",
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
-                "username",
-                link_type: "channel", //Link type to associate a channel with a user - tag can then define channel type; in our case/implementation: den
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

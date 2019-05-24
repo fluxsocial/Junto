@@ -97,6 +97,18 @@ pub fn post_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
+                "channel",
+                link_type: "expression_type", //type which expression is
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
                 "time",
                 link_type: "time", //time entries which the expression is associated to
 

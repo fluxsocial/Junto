@@ -85,8 +85,32 @@ pub fn group_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
+                "expression_post",
+                link_type: "resonation", //Expression post on group
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
                 "channel",
-                link_type: "group_channel", //Channel within group
+                link_type: "channel", //Channel within group
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "channel",
+                link_type: "expression_type", //Channel within group
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -98,7 +122,7 @@ pub fn group_definition() -> ValidatingEntryType {
             ),
             to!(
                 "time",
-                link_type: "group_time", //Time entry in group to be used to associate group actions to given time entries
+                link_type: "time", //Time entry in group to be used to associate group actions to given time entries
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

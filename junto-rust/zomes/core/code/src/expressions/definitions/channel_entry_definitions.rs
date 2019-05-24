@@ -37,8 +37,20 @@ pub fn channel_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
+                "username",
+                link_type: "auth", //link type which will handle all auth links e.g: owner, member etc
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
                 "time",
-                link_type: "channel_time", //Link for channels which are being used as an anchor for users to store a collection of private/shared/public posts
+                link_type: "time", //Link for channels which are being used as an anchor for users to store a collection of private/shared/public posts
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -62,7 +74,19 @@ pub fn channel_definition() -> ValidatingEntryType {
             ),
             from!(
                 "channel",
-                link_type: "sub_channel", //sub channel 
+                link_type: "channel", //sub channel 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            from!(
+                "channel",
+                link_type: "expression_type", //sub channel 
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -74,7 +98,7 @@ pub fn channel_definition() -> ValidatingEntryType {
             ),
             from!( //group related links
                 "group",
-                link_type: "group_channel", //channel inside group
+                link_type: "channel", //channel inside group
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
