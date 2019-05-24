@@ -82,20 +82,19 @@ pub fn get_expression<T: TryFrom<AppEntryValue>>(query_root: Address, mut query_
                 };
                 match has_user_query{ //match user query
                     Some(query) => { //user query is present - this means we will do a search for the user - disregarding any other query parameters - otherwise the query wont return correct results
-                        expression_results = utils::get_links_and_load_type::<String, T>(&query_root, query.to_string())?;
+                        expression_results = utils::get_links_and_load_type::<T>(&query_root, Some("username".to_string()), Some(query.to_string()))?;
                     },
                     None => { //no user query is present - thus users will be found based on expressions
-                        let expression_post_results = utils::get_links_and_load_type::<String, app_definitions::ExpressionPost>(&query_root, query_string.to_string())?;
-                        //let mut expression_results = vec![];
+                        let expression_post_results = utils::get_links_and_load_type::<app_definitions::ExpressionPost>(&query_root, Some("expression_post".to_string()), Some(query_string.to_string()))?;
                         for expression in expression_post_results{
-                            let user = utils::get_links_and_load_type::<String, T>(&expression.address, "owner".to_string())?;
+                            let user = utils::get_links_and_load_type::<T>(&expression.address, Some("auth".to_string()), Some("owner".to_string()))?;
                             expression_results.push(user[0].clone());
                         };
                     }
                 };
             },
             QueryTarget::ExpressionPost => {
-                expression_results = utils::get_links_and_load_type::<String, T>(&query_root, query_string.to_string())?;
+                expression_results = utils::get_links_and_load_type::<T>(&query_root, Some("expression_post".to_string()), Some(query_string.to_string()))?;
             }
         };
     } else { //context is a local context - first do local context auth checking. TODO: abstract out to own function
@@ -113,8 +112,8 @@ pub fn get_expression<T: TryFrom<AppEntryValue>>(query_root: Address, mut query_
                     };
                 } else if privacy == app_definitions::Privacy::Shared {
                     //check that user is in pack and thus a shared member of their shared den
-                    let den_owner_links = utils::get_links_and_load_type::<String, app_definitions::UserName>(&context, "owner".to_string())?;
-                    let den_owner_pack_links = utils::get_links_and_load_type::<String, app_definitions::Group>(&den_owner_links[0].address, "pack".to_string())?;
+                    let den_owner_links = utils::get_links_and_load_type::<app_definitions::UserName>(&context, Some("auth".to_string()), Some("owner".to_string()))?;
+                    let den_owner_pack_links = utils::get_links_and_load_type::<app_definitions::Group>(&den_owner_links[0].address, Some("group".to_string()), Some("pack".to_string()))?;
                     let current_user_hash = user::get_user_username_address_by_agent_address()?;
                     if group::is_group_member(den_owner_pack_links[0].address.clone(), current_user_hash.clone())? == false{
                         return Err(ZomeApiError::from("You are attempting to access a shared channel (den). In order to access expressions from this channel you must be in the owners group".to_string()))
@@ -149,42 +148,42 @@ pub fn handle_local_query<T: TryFrom<AppEntryValue>>(context: Address, query_poi
                 let entry = Entry::App("channel".into(), app_definitions::Channel{parent: context.clone(), name: query_split[0].to_string(), 
                                                             privacy: privacy.clone(), channel_type: app_definitions::ChannelType::Tag}.into());
                 let address = hdk::entry_address(&entry)?;
-                expression_results.push(utils::get_links_and_load_type::<String, T>(&address, "expression".to_string())?);
+                expression_results.push(utils::get_links_and_load_type::<T>(&address, Some("expression_post".to_string()), Some("expression".to_string()))?);
             },
             "user" => {
                 let entry = Entry::App("username".into(), app_definitions::UserName{username: query_split[0].to_string()}.into());
                 let address = hdk::entry_address(&entry)?;
-                expression_results.push(utils::get_links_and_load_type::<String, T>(&address, "expression".to_string())?);
+                expression_results.push(utils::get_links_and_load_type::<T>(&address, Some("expression_post".to_string()), Some("expression".to_string()))?);
             },
             "type" => {
                 let entry = Entry::App("channel".into(), app_definitions::Channel{parent: context.clone(), name: query_split[0].to_string(), 
                                                             privacy: privacy.clone(), channel_type: app_definitions::ChannelType::Type}.into());
                 let address = hdk::entry_address(&entry)?;
-                expression_results.push(utils::get_links_and_load_type::<String, T>(&address, "expression".to_string())?);
+                expression_results.push(utils::get_links_and_load_type::<T>(&address, Some("expression_post".to_string()), Some("expression".to_string()))?);
             },
             "time:y" => {
                 let entry = Entry::App("time".into(), app_definitions::Time{parent: context.clone(), time: query_split[0].to_string(), 
                                                         time_type: app_definitions::TimeType::Year}.into());
                 let address = hdk::entry_address(&entry)?;
-                expression_results.push(utils::get_links_and_load_type::<String, T>(&address, "expression".to_string())?);
+                expression_results.push(utils::get_links_and_load_type::<T>(&address, Some("expression_post".to_string()), Some("expression".to_string()))?);
             },
             "time:m" => {
                 let entry = Entry::App("time".into(), app_definitions::Time{parent: context.clone(), time: query_split[0].to_string(), 
                                                         time_type: app_definitions::TimeType::Month}.into());
                 let address = hdk::entry_address(&entry)?;
-                expression_results.push(utils::get_links_and_load_type::<String, T>(&address, "expression".to_string())?);
+                expression_results.push(utils::get_links_and_load_type::<T>(&address, Some("expression_post".to_string()), Some("expression".to_string()))?);
             },
             "time:d" => {
                 let entry = Entry::App("time".into(), app_definitions::Time{parent: context.clone(), time: query_split[0].to_string(), 
                                                         time_type: app_definitions::TimeType::Day}.into());
                 let address = hdk::entry_address(&entry)?;
-                expression_results.push(utils::get_links_and_load_type::<String, T>(&address, "expression".to_string())?);
+                expression_results.push(utils::get_links_and_load_type::<T>(&address, Some("expression_post".to_string()), Some("expression".to_string()))?);
             },
             "time:h" => {
                 let entry = Entry::App("time".into(), app_definitions::Time{parent: context.clone(), time: query_split[0].to_string(), 
                                                         time_type: app_definitions::TimeType::Hour}.into());
                 let address = hdk::entry_address(&entry)?;
-                expression_results.push(utils::get_links_and_load_type::<String, T>(&address, "expression".to_string())?);
+                expression_results.push(utils::get_links_and_load_type::<T>(&address, Some("expression_post".to_string()), Some("expression".to_string()))?);
             },
             &_ => {
                 return Err(ZomeApiError::from("Invalid query type".to_string()))
