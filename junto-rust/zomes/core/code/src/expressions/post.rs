@@ -1,20 +1,15 @@
 use hdk::{
-    AGENT_ADDRESS,
     error::ZomeApiResult,
     error::ZomeApiError,
     holochain_core_types::{
         cas::content::Address,
         entry::Entry, 
-        entry::AppEntryValue,
-        json::JsonString,
         hash::HashString
     },
     api::DNA_ADDRESS
 };
 
 use std::collections::HashMap;
-use multihash::Hash;
-use std::convert::TryFrom;
 
 //Our modules for holochain actins
 use super::definitions::{
@@ -66,7 +61,7 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, chann
 }
 
 pub fn build_hooks(contexts: Vec<Address>, address: &Address, query_params: &Vec<HashMap<String, String>>) -> ZomeApiResult<Vec<FunctionDescriptor>> {
-    let dna_hash_string = HashString::from(hdk::api::DNA_ADDRESS.to_string());
+    let dna_hash_string = Address::from(DNA_ADDRESS.to_string());
     let collective_count = contexts.iter().filter(|&c| *c == *&dna_hash_string).count();
     if collective_count > 1{
         return Err(ZomeApiError::from("You have submitted more than one DNA address - this would cause duplicate posting of the same post".to_string()))
@@ -88,7 +83,7 @@ pub fn build_hooks(contexts: Vec<Address>, address: &Address, query_params: &Vec
         if context == &dna_hash_string {
             //Link expression to public area - TODO: check if time_to_expression even needs to run here - create_query_points might already handle this - initial look says we dont even neeed time_to_expression
             //hook_definitions.push(FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: Address::from(DNA_ADDRESS.to_string())}});
-            hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: dna_hash_string.clone(), privacy: app_definitions::Privacy::Public, query_type: "Contextual".to_string(), expression: address.clone()}});
+            hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: HashString::from(hdk::api::DNA_ADDRESS.to_string()), privacy: app_definitions::Privacy::Public, query_type: "Contextual".to_string(), expression: address.clone()}});
             //Link expression to private den
             //hook_definitions.push(FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{tag: "expression", direction: "forward", expression_address: address.clone(), context: private_den.clone()}});
             hook_definitions.push(FunctionDescriptor{name: "create_query_points", parameters: FunctionParameters::CreateQueryPoints{query_points: query_params.clone(), context: private_den.clone(), privacy: app_definitions::Privacy::Private, query_type: "Standard".to_string(), expression: address.clone()}});

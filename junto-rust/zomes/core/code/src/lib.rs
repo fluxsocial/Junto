@@ -14,7 +14,6 @@ extern crate chrono;
 extern crate regex;
 
 use hdk::{
-    api::DNA_ADDRESS,
     error::ZomeApiResult,
     holochain_core_types::{
         json::JsonString, 
@@ -36,8 +35,8 @@ define_zome! {
         expressions::definitions::time_entry_definitions::time_definiton(),
         expressions::definitions::channel_entry_definitions::channel_definition(),
         expressions::definitions::group_entry_definitions::group_definition(),
-        expressions::definitions::post_entry_definitions::post_definition()
-        //expressions::definitions::post_entry_definitions::resonation_definition()
+        expressions::definitions::post_entry_definitions::post_definition(),
+        expressions::definitions::anchor_entry_definitions::anchor_definition()
     ]
 
     genesis: || { 

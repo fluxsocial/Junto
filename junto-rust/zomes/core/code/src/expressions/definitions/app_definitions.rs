@@ -16,6 +16,12 @@ pub enum Privacy {
     Private //Viewable by only owner
 }
 
+//This anchor will serve as a global index entry to link users, types, times and tags from
+#[derive(Serialize, Deserialize, Debug, Clone, DefaultJson)]
+pub struct Anchor {
+    pub anchor_type: String,
+}
+
 #[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone)]
 pub enum ChannelType {
     Tag, 

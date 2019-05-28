@@ -1,13 +1,12 @@
-//Entry Definition(s)
-use super::app_definitions;
-
 use hdk::{
     entry_definition::ValidatingEntryType,
     holochain_core_types::{
-        dna::entry_types::Sharing,
-        cas::content::Address
+        dna::entry_types::Sharing
     }
 };
+
+//Entry Definition(s)
+use super::app_definitions;
 
 pub fn channel_definition() -> ValidatingEntryType {
     entry!(
@@ -19,7 +18,7 @@ pub fn channel_definition() -> ValidatingEntryType {
             hdk::ValidationPackageDefinition::Entry
         },
 
-        validation: |validation_data: hdk::EntryValidationData<app_definitions::Channel>| {
+        validation: |_validation_data: hdk::EntryValidationData<app_definitions::Channel>| {
             Ok(())
         },
 

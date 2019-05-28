@@ -1,7 +1,7 @@
 //Module to handle all channel related operations
 use hdk::{
     error::ZomeApiResult,
-    error::ZomeApiError,
+    // error::ZomeApiError,
     holochain_core_types::{
         entry::Entry, 
         cas::content::Address
@@ -9,8 +9,8 @@ use hdk::{
 };
 
 use super::utils;
-use super::group;
-use super::user;
+// use super::group;
+// use super::user;
 use super::definitions::{
     app_definitions,
     function_definitions::{
@@ -71,24 +71,30 @@ pub fn is_den_owner(den: Address, user: Address) -> ZomeApiResult<bool>{
     Ok(den_owner_results[0].address == user)
 }
 
-pub fn create_collective_channel(context: &Address) -> ZomeApiResult<Address> {
-    let channel_entry: app_definitions::Channel;
-    if context == &Address::from(hdk::api::DNA_ADDRESS.to_string()) {
-        channel_entry = app_definitions::Channel{parent: context.clone(), name: "Collective".to_string(), 
-                                        privacy: app_definitions::Privacy::Public, channel_type: app_definitions::ChannelType::Tag};
-    } else { 
-        let user_name_address = user::get_user_username_address_by_agent_address()?;
-        if (group::is_group_member(context.clone(), user_name_address.clone())? == true) | (group::is_group_owner(context.clone(), user_name_address.clone())? == true) {
-            channel_entry = app_definitions::Channel{parent: context.clone(), name: "Collective".to_string(), 
-                                        privacy: app_definitions::Privacy::Shared, channel_type: app_definitions::ChannelType::Tag};
-        } else {
-            return Err(ZomeApiError::from("You are not a member/owner of given channel".to_string()))
-        };
-    };
-    let channel_collective_entry = Entry::App("channel".into(), channel_entry.into());
-    let address = hdk::commit_entry(&channel_collective_entry)?;
-    Ok(address)
-}
+// pub fn create_collective_channel(context: &Address) -> ZomeApiResult<Address> {
+//     let channel_entry: app_definitions::Channel;
+//     if context == &Address::from(hdk::api::DNA_ADDRESS.to_string()) {
+//         let tag_anchor = hdk::commit_entry(&Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: "tag".to_string()}.into()))?;
+//         channel_entry = app_definitions::Channel{parent: tag_anchor.clone(), name: "Collective".to_string(), 
+//                                         privacy: app_definitions::Privacy::Public, channel_type: app_definitions::ChannelType::Tag};
+//         let channel_collective_entry = Entry::App("channel".into(), channel_entry.into());
+//         let address = hdk::commit_entry(&channel_collective_entry)?;
+//         hdk::link_entries(&tag_anchor, &address, "tag", "")?;
+//         return Ok(address)
+
+//     } else { 
+//         let user_name_address = user::get_user_username_address_by_agent_address()?;
+//         if (group::is_group_member(context.clone(), user_name_address.clone())? == true) | (group::is_group_owner(context.clone(), user_name_address.clone())? == true) {
+//             channel_entry = app_definitions::Channel{parent: context.clone(), name: "Collective".to_string(), 
+//                                         privacy: app_definitions::Privacy::Shared, channel_type: app_definitions::ChannelType::Tag};
+//         } else {
+//             return Err(ZomeApiError::from("You are not a member/owner of given channel".to_string()))
+//         };
+//     };
+//     let channel_collective_entry = Entry::App("channel".into(), channel_entry.into());
+//     let address = hdk::commit_entry(&channel_collective_entry)?;
+//     Ok(address)
+// }
 
 pub fn get_channel_address(channel: app_definitions::Channel) -> ZomeApiResult<Address> {
     hdk::api::entry_address(&Entry::App("channel".into(), channel.into()))

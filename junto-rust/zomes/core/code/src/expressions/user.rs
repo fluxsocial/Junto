@@ -54,10 +54,12 @@ pub fn handle_create_user(user_data: CreateUserInformation) -> ZomeApiResult<Jun
     let user_meta_data = app_definitions::User{parent: username_address.clone(), first_name: user_data.first_name.clone(), last_name: user_data.last_name, bio: user_data.bio, profile_picture: user_data.profile_picture, verified: true};
     let entry = Entry::App("user".into(), user_meta_data.clone().into());
     let address = hdk::commit_entry(&entry)?;
+    let user_anchor = hdk::commit_entry(&Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: "registered".to_string()}.into()))?;
+
     hdk::link_entries(&AGENT_ADDRESS, &address, "user", "")?; 
     hdk::link_entries(&AGENT_ADDRESS, &username_address, "username", "")?; 
     hdk::link_entries(&username_address, &address, "profile", "")?;
-    //hdk::link_entries(&hdk::api::DNA_ADDRESS, &username_address, "username", &user_data.username.clone())?; //add link on DNA address where tag is username so this can be used for searching later
+    hdk::link_entries(&user_anchor, &username_address, "username", &user_data.username.clone())?; //add link on DNA address where tag is username so this can be used for searching later
     //Build hook definitions to link user to timestamps and create pack/den
     let hook_definitions = vec![FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{link_type: "user", tag: "", direction: "forward", expression_address: username_address.clone(), context: Address::from(DNA_ADDRESS.to_string())}},
                                 FunctionDescriptor{name: "create_pack", parameters: FunctionParameters::CreatePack{username_address: username_address.clone(), first_name: user_data.first_name.clone()}},

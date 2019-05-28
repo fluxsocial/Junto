@@ -17,17 +17,17 @@ use super::definitions::{
 };
 
 pub fn time_to_expression(link_type: &'static str, tag: &'static str, direction: &'static str, expression_address: &Address, context: &Address) -> ZomeApiResult<Vec<Address>> {
-    let mut timestamps: Vec<Address> = vec![];
-    let iso_timestamp;
-    match hdk::get_entry_result(expression_address, GetEntryOptions {headers: true, ..Default::default()},)?.result {
-        GetEntryResultType::Single(result) => {
-            iso_timestamp = serde_json::to_string(&result.headers[0].timestamp()).map_err(|err| ZomeApiError::from(err.to_string()))?;
-            timestamps = create_timestamps(context, &iso_timestamp)?;
-        },  
-        GetEntryResultType::All(_entry_history) => {
-            return Err(ZomeApiError::from("EntryResultType not of enum variant Single".to_string()))
-        }
-    };
+    let timestamps = 
+        match hdk::get_entry_result(expression_address, GetEntryOptions {headers: true, ..Default::default()},)?.result {
+            GetEntryResultType::Single(result) => {
+                let iso_timestamp = serde_json::to_string(&result.headers[0].timestamp()).map_err(|err| ZomeApiError::from(err.to_string()))?;
+                create_timestamps(context, &iso_timestamp)?
+            },  
+            GetEntryResultType::All(_entry_history) => {
+                return Err(ZomeApiError::from("EntryResultType not of enum variant Single".to_string()))
+            }
+        };
+
     if timestamps.clone().len() == 0{
         return Err(ZomeApiError::from("Timestamps not found on header".to_string()))
     };

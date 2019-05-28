@@ -5,3 +5,4 @@ pub mod post_entry_definitions;
 pub mod time_entry_definitions;
 pub mod user_entry_definitions;
 pub mod function_definitions;
+pub mod anchor_entry_definitions;
