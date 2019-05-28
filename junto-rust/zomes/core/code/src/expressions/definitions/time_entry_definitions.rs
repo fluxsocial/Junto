@@ -14,7 +14,7 @@ pub fn time_definiton() -> ValidatingEntryType {
         name: "time",
         description: "Time Object Entry",
         sharing: Sharing::Public,
-        //native_type: app_definitions::Time,
+
         validation_package: || {
             hdk::ValidationPackageDefinition::Entry
         },

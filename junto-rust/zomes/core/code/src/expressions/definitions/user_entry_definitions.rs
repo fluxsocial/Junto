@@ -14,7 +14,7 @@ pub fn user_name_definition() -> ValidatingEntryType {
         name: "username",
         description: "Username Object Entry",
         sharing: Sharing::Public,
-        //native_type: app_definitions::UserName,
+
         validation_package: || {
             hdk::ValidationPackageDefinition::Entry
         },
@@ -36,18 +36,18 @@ pub fn user_name_definition() -> ValidatingEntryType {
                     Ok(())
                 }
             ),
-            from!(
-                "%dna_addresss",
-                link_type: "username", //links username object to agent_id
+            // from!(
+            //     "%dna_id",
+            //     link_type: "username", //links username object to agent_id
 
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
+            //     validation_package: || {
+            //         hdk::ValidationPackageDefinition::Entry
+            //     },
 
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
+            //     validation: |_validation_data: hdk::LinkValidationData| {
+            //         Ok(())
+            //     }
+            // ),
             from!(
                 "time",
                 link_type: "user", //Link user to time which they are created
@@ -163,18 +163,18 @@ pub fn user_definition() -> ValidatingEntryType {
         },
 
         links: [
-            from!(
-                "username",
-                link_type: "profile", //link type from username anchor to user profile
+            // from!(
+            //     "username",
+            //     link_type: "profile", //link type from username anchor to user profile
 
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
+            //     validation_package: || {
+            //         hdk::ValidationPackageDefinition::Entry
+            //     },
 
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
+            //     validation: |_validation_data: hdk::LinkValidationData| {
+            //         Ok(())
+            //     }
+            // ),
             from!(
                 "%agent_id",
                 link_type: "user",

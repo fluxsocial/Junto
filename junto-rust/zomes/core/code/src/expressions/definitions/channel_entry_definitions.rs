@@ -14,7 +14,7 @@ pub fn channel_definition() -> ValidatingEntryType {
         name: "channel",
         description: "Channel Object Entry",
         sharing: Sharing::Public,
-        //native_type: app_definitions::Channel,
+
         validation_package: || {
             hdk::ValidationPackageDefinition::Entry
         },

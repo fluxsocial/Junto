@@ -14,7 +14,7 @@ pub fn post_definition() -> ValidatingEntryType {
         name: "expression_post",
         description: "ExpressionPost Object Entry",
         sharing: Sharing::Public,
-        //native_type: app_definitions::ExpressionPost,
+
         validation_package: || {
             hdk::ValidationPackageDefinition::Entry
         },
