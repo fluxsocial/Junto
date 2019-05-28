@@ -14,7 +14,7 @@ pub fn post_definition() -> ValidatingEntryType {
         name: "expression_post",
         description: "ExpressionPost Object Entry",
         sharing: Sharing::Public,
-        //native_type: app_definitions::ExpressionPost,
+
         validation_package: || {
             hdk::ValidationPackageDefinition::Entry
         },
@@ -25,8 +25,8 @@ pub fn post_definition() -> ValidatingEntryType {
 
         links: [
             from!(
-                "user",
-                tag: "expression",
+                "username",
+                link_type: "expression_post", //users posts links
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -38,7 +38,7 @@ pub fn post_definition() -> ValidatingEntryType {
             ),
             from!(
                 "channel",
-                tag: "*", //Any tag or expression tag
+                link_type: "expression_post", //links on public channels
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -49,20 +49,8 @@ pub fn post_definition() -> ValidatingEntryType {
                 }
             ),
             from!(
-                "resonation",
-                tag: "*", //Any tag or expression tag
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            from!(
-                "time",
-                tag: "*", //Any tag or expression tag
+                "channel",
+                link_type: "local_expression_post", //links on private channels
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -74,7 +62,19 @@ pub fn post_definition() -> ValidatingEntryType {
             ),
             from!(
                 "group",
-                tag: "expression",
+                link_type: "expression_post",  //links from within groups to expression
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            from!(
+                "time",
+                link_type: "expression_post", 
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -85,8 +85,44 @@ pub fn post_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "user",
-                tag: "owner", 
+                "channel",
+                link_type: "expression_channels", //channels which an expression is a part of 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "channel",
+                link_type: "expression_type", //type which expression is
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "time",
+                link_type: "time", //time entries which the expression is associated to
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "username",
+                link_type: "auth", //links types which will contain auth information of a given post: example: owner, co-writer etc
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -98,19 +134,7 @@ pub fn post_definition() -> ValidatingEntryType {
             ),
             to!(
                 "expression_post",
-                tag: "comment", 
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
-                "resonation",
-                tag: "*", //Any tag to help make resonation colour searchable or just resonation tag 
+                link_type: "related", //used for mapping other expressions to current expression: example: comments
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -123,106 +147,3 @@ pub fn post_definition() -> ValidatingEntryType {
         ]
     )
 }
-
-// pub fn resonation_definition() -> ValidatingEntryType {
-//     entry!(
-//         name: "resonation",
-//         description: "Resonation Object Entry",
-//         sharing: Sharing::Public,
-//         native_type: app_definitions::Resonation,
-//         validation_package: || {
-//             hdk::ValidationPackageDefinition::Entry
-//         },
-
-//         validation: |_resonation: app_definitions::Resonation, _ctx: hdk::ValidationData| {
-//             Ok(())
-//         },
-
-//         links: [
-//             from!(
-//                 "expression_post",
-//                 tag: "*", //Either any tag containing resonation colour/search query through expression or just resonation tag
-
-//                 validation_package: || {
-//                     hdk::ValidationPackageDefinition::Entry
-//                 },
-
-//                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
-//                     Ok(())
-//                 }
-//             ),
-//             from!(
-//                 "channel",
-//                 tag: "*", //Either any tag containing resonation colour/search query through expression or just resonation tag
-
-//                 validation_package: || {
-//                     hdk::ValidationPackageDefinition::Entry
-//                 },
-
-//                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
-//                     Ok(())
-//                 }
-//             ),
-//             from!(
-//                 "user",
-//                 tag: "*",//Either any tag containing resonation colour/search query through expression or just resonation tag
-
-//                 validation_package: || {
-//                     hdk::ValidationPackageDefinition::Entry
-//                 },
-
-//                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
-//                     Ok(())
-//                 }
-//             ),
-//             from!(
-//                 "group",
-//                 tag: "*",//Either any tag containing resonation colour/search query through expression or just resonation tag
-
-//                 validation_package: || {
-//                     hdk::ValidationPackageDefinition::Entry
-//                 },
-
-//                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
-//                     Ok(())
-//                 }
-//             ),
-//             from!(
-//                 "time",
-//                 tag: "*",//Either any tag containing resonation colour/search query through expression or just resonation tag
-
-//                 validation_package: || {
-//                     hdk::ValidationPackageDefinition::Entry
-//                 },
-
-//                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
-//                     Ok(())
-//                 }
-//             ),
-//             to!(
-//                 "expression_post",
-//                 tag: "expression", 
-
-//                 validation_package: || {
-//                     hdk::ValidationPackageDefinition::Entry
-//                 },
-
-//                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
-//                     Ok(())
-//                 }
-//             ),
-//             to!(
-//                 "channel",
-//                 tag: "*", //Any tag to provide searchable trees 
-
-//                 validation_package: || {
-//                     hdk::ValidationPackageDefinition::Entry
-//                 },
-
-//                 validation: |base: Address, target: Address, _ctx: hdk::ValidationData| {
-//                     Ok(())
-//                 }
-//             )
-//         ]
-//     )
-// }

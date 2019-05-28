@@ -56,9 +56,9 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
                 match &hook_descriptor.name{ //Match function names
                     &"time_to_expression" => {
                         match &hook_descriptor.parameters{
-                            FunctionParameters::TimeToExpression {tag, direction, expression_address, context} => {
+                            FunctionParameters::TimeToExpression {link_type, tag, direction, expression_address, context} => {
                                 hdk::debug("Running time_to_expression")?;
-                                let time_addresses = time::time_to_expression(tag, direction, &expression_address, &context)?;
+                                let time_addresses = time::time_to_expression(link_type, tag, direction, &expression_address, &context)?;
                                 hdk::debug("Ran time_to_expression")?;
                                 hook_result_outputs.push(HooksResultTypes::TimeToExpression(time_addresses));
                             },
@@ -89,9 +89,9 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
                     },
                     &"link_expression" => {
                         match &hook_descriptor.parameters{
-                            FunctionParameters::LinkExpression {tag, direction, parent_expression, child_expression} =>{
+                            FunctionParameters::LinkExpression {link_type, tag, direction, parent_expression, child_expression} =>{
                                 hdk::debug("Running link_expression")?;
-                                let link_result = link_expression(tag, direction, &parent_expression, &child_expression)?;
+                                let link_result = link_expression(link_type, tag, direction, &parent_expression, &child_expression)?;
                                 hdk::debug("Ran link_expression")?;
                                 hook_result_outputs.push(HooksResultTypes::LinkExpression(link_result))
                             },
@@ -122,24 +122,25 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
 }
 
 //Link two expression objects together in a given direction
-pub fn link_expression(tag: &'static str, direction: &'static str, parent_expression: &Address, child_expression: &Address) -> ZomeApiResult<String>{
+pub fn link_expression(link_type: &'static str, tag: &'static str, direction: &'static str, parent_expression: &Address, child_expression: &Address) -> ZomeApiResult<String>{
     hdk::debug("Linking expressions")?;
     if (direction == "reverse") | (direction == "both"){
-        hdk::debug(format!("Linking expression: {} (child) to: {} (parent) with tag: {}", child_expression.to_string(), parent_expression.to_string(), tag))?;
-        hdk::link_entries(&child_expression, &parent_expression, tag)?;
+        hdk::debug(format!("Linking expression: {} (child) to: {} (parent) with tag: {} and link_type: {}", child_expression.to_string(), parent_expression.to_string(), tag, link_type))?;
+        hdk::link_entries(&child_expression, &parent_expression, link_type, tag)?;
     }
     if (direction == "forward") | (direction == "both"){
-        hdk::debug(format!("Linking expression: {} (parent) to: {} (child) with tag: {}", parent_expression.to_string(), child_expression.to_string(), tag))?;
-        hdk::link_entries(&parent_expression, &child_expression, tag)?;
+        hdk::debug(format!("Linking expression: {} (parent) to: {} (child) with tag: {} and link_type: {}", parent_expression.to_string(), child_expression.to_string(), tag, link_type))?;
+        hdk::link_entries(&parent_expression, &child_expression, link_type, tag)?;
     }
     Ok("Links between expressions made with specified tag".to_string())
 }
 
-pub fn get_links_and_load<S: Into<String>>(
+pub fn get_links_and_load(
     base: &HashString,
-    tag: S
+    link_type: Option<String>,
+    tag: Option<String>
 ) -> ZomeApiResult<EntryAndAddressResult<Entry>>  {
-	let get_links_result = hdk::get_links(base, tag)?;
+	let get_links_result = hdk::get_links(base, link_type, tag)?;
 
 	Ok(get_links_result.addresses()
 	.iter()
@@ -157,8 +158,8 @@ pub fn get_links_and_load<S: Into<String>>(
 }
 
 //This function has now been implemented in the HDK - but its still useful as it can return the address as well as the entry
-pub fn get_links_and_load_type<S: Into<String>, R: TryFrom<AppEntryValue>>(base: &HashString, tag: S) -> ZomeApiResult<EntryAndAddressResult<R>> {
-	let link_load_results = get_links_and_load(base, tag)?;
+pub fn get_links_and_load_type<R: TryFrom<AppEntryValue>>(base: &HashString, link_type: Option<String>, tag: Option<String>) -> ZomeApiResult<EntryAndAddressResult<R>> {
+	let link_load_results = get_links_and_load(base, link_type, tag)?;
 
 	Ok(link_load_results
 	.iter()

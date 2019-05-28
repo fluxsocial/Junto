@@ -52,9 +52,10 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
         };
     };
 
+    //Create "traditional" base links between index items and expression for given context - these are links that should be present for every expression post - no matter if it is public or not
     for (i, query_param) in query_points.iter().enumerate(){
         match query_param["type"].as_ref(){
-            "Channel" => {
+            "channel" => {
                 let entry = Entry::App("channel".into(), app_definitions::Channel{name: query_param["value"].to_string(), 
                                                     parent: context.clone(), privacy: privacy.clone(), channel_type: app_definitions::ChannelType::Tag}.into()).into();
                 let address = hdk::entry_address(&entry)?;
@@ -63,21 +64,21 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                 match dht_entry {
                     Some(_value) => {
                         //No checks to see if there is a link on context need to made - chanels can only be created in the None block here and thus must have been linked to the context
-                        hdk::api::link_entries(&address, expression, "expression")?;
-                        hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
-                        hdk::api::link_entries(&expression, &address, "channel")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", "expression")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", &query_param["value"])?;
+                        hdk::api::link_entries(&expression, &address, "expression_channels", &query_param["value"])?;
                         addressed_params[i].insert("address".to_string(), address.to_string()); 
                     }, 
                     None => {
-                        let address = hdk::utils::commit_and_link(&entry, context, "channel")?;
-                        hdk::api::link_entries(&address, expression, "expression")?;
-                        hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
-                        hdk::api::link_entries(&expression, &address, "channel")?;
+                        let address = hdk::utils::commit_and_link(&entry, context, "channel", &query_param["value"])?;
+                        hdk::api::link_entries(&address, expression, "expression_post", "expression")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", &query_param["value"])?;
+                        hdk::api::link_entries(&expression, &address, "expression_channels", &query_param["value"])?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     }
                 };
             },
-            "Type" => {
+            "type" => {
                 let entry = Entry::App("channel".into(), app_definitions::Channel{name: query_param["value"].to_string(), 
                                                     parent: context.clone(), privacy: privacy.clone(), channel_type: app_definitions::ChannelType::Type}.into()).into();
                 let address = hdk::entry_address(&entry)?;
@@ -85,21 +86,21 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
 
                 match dht_entry {
                     Some(_value) => {
-                        hdk::api::link_entries(&address, expression, "expression")?;
-                        hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
-                        hdk::api::link_entries(expression, &address, "type")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", "expression")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", &query_param["value"])?;
+                        hdk::api::link_entries(expression, &address, "expression_type", &query_param["value"])?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     },
                     None => {
-                        let address = hdk::utils::commit_and_link(&entry, context, "channel")?;
-                        hdk::api::link_entries(&address, expression, "expression")?;
-                        hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
-                        hdk::api::link_entries(expression, &address, "type")?;
+                        let address = hdk::utils::commit_and_link(&entry, context, "expression_type", &query_param["value"])?;
+                        hdk::api::link_entries(&address, expression, "expression_post", "expression")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", &query_param["value"])?;
+                        hdk::api::link_entries(expression, &address, "expression_type", &query_param["value"])?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     }
                 };
             },
-            "Time:Y" => {
+            "time:y" => {
                 let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
                                         parent: context.clone(), time_type: app_definitions::TimeType::Year}.into()).into();
                 let address = hdk::entry_address(&entry)?;
@@ -107,24 +108,22 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
 
                 match dht_entry {
                     Some(_value) => {
-                        hdk::api::link_entries(&address, expression, "expression")?;
-                        hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
-                        hdk::api::link_entries(expression, &address, "time")?;
-                        hdk::api::link_entries(expression, &address, "year")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", "expression")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", &query_param["value"])?;
+                        hdk::api::link_entries(expression, &address, "time", "year")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     },
                     None => {
-                        let address = hdk::utils::commit_and_link(&entry, context, "time")?;
-                        hdk::api::link_entries(context, &address, "year")?;
-                        hdk::api::link_entries(&address, expression, "expression")?;
-                        hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
-                        hdk::api::link_entries(&expression, &address, "time")?;
-                        hdk::api::link_entries(&expression, &address, "year")?;
+                        let address = hdk::utils::commit_and_link(&entry, context, "time", "year")?;
+                        hdk::api::link_entries(context, &address, "time", "year")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", "expression")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", &query_param["value"])?;
+                        hdk::api::link_entries(&expression, &address, "time", "year")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     }
                 };
             },
-            "Time:M" => {
+            "time:m" => {
                 let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
                                         parent: context.clone(), time_type: app_definitions::TimeType::Month}.into()).into();
                 let address = hdk::entry_address(&entry)?;
@@ -132,24 +131,22 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
 
                 match dht_entry {
                     Some(_value) => {
-                        hdk::api::link_entries(&address, expression, "expression")?;
-                        hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
-                        hdk::api::link_entries(&expression, &address, "time")?;
-                        hdk::api::link_entries(&expression, &address, "month")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", "expression")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", &query_param["value"])?;
+                        hdk::api::link_entries(&expression, &address, "time", "month")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     },
                     None => {
-                        let address = hdk::utils::commit_and_link(&entry, context, "time")?;
-                        hdk::api::link_entries(context, &address, "month")?;
-                        hdk::api::link_entries(&address, expression, "expression")?;
-                        hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
-                        hdk::api::link_entries(&expression, &address, "time")?;
-                        hdk::api::link_entries(&expression, &address, "month")?;
+                        let address = hdk::utils::commit_and_link(&entry, context, "time", "month")?;
+                        hdk::api::link_entries(context, &address, "time", "month")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", "expression")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", &query_param["value"])?;
+                        hdk::api::link_entries(&expression, &address, "time", "month")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     }
                 };
             },
-            "Time:D" => {
+            "time:d" => {
                 let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
                                         parent: context.clone(), time_type: app_definitions::TimeType::Day}.into()).into();
                 let address = hdk::entry_address(&entry)?;
@@ -157,24 +154,22 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
 
                 match dht_entry {
                     Some(_value) => {
-                        hdk::api::link_entries(&address, expression, "expression")?;
-                        hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
-                        hdk::api::link_entries(&expression, &address, "time")?;
-                        hdk::api::link_entries(&expression, &address, "day")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", "expression")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", &query_param["value"])?;
+                        hdk::api::link_entries(&expression, &address, "time", "day")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     },
                     None => {
-                        let address = hdk::utils::commit_and_link(&entry, context, "time")?;
-                        hdk::api::link_entries(context, &address, "day")?;
-                        hdk::api::link_entries(&address, expression, "expression")?;
-                        hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
-                        hdk::api::link_entries(&expression, &address, "time")?;
-                        hdk::api::link_entries(&expression, &address, "day")?;
+                        let address = hdk::utils::commit_and_link(&entry, context, "time", "day")?;
+                        hdk::api::link_entries(context, &address, "time", "day")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", "expression")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", &query_param["value"])?;
+                        hdk::api::link_entries(&expression, &address, "time", "day")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     }
                 };
             },
-            "Time:H" => {
+            "time:h" => {
                 let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
                                         parent: context.clone(), time_type: app_definitions::TimeType::Hour}.into()).into();
                 let address = hdk::entry_address(&entry)?;
@@ -182,19 +177,17 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
 
                 match dht_entry {
                     Some(_value) => {
-                        hdk::api::link_entries(&address, expression, "expression")?;
-                        hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
-                        hdk::api::link_entries(&expression, &address, "time")?;
-                        hdk::api::link_entries(&expression, &address, "hour")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", "expression")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", &query_param["value"])?;
+                        hdk::api::link_entries(&expression, &address, "time", "hour")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     },
                     None => {
-                        let address = hdk::utils::commit_and_link(&entry, context, "time")?;
-                        hdk::api::link_entries(&context, &address, "hour")?;
-                        hdk::api::link_entries(&address, expression, "expression")?;
-                        hdk::api::link_entries(&address, expression, query_param["value"].to_string())?;
-                        hdk::api::link_entries(&expression, &address, "time")?;
-                        hdk::api::link_entries(&expression, &address, "hour")?;
+                        let address = hdk::utils::commit_and_link(&entry, context, "time", "day")?;
+                        hdk::api::link_entries(&context, &address, "time", "hour")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", "expression")?;
+                        hdk::api::link_entries(&address, expression, "expression_post", &query_param["value"])?;
+                        hdk::api::link_entries(&expression, &address, "time", "hour")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     }
                 };
@@ -206,8 +199,8 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
 
                 match dht_entry{
                     Some(_value) => {
-                        hdk::api::link_entries(&address, &expression, "expression")?;
-                        hdk::api::link_entries(&expression, &address, "user")?;
+                        hdk::api::link_entries(&address, &expression, "expression_post", "expression")?;
+                        hdk::api::link_entries(&expression, &address, "auth", "owner")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     },
                     None => {
@@ -228,7 +221,7 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
     let context_channel = app_definitions::Channel{parent: context.clone(), name: "Collective".to_string(), 
                                         privacy: privacy.clone(), channel_type: app_definitions::ChannelType::Tag};
     let collective_address = hdk::entry_address(&Entry::App("channel".into(), context_channel.into()))?;
-    hdk::api::link_entries(&collective_address, expression, "expression")?;
+    hdk::api::link_entries(&collective_address, expression, "expression_post", "expression")?;
     Ok("ok".to_string())
 }
 
@@ -249,7 +242,7 @@ pub fn create_contextual_links(query_points: &Vec<HashMap<String, String>>, expr
         let start = link[0];
         let link_strings: Vec<String> = link.iter().map(|link_value| format!("{}<{}>", link_value["value"], link_value["type"],) ).collect();
         let link_string = link_strings.join(":");
-        hdk::api::link_entries(&HashString::from(start["address"].clone()), expression, link_string)?;
+        hdk::api::link_entries(&HashString::from(start["address"].clone()), expression, "expression_post", &link_string)?;
     };
     Ok("ok".to_string())
 }
