@@ -9,7 +9,6 @@ use hdk::{
     }
 };
 
-use multihash::Hash;
 use std::convert::TryFrom;
 use regex::Regex;
 
@@ -17,8 +16,6 @@ use regex::Regex;
 use super::definitions::{
     app_definitions,
     function_definitions::{
-        FunctionDescriptor,
-        FunctionParameters,
         QueryTarget,
         QueryOptions,
         EntryAndAddress,

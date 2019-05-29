@@ -6,8 +6,7 @@ use hdk::{
         entry::Entry, 
         cas::content::Address,
         json::JsonString
-    },
-    api::DNA_ADDRESS
+    }
 };
 
 use std::convert::TryFrom;
@@ -24,7 +23,6 @@ use super::definitions::{
     }
 };
 use super::user;
-use super::channel;
 
 //Creates a user "group" - more specifically in this case a pack
 pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiResult<UserPack> {
@@ -37,12 +35,14 @@ pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiRes
     };
     let entry = Entry::App("group".into(), pack.clone().into());
     let address = hdk::commit_entry(&entry)?;
-    let hook_definitions = vec![FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{link_type: "group", tag: "pack", direction: "forward", expression_address: address.clone(), context: Address::from(DNA_ADDRESS.to_string())}},
+    //currently here we are using global time entries - this wont scale, lets work around this somehow
+    let tag_anchor = hdk::commit_entry(&Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: "time".to_string()}.into()))?;
+    let hook_definitions = vec![FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{link_type: "group", tag: "pack", direction: "forward", expression_address: address.clone(), context: tag_anchor}},
                                 FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "group", tag: "pack", direction: "reverse", parent_expression: address.clone(), child_expression: username_address.clone()}},
                                 FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "auth", tag: "owner", direction: "forward", parent_expression: address.clone(), child_expression: username_address.clone()}}];
 
     let _hook_result = utils::handle_hooks("Group".to_string(), hook_definitions)?;
-    channel::create_collective_channel(&address)?;
+    //channel::create_collective_channel(&address)?;
     Ok(UserPack{pack: EntryAndAddress{entry: pack, address: address}})
 }
 

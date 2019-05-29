@@ -113,12 +113,12 @@ pub struct EntryAndAddress<T>{
 }
 
 impl HooksResultTypes{
-    pub fn time_to_expression_result(self) -> ZomeApiResult<Vec<Address>> {
-        match self {
-            HooksResultTypes::TimeToExpression(r) => Ok(r),
-            _ => Err(ZomeApiError::from("Hook result enum value not: TimeToExpression".to_string())),
-        }
-    }
+    // pub fn time_to_expression_result(self) -> ZomeApiResult<Vec<Address>> {
+    //     match self {
+    //         HooksResultTypes::TimeToExpression(r) => Ok(r),
+    //         _ => Err(ZomeApiError::from("Hook result enum value not: TimeToExpression".to_string())),
+    //     }
+    // }
     pub fn create_pack_result(self) -> ZomeApiResult<UserPack> {
         match self {
             HooksResultTypes::CreatePack(r) => Ok(r),
@@ -131,18 +131,18 @@ impl HooksResultTypes{
             _ => Err(ZomeApiError::from("Hook result enum value not: CreateDen".to_string())),
         }
     }
-    pub fn link_expression_result(self) -> ZomeApiResult<String> {
-        match self {
-            HooksResultTypes::LinkExpression(r) => Ok(r),
-            _ => Err(ZomeApiError::from("Hook result enum value not: LinkExpression".to_string())),
-        }
-    }
-    pub fn create_query_points_result(self) -> ZomeApiResult<String> {
-        match self {
-            HooksResultTypes::CreateQueryPoints(r) => Ok(r),
-            _ => Err(ZomeApiError::from("Hook result enum value not: CreateQueryPoints".to_string())),
-        }
-    }
+    // pub fn link_expression_result(self) -> ZomeApiResult<String> {
+    //     match self {
+    //         HooksResultTypes::LinkExpression(r) => Ok(r),
+    //         _ => Err(ZomeApiError::from("Hook result enum value not: LinkExpression".to_string())),
+    //     }
+    // }
+    // pub fn create_query_points_result(self) -> ZomeApiResult<String> {
+    //     match self {
+    //         HooksResultTypes::CreateQueryPoints(r) => Ok(r),
+    //         _ => Err(ZomeApiError::from("Hook result enum value not: CreateQueryPoints".to_string())),
+    //     }
+    // }
 }
 
 impl<T> PartialEq for EntryAndAddress<T>{

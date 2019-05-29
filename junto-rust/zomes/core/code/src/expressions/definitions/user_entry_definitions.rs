@@ -1,13 +1,11 @@
-//Entry Definition(s)
-use super::app_definitions;
-
 use hdk::{
     entry_definition::ValidatingEntryType,
     holochain_core_types::{
-        dna::entry_types::Sharing,
-        cas::content::Address
+        dna::entry_types::Sharing
     }
 };
+
+use super::app_definitions;
 
 pub fn user_name_definition() -> ValidatingEntryType {
     entry!(
@@ -19,7 +17,7 @@ pub fn user_name_definition() -> ValidatingEntryType {
             hdk::ValidationPackageDefinition::Entry
         },
 
-        validation: |validation_data: hdk::EntryValidationData<app_definitions::UserName>| {
+        validation: |_validation_data: hdk::EntryValidationData<app_definitions::UserName>| {
             Ok(())
         },
 
@@ -36,18 +34,6 @@ pub fn user_name_definition() -> ValidatingEntryType {
                     Ok(())
                 }
             ),
-            // from!(
-            //     "%dna_id",
-            //     link_type: "username", //links username object to agent_id
-
-            //     validation_package: || {
-            //         hdk::ValidationPackageDefinition::Entry
-            //     },
-
-            //     validation: |_validation_data: hdk::LinkValidationData| {
-            //         Ok(())
-            //     }
-            // ),
             from!(
                 "time",
                 link_type: "user", //Link user to time which they are created
@@ -158,7 +144,7 @@ pub fn user_definition() -> ValidatingEntryType {
             hdk::ValidationPackageDefinition::Entry
         },
 
-        validation: |validation_data: hdk::EntryValidationData<app_definitions::User>| {
+        validation: |_validation_data: hdk::EntryValidationData<app_definitions::User>| {
             Ok(())
         },
 
