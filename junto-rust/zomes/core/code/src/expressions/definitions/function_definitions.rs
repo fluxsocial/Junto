@@ -205,6 +205,7 @@ pub enum FunctionParameters{
         context: Address, 
         privacy: app_definitions::Privacy,
         query_type: String,
-        expression: Address
+        expression: Address,
+        context_link_tag: &'static str
     }
 }

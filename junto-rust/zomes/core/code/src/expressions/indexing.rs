@@ -18,7 +18,7 @@ use super::user;
 use super::channel;
 
 pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: &Address, privacy: &app_definitions::Privacy, 
-                            query_type: &String, expression: &Address) -> ZomeApiResult<String>{
+                            query_type: &String, expression: &Address, context_link_tag: &'static str) -> ZomeApiResult<String>{
     let mut addressed_params: Vec<HashMap<String, String>> = query_points.to_vec();
     let mut is_global = true;
     if context != &HashString::from(hdk::api::DNA_ADDRESS.to_string()){
@@ -43,7 +43,7 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
             }
         };
         //make link on group channel for all posts
-        hdk::api::link_entries(&context, expression, "expression_post", "expression")?;
+        hdk::api::link_entries(&context, expression, "expression_post", context_link_tag)?;
         is_global = false;
     };
 
