@@ -17,6 +17,7 @@ use hdk::{
 
 use std::collections::HashMap;
 use serde::Serialize;
+use std::fmt::Debug;
 
 use super::app_definitions;
 
@@ -169,22 +170,9 @@ impl From<ExpressionResults<app_definitions::ExpressionPost>> for JsonString {
     }
 }
 
-impl<T: Into<JsonString>> From<EntryAndAddress<T>> for JsonString  where T: Serialize{
+impl<T: Into<JsonString>> From<EntryAndAddress<T>> for JsonString  where T: Serialize + Debug{
     fn from(result: EntryAndAddress<T>) -> JsonString {
-        let entry = serde_json::to_string(&result.entry);
-        let entry_string: String;
-        match entry {
-            Ok(entry) => entry_string = entry,
-            Err(e) => return JsonString::from(HolochainError::SerializationError(e.to_string()))
-        };
-        let address = serde_json::to_string(&result.address);
-        let address_string: String;
-        match address{
-            Ok(address) => address_string = address,
-            Err(e) => return JsonString::from(HolochainError::SerializationError(e.to_string()))
-        }
-
-        json!(&format!("{{\"address\": {}, \"entry\": {}}}", address_string, entry_string)).into()
+        JsonString::from(default_to_json(result))
     }
 }
 
