@@ -90,45 +90,28 @@ pub fn get_username_from_address(username_address: Address) -> JsonString {
     }
 }
 
-pub fn get_user_profile_from_address(username_address: Address) -> ZomeApiResult<app_definitions::User> {
+pub fn get_user_profile_from_address(username_address: Address) -> ZomeApiResult<EntryAndAddress<app_definitions::User>> {
     let user_links = utils::get_links_and_load_type::<app_definitions::User>(&username_address, Some("profile".to_string()), None)?;
     if user_links.len() == 0{
         return Err(ZomeApiError::from("User address does not have any profile links".to_string()))
     };
-    Ok(user_links[0].entry.clone())
+    Ok(user_links[0].clone())
 }
 
-pub fn get_user_profile_by_agent_address() -> ZomeApiResult<app_definitions::User>{
+pub fn get_user_profile_by_agent_address() -> ZomeApiResult<EntryAndAddress<app_definitions::User>>{
     let user_links = utils::get_links_and_load_type::<app_definitions::User>(&AGENT_ADDRESS, Some("user".to_string()), None)?;
     if user_links.len() == 0{
         return Err(ZomeApiError::from("agent does not have any profile links".to_string()))
     };
-    Ok(user_links[0].entry.clone())
+    Ok(user_links[0].clone())
 }
 
-pub fn get_user_profile_address_by_agent_address() -> ZomeApiResult<Address>{
-    let user_links = utils::get_links_and_load_type::<app_definitions::User>(&AGENT_ADDRESS, Some("user".to_string()), None)?;
-    if user_links.len() == 0{
-        return Err(ZomeApiError::from("agent does not have any profile links".to_string()))
-    };
-    Ok(user_links[0].address.clone())
-}
-
-pub fn get_user_username_by_agent_address() -> ZomeApiResult<app_definitions::UserName>{
+pub fn get_user_username_by_agent_address() -> ZomeApiResult<EntryAndAddress<app_definitions::UserName>>{
     let user_name_links = utils::get_links_and_load_type::<app_definitions::UserName>(&AGENT_ADDRESS, Some("username".to_string()), None)?;
     if user_name_links.len() == 0{
         return Err(ZomeApiError::from("agent does not have any profile links".to_string()))
     };
-    Ok(user_name_links[0].entry.clone())
-}
-
-
-pub fn get_user_username_address_by_agent_address() -> ZomeApiResult<Address>{
-    let user_name_links = utils::get_links_and_load_type::<app_definitions::UserName>(&AGENT_ADDRESS, Some("username".to_string()), None)?;
-    if user_name_links.len() == 0{
-        return Err(ZomeApiError::from("agent does not have any profile links".to_string()))
-    };
-    Ok(user_name_links[0].address.clone())
+    Ok(user_name_links[0].clone())
 }
 
 pub fn get_user_dens(user: Address) -> ZomeApiResult<UserDens>{

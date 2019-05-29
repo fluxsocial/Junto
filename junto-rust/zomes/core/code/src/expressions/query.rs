@@ -96,6 +96,7 @@ pub fn get_expression<T: TryFrom<AppEntryValue>>(query_root: Address, mut query_
         };
     } else { //context is a local context - first do local context auth checking. TODO: abstract out to own function
         let privacy: app_definitions::Privacy;
+        let current_user_hash = user::get_user_username_by_agent_address()?.address;
         match hdk::utils::get_as_type::<app_definitions::Channel>(context.clone()){
             Ok(context_entry) => {
                 if context_entry.channel_type != app_definitions::ChannelType::Den{
@@ -103,7 +104,6 @@ pub fn get_expression<T: TryFrom<AppEntryValue>>(query_root: Address, mut query_
                 };
                 privacy = context_entry.privacy;
                 if privacy == app_definitions::Privacy::Private {
-                    let current_user_hash = user::get_user_username_address_by_agent_address()?;
                     if channel::is_den_owner(context.clone(), current_user_hash.clone())? == false{
                         return Err(ZomeApiError::from("You are attempting to get results from a private channel which you do not own".to_string()))
                     };
@@ -111,7 +111,6 @@ pub fn get_expression<T: TryFrom<AppEntryValue>>(query_root: Address, mut query_
                     //check that user is in pack and thus a shared member of their shared den
                     let den_owner_links = utils::get_links_and_load_type::<app_definitions::UserName>(&context, Some("auth".to_string()), Some("owner".to_string()))?;
                     let den_owner_pack_links = utils::get_links_and_load_type::<app_definitions::Group>(&den_owner_links[0].address, Some("group".to_string()), Some("pack".to_string()))?;
-                    let current_user_hash = user::get_user_username_address_by_agent_address()?;
                     if group::is_group_member(den_owner_pack_links[0].address.clone(), current_user_hash.clone())? == false{
                         return Err(ZomeApiError::from("You are attempting to access a shared channel (den). In order to access expressions from this channel you must be in the owners group".to_string()))
                     };
@@ -121,7 +120,6 @@ pub fn get_expression<T: TryFrom<AppEntryValue>>(query_root: Address, mut query_
                 let context_entry = hdk::utils::get_as_type::<app_definitions::Group>(context.clone()).map_err(|_err| ZomeApiError::from("Context address was not a channel, group or dna address (global context)".to_string()))?;
                 privacy = context_entry.privacy;
                 if privacy != app_definitions::Privacy::Public {
-                    let current_user_hash = user::get_user_username_address_by_agent_address()?;
                     if (group::is_group_owner(context.clone(), current_user_hash.clone())? == false) | (group::is_group_member(context.clone(), current_user_hash.clone())? == false){
                         return Err(ZomeApiError::from("You are attempting to post an expression into a group you are not permitted to interact with".to_string()))
                     };
