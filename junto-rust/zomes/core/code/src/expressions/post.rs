@@ -31,9 +31,9 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, chann
 
     let entry = Entry::App("expression_post".into(), expression.into());
     let address = hdk::commit_entry(&entry)?;
-
-    let username_address = user::get_user_username_address_by_agent_address()?; //TODO: these two calls could happen in one function - both calls end up getting the same data object
-    let username = user::get_user_username_by_agent_address()?;
+    let username_entry_address = user::get_user_username_by_agent_address()?;
+    let username_address = username_entry_address.address; //TODO: these two calls could happen in one function - both calls end up getting the same data object
+    let username = username_entry_address.entry;
     hdk::api::link_entries(&address, &username_address, "auth".to_string(), "owner".to_string())?;
     query_params.push(hashmap!{"type".to_string() => "user".to_string(), "value".to_string() => username.username.to_string().to_lowercase()});
     query_params.push(hashmap!{"type".to_string() => "type".to_string(), "value".to_string() => expression_type.to_string().to_lowercase()});
@@ -67,7 +67,7 @@ pub fn build_hooks(contexts: Vec<Address>, address: &Address, query_params: &Vec
         return Err(ZomeApiError::from("You have submitted more than one DNA address - this would cause duplicate posting of the same post".to_string()))
     };
 
-    let user_name_address = user::get_user_username_address_by_agent_address()?;
+    let user_name_address = user::get_user_username_by_agent_address()?.address;
     let user_pack = user::get_user_pack(user_name_address.clone())?.pack.address;
     let member_results: Vec<Address> = user::get_user_member_packs(user_name_address.clone())?.iter().map(|pack| pack.address.clone()).collect();
     let den_result = user::get_user_dens(user_name_address.clone())?;
@@ -142,7 +142,7 @@ pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
         None => {return Err(ZomeApiError::from("No expression at given address".to_string()))},
         _ => {}
     };
-    let user_name_address = user::get_user_username_address_by_agent_address()?;
+    let user_name_address = user::get_user_username_by_agent_address()?.address;
     let user_pack = user::get_user_pack(user_name_address.clone())?.pack.address;
 
     let channels = utils::get_links_and_load_type::<app_definitions::Channel>(&expression, Some("expression_channels".to_string()), None)?;

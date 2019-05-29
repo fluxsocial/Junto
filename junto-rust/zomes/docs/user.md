@@ -68,7 +68,7 @@ Success: { Ok: { username: 'username' } }
 Error: {Err:  {Error Type: 'Error Message'} }
 ```
 
-**Get Profile From Address**
+**Get User Profile From Username Address**
 ###### Request: 
 ```
 Endpoint: /get_user_profile_from_address
@@ -77,7 +77,7 @@ Arguments: { username_address: "address of user"}
 
 ###### Response: 
 ```
-Success: { Ok: { parent: 'parent object (user address)', first_name: 'first_name', last_name: 'last_name', bio: 'bio', profile_picture: 'profile_picture',verified: true/false } }
+Success: { Ok: { 'address': 'address-of-profile', entry: { parent: 'parent object (user address)', first_name: 'first_name', last_name: 'last_name', bio: 'bio', profile_picture: 'profile_picture',verified: true/false} } }
 Error: {Err:  {Error Type: 'Error Message'} }
 ```
 
@@ -90,24 +90,11 @@ Arguments: {}
 
 ###### Response: 
 ```
-Success: { Ok: { parent: 'parent object (user address)', first_name: 'first_name', last_name: 'last_name', bio: 'bio', profile_picture: 'profile_picture',verified: true/false } }
+Success: { Ok: { 'address': 'address-of-profile', entry: { parent: 'parent object (user address)', first_name: 'first_name', last_name: 'last_name', bio: 'bio', profile_picture: 'profile_picture',verified: true/false} } }
 Error: {Err:  {Error Type: 'Error Message'} }
 ```
 
-**Get User Profile Address From Agent**
-###### Request: 
-```
-Endpoint: /get_user_profile_address_by_agent_address
-Arguments: {}
-```
-
-###### Response: 
-```
-Success: { Ok: 'user profile address'}
-Error: {Err:  {Error Type: 'Error Message'} }
-```
-
-**Get User Name From Agent**
+**Get Username From Agent**
 ###### Request: 
 ```
 Endpoint: /get_user_username_by_agent_address
@@ -116,19 +103,6 @@ Arguments: {}
 
 ###### Response: 
 ```
-Success: { Ok: { username: 'username' } }
-Error: {Err:  {Error Type: 'Error Message'} }
-```
-
-**Get User Name Address From Agent**
-###### Request: 
-```
-Endpoint: /get_user_username_address_by_agent_address
-Arguments: {}
-```
-
-###### Response: 
-```
-Success: { Ok: 'username address' }
+Success: { Ok: { 'address': 'address-of-username', 'entry': { 'username': 'username' } } }
 Error: {Err:  {Error Type: 'Error Message'} }
 ```

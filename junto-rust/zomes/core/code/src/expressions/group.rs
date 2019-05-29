@@ -47,13 +47,13 @@ pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiRes
 }
 
 pub fn add_pack_member(username_address: Address) -> ZomeApiResult<JsonString>{
-    let current_user_username = user::get_user_username_address_by_agent_address()?;
+    let current_user_username = user::get_user_username_by_agent_address()?.address;
     let group = user::get_user_pack(current_user_username)?.pack;   
     add_member_to_group(username_address.clone(), group.address.clone())
 }
 
 pub fn add_member_to_group(username_address: Address, group: Address) -> ZomeApiResult<JsonString>{
-    let current_user_username = user::get_user_username_address_by_agent_address()?;
+    let current_user_username = user::get_user_username_by_agent_address()?.address;
     let group_owner = is_group_owner(group.clone(), current_user_username.clone())?;
     if group_owner == true{
         let group_member = is_group_member(group.clone(), username_address.clone())?;
@@ -69,7 +69,7 @@ pub fn add_member_to_group(username_address: Address, group: Address) -> ZomeApi
 }
 
 pub fn remove_group_member(username_address: Address, group: Address) -> ZomeApiResult<JsonString>{
-    let current_user_username = user::get_user_username_address_by_agent_address()?;
+    let current_user_username = user::get_user_username_by_agent_address()?.address;
     let group_owner = is_group_owner(group.clone(), current_user_username.clone())?;
     if group_owner == true{
         let group_member = is_group_member(group.clone(), username_address.clone())?;
@@ -108,7 +108,7 @@ pub fn get_group_members(group: Address) -> ZomeApiResult<GroupMembers> {
     match group_entry {
         Some(Entry::App(_, entry_value)) => {
             let _entry = app_definitions::Group::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Specified group address is not of type Group".to_string()))?; //will return error here if cannot ser entry to group
-            let current_user_username = user::get_user_username_address_by_agent_address()?;
+            let current_user_username = user::get_user_username_by_agent_address()?.address;
             if is_group_owner(group.clone(), current_user_username.clone())? == false && is_group_member(group.clone(), current_user_username.clone())? == false {
                 return Err(ZomeApiError::from("You are not an owner or member of this group and thus are not allowed to view given information".to_string()))
             };

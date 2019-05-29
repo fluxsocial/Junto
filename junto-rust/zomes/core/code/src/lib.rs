@@ -59,28 +59,18 @@ define_zome! {
         }
         get_user_profile_from_address: {
             inputs: |username_address: Address|,
-            outputs: |result: ZomeApiResult<app_definitions::User>|,
+            outputs: |result: ZomeApiResult<function_definitions::EntryAndAddress<app_definitions::User>>|,
             handler: expressions::user::get_user_profile_from_address
         }
         get_user_profile_by_agent_address: {
             inputs: | |,
-            outputs: |result: ZomeApiResult<app_definitions::User>|,
+            outputs: |result: ZomeApiResult<function_definitions::EntryAndAddress<app_definitions::User>>|,
             handler: expressions::user::get_user_profile_by_agent_address
-        }
-        get_user_profile_address_by_agent_address: {
-            inputs: | |,
-            outputs: |result: ZomeApiResult<Address>|,
-            handler: expressions::user::get_user_profile_address_by_agent_address 
         }
         get_user_username_by_agent_address: {
             inputs: | |,
-            outputs: |result: ZomeApiResult<app_definitions::UserName>|,
+            outputs: |result: ZomeApiResult<function_definitions::EntryAndAddress<app_definitions::UserName>>|,
             handler: expressions::user::get_user_username_by_agent_address
-        }
-        get_user_username_address_by_agent_address: {
-            inputs: | |,
-            outputs: |result: ZomeApiResult<Address>|,
-            handler: expressions::user::get_user_username_address_by_agent_address
         }
         user_dens: {
             inputs: |username_address: Address|,
@@ -162,9 +152,7 @@ define_zome! {
             get_username_from_address,
             get_user_profile_from_address,
             get_user_profile_by_agent_address,
-            get_user_profile_address_by_agent_address,
             get_user_username_by_agent_address,
-            get_user_username_address_by_agent_address,
             user_dens,
             is_den_owner,
             user_pack,
