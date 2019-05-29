@@ -67,7 +67,7 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                         address
                     };
 
-                hdk::api::link_entries(&address, expression, "expression_post", "expression")?;
+                hdk::api::link_entries(&address, expression, "expression_post", context_link_tag)?;
                 hdk::api::link_entries(&address, expression, "expression_post", &query_param["value"])?;
                 hdk::api::link_entries(&expression, &address, "expression_channels", &query_param["value"])?;
                 addressed_params[i].insert("address".to_string(), address.to_string()); 
@@ -91,7 +91,7 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                         address
                     };
 
-                hdk::api::link_entries(&address, expression, "expression_post", "expression")?;
+                hdk::api::link_entries(&address, expression, "expression_post", context_link_tag)?;
                 hdk::api::link_entries(&address, expression, "expression_post", &query_param["value"])?;
                 hdk::api::link_entries(expression, &address, "expression_type", &query_param["value"])?;
                 addressed_params[i].insert("address".to_string(), address.to_string());
@@ -115,7 +115,7 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                         address
                     };
 
-                hdk::api::link_entries(&address, expression, "expression_post", "expression")?;
+                hdk::api::link_entries(&address, expression, "expression_post", context_link_tag)?;
                 hdk::api::link_entries(&address, expression, "expression_post", &query_param["value"])?;
                 hdk::api::link_entries(expression, &address, "time", "year")?;
                 addressed_params[i].insert("address".to_string(), address.to_string());
@@ -139,7 +139,7 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                         address
                     };
 
-                hdk::api::link_entries(&address, expression, "expression_post", "expression")?;
+                hdk::api::link_entries(&address, expression, "expression_post", context_link_tag)?;
                 hdk::api::link_entries(&address, expression, "expression_post", &query_param["value"])?;
                 hdk::api::link_entries(&expression, &address, "time", "month")?;
                 addressed_params[i].insert("address".to_string(), address.to_string());
@@ -163,7 +163,7 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                         address
                     };
 
-                hdk::api::link_entries(&address, expression, "expression_post", "expression")?;
+                hdk::api::link_entries(&address, expression, "expression_post", context_link_tag)?;
                 hdk::api::link_entries(&address, expression, "expression_post", &query_param["value"])?;
                 hdk::api::link_entries(&expression, &address, "time", "day")?;
                 addressed_params[i].insert("address".to_string(), address.to_string());
@@ -187,7 +187,7 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
                         address
                     };
 
-                hdk::api::link_entries(&address, expression, "expression_post", "expression")?;
+                hdk::api::link_entries(&address, expression, "expression_post", context_link_tag)?;
                 hdk::api::link_entries(&address, expression, "expression_post", &query_param["value"])?;
                 hdk::api::link_entries(&expression, &address, "time", "hour")?;
                 addressed_params[i].insert("address".to_string(), address.to_string());
@@ -200,7 +200,7 @@ pub fn create_query_points(query_points: Vec<HashMap<String, String>>, context: 
 
                 match dht_entry{
                     Some(_value) => {
-                        hdk::api::link_entries(&address, &expression, "expression_post", "expression")?;
+                        hdk::api::link_entries(&address, &expression, "expression_post", context_link_tag)?;
                         hdk::api::link_entries(&expression, &address, "auth", "owner")?;
                         addressed_params[i].insert("address".to_string(), address.to_string());
                     },
