@@ -99,9 +99,9 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
                     },
                     &"create_query_points" => {
                         match &hook_descriptor.parameters{
-                            FunctionParameters::CreateQueryPoints {query_points, context, privacy, query_type, expression} =>{
+                            FunctionParameters::CreateQueryPoints {query_points, context, privacy, query_type, expression, context_link_tag} =>{
                                 hdk::debug("Running create_query_points")?;
-                                let query_point_result = indexing::create_query_points(query_points.to_vec(), context, privacy, query_type, expression)?;
+                                let query_point_result = indexing::create_query_points(query_points.to_vec(), context, privacy, query_type, expression, context_link_tag)?;
                                 hdk::debug("Ran create_query_points")?;
                                 hook_result_outputs.push(HooksResultTypes::CreateQueryPoints(query_point_result))
                             },
