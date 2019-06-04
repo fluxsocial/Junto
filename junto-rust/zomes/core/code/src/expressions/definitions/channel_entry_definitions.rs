@@ -130,6 +130,18 @@ pub fn channel_definition() -> ValidatingEntryType {
                 validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
+            ),
+            to!(
+                "username",
+                link_type: "user_perspective", //link to a user who is part of a given perspective
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
             )
         ]
     )

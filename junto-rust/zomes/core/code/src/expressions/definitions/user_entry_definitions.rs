@@ -129,6 +129,18 @@ pub fn user_name_definition() -> ValidatingEntryType {
                 validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
+            ),
+            to!(
+                "channel",
+                link_type: "perspective", //link to a users perspective
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                } 
             )
         ]
     )

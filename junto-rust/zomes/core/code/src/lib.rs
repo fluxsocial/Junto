@@ -144,6 +144,21 @@ define_zome! {
             outputs: |result: ZomeApiResult<function_definitions::Env>|,
             handler: expressions::user::show_env
         }
+        create_perspective: {
+            inputs: |name: String|,
+            outputs: |result: ZomeApiResult<function_definitions::EntryAndAddress<app_definitions::Channel>>|,
+            handler: expressions::channel::create_perspective
+        }
+        add_user_to_perspective: {
+            inputs: |perspective: Address, target_user: Address|,
+            outputs: |result: ZomeApiResult<Address>|,
+            handler: expressions::channel::add_user_to_perspective
+        }
+        get_perspectives_users: {
+            inputs: |perspective: Address|,
+            outputs: |result: ZomeApiResult<Vec<function_definitions::EntryAndAddress<app_definitions::UserName>>>|,
+            handler: expressions::channel::get_perspectives_users
+        }
     ]
 
     traits: {
@@ -166,7 +181,9 @@ define_zome! {
             resonation,
             get_channel_address,
             get_time_address,
-            show_env
+            show_env,
+            add_user_to_perspective,
+            get_perspectives_users
         ]
     }
 }

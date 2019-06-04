@@ -26,7 +26,8 @@ pub struct Anchor {
 pub enum ChannelType {
     Tag, 
     Den,
-    Type 
+    Type,
+    Perspective
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone)]

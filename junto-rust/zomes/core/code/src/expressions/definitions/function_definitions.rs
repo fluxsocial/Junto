@@ -60,6 +60,7 @@ pub struct JuntoUser{
     pub pack: EntryAndAddress<app_definitions::Group>,
     pub profile: EntryAndAddress<app_definitions::User>,
     pub username: EntryAndAddress<app_definitions::UserName>,
+    pub user_perspective: EntryAndAddress<app_definitions::Channel>,
 }
 
 #[derive(Serialize, Deserialize, DefaultJson, Debug, Clone)]
