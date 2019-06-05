@@ -87,6 +87,9 @@ pub fn create_perspective(name: String) -> ZomeApiResult<EntryAndAddress<app_def
 pub fn add_user_to_perspective(perspective: Address, target_user: Address) -> ZomeApiResult<Address>{
     let _perspective_entry = utils::get_and_check_perspective(&perspective)?;
     let _user_entry = hdk::api::get_entry(&target_user)?.ok_or(ZomeApiError::from("No such target user".to_string()))?;
+    let current_user = user::get_user_username_by_agent_address()?;
+    hdk::api::link_entries(&target_user, &current_user.address, "follower", "")?;
+    hdk::api::link_entries(&current_user.address, &target_user, "following", "")?;
     hdk::api::link_entries(&perspective, &target_user, "user_perspective", "")
 }
 

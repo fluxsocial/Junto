@@ -71,6 +71,30 @@ pub fn user_name_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
+                "username",
+                link_type: "follower", //Occurs when user add another user to one of their perspective and thus are "following" their posts - name due to change
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "username",
+                link_type: "following", //Occurs when user add another user to one of their perspective and thus are "following" their posts - name due to change
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
                 "group",
                 link_type: "group", //Link type to associate a group with a user - tag can then define group type; in our case/implementation: pack
 
