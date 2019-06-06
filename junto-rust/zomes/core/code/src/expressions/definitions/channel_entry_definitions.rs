@@ -61,7 +61,7 @@ pub fn channel_definition() -> ValidatingEntryType {
             ), 
             to!( 
                 "expression_post",
-                link_type: "local_expression_post", //post to channel which is being used as an anchor for users to store a collection of private/shared/public posts
+                link_type: "expression_post", //post to channel which is being used as an anchor for users to store a collection of private/shared/public posts
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -85,7 +85,7 @@ pub fn channel_definition() -> ValidatingEntryType {
             ),
             from!(
                 "channel",
-                link_type: "expression_type", //sub channel 
+                link_type: "expression_type", //sub channel (type)
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -98,18 +98,6 @@ pub fn channel_definition() -> ValidatingEntryType {
             from!( //group related links
                 "group",
                 link_type: "channel", //channel inside group
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!( //expression post related links
-                "expression_post",
-                link_type: "expression_post", //expression on PUBLIC channel
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
