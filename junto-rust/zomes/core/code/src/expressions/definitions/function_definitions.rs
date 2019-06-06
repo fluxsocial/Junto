@@ -84,7 +84,7 @@ pub enum HooksResultTypes{
     CreatePack(UserPack),
     CreateDen(UserDens),
     LinkExpression(String),
-    CreateQueryPoints(String)
+    CreatePostIndex(String)
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -139,7 +139,7 @@ impl HooksResultTypes{
     //         _ => Err(ZomeApiError::from("Hook result enum value not: LinkExpression".to_string())),
     //     }
     // }
-    // pub fn create_query_points_result(self) -> ZomeApiResult<String> {
+    // pub fn create_post_index_result(self) -> ZomeApiResult<String> {
     //     match self {
     //         HooksResultTypes::CreateQueryPoints(r) => Ok(r),
     //         _ => Err(ZomeApiError::from("Hook result enum value not: CreateQueryPoints".to_string())),
@@ -201,12 +201,12 @@ pub enum FunctionParameters{
         parent_expression: Address, 
         child_expression: Address
     },
-    CreateQueryPoints{
+    CreatePostIndex{
         query_points: Vec<HashMap<String, String>>, 
         context: Address, 
         privacy: app_definitions::Privacy,
-        query_type: String,
         expression: Address,
-        context_link_tag: &'static str
+        index_string: String,
+        link_type: String
     }
 }

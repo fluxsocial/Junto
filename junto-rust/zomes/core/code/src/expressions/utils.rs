@@ -97,15 +97,15 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
                             _ => return Err(ZomeApiError::from("link_expression expects the LinkExpression enum value to be present".to_string()))
                         }
                     },
-                    &"create_query_points" => {
+                    &"create_post_index" => {
                         match &hook_descriptor.parameters{
-                            FunctionParameters::CreateQueryPoints {query_points, context, privacy, query_type, expression, context_link_tag} =>{
-                                hdk::debug("Running create_query_points")?;
-                                let query_point_result = indexing::create_query_points(query_points.to_vec(), context, privacy, query_type, expression, context_link_tag)?;
-                                hdk::debug("Ran create_query_points")?;
-                                hook_result_outputs.push(HooksResultTypes::CreateQueryPoints(query_point_result))
+                            FunctionParameters::CreatePostIndex {query_points, context, privacy, expression, index_string, link_type} =>{
+                                hdk::debug("Running create_post_index")?;
+                                let query_point_result = indexing::create_post_index(query_points.to_vec(), context, privacy, expression, index_string.to_string(), link_type.to_string())?;
+                                hdk::debug("Ran create_post_index")?;
+                                hook_result_outputs.push(HooksResultTypes::CreatePostIndex(query_point_result))
                             },
-                            _ => return Err(ZomeApiError::from("create_query_points expects the CreateQueryPoints enum value to be present".to_string()))
+                            _ => return Err(ZomeApiError::from("create_post_index expects the CreateQueryPoints enum value to be present".to_string()))
                         }
                     },
                     &_ => {
