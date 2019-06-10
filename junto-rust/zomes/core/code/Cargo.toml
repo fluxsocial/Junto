@@ -17,6 +17,7 @@ holochain_core_types_derive = { git = "https://github.com/holochain/holochain-ru
 itertools = "0.8"
 regex = "*"
 lazy_static = "1.2.0"
+rand = "0.6"
 
 [lib]
 path = "src/lib.rs"
