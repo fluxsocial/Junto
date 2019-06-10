@@ -54,6 +54,8 @@ pub fn get_packs_posts(pack_members: &Vec<Address>, query_string: String, post_a
     Ok(out_posts)
 }
 
+//TODO build dos post query and user query into seperate functions which are handled and called by dos_query
+//Currently this algorithm will iterate until either all searches are exhasted from each pack recursion tree or 50 posts are found or user/pack recursions have reached their max - then the loop will break and return whatever posts it has
 pub fn dos_query<T: TryFrom<AppEntryValue>>(query_string: String, _query_options: QueryOptions, target_type: QueryTarget, _query_type: QueryType, dos: i32) -> ZomeApiResult<Vec<Address>>{
     let mut avoid_addresses = vec![];
     let mut post_addresses = vec![];
@@ -69,14 +71,18 @@ pub fn dos_query<T: TryFrom<AppEntryValue>>(query_string: String, _query_options
     let mut pack_recursions = vec![];
     for _ in 0..dos-1{pack_recursions.push(vec![]);};
     pack_recursions[0].append(&mut pack_members);
+    hdk::debug(format!("Pack recursion vector before loop starts: {:?}", pack_recursions))?;
     
     loop {
+        hdk::debug(format!("At depth: {}", depth))?;
         if (post_addresses.len() as i32 >= DESIRED_POST_COUNT) | (users_checked_count >= MAXIMUM_USER_RECURSIONS) | (packs_traversed_count >= MAXIMUM_PACK_RECURSIONS) {
+            hdk::debug("Post or recursion limit has been reached - breaking loop")?;
             break;
         };
         if depth != dos-1{
             match choose_pack_member(pack_members.clone(), depth, &avoid_addresses){
                 Ok(pack_member) => {
+                    hdk::debug(format!("Pack member choosen at depth: {}", depth))?;
                     avoid_addresses.push(pack_member.clone());
                     let recursions_pack = user::get_user_pack(pack_member)?;
                     pack_members = hdk::get_links(&recursions_pack.address, Some(String::from("auth")), Some(String::from("member")))?.addresses();
@@ -103,18 +109,19 @@ pub fn dos_query<T: TryFrom<AppEntryValue>>(query_string: String, _query_options
                 }
             };
         } else {
+            hdk::debug(format!("Desired depth of: {} met, getting posts randomly from pack members in pack at current depth and recursion", depth))?;
             //get posts from all members in pack - then comapre amount retrieved and see if we need to do another recursion from first pack
             let mut posts = get_packs_posts(&pack_members, query_string.clone(), &post_addresses)?;
             users_checked_count += pack_members.len() as i32;
             post_addresses.append(&mut posts);
+            hdk::debug(format!("Number of users checked: {}, number of total users checked: {}", pack_members.len(), users_checked_count))?;
+            hdk::debug(format!("Number of posts found: {}, total number of posts: {}", posts.len(), post_addresses.len()))?;
             depth = 0;
-            hdk::debug(format!("Desired number of posts not reached at depth of: {} restarting recursion from depth 0, avoiding addresses which have already been used in pack hops, current amount of posts retrieved: {}", dos, post_addresses.len()))?;
+            hdk::debug(format!("Desired number of posts not reached at depth of: {} restarting recursion from depth 0 - may break on next loop - if not: avoiding addresses which have already been used in pack hops, current amount of posts retrieved: {}", dos, post_addresses.len()))?;
         };
     };
     Ok(post_addresses)
 }
-
-//build dos post query and user query into seperate functions which are handled and called by dos_query
 
 #[cfg(test)]
 mod tests {

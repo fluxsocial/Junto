@@ -24,9 +24,13 @@ pub fn create_post_attributes(query_points: &Vec<HashMap<String, String>>, expre
                 let channel_anchor = hdk::commit_entry(&Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: "tag".to_string()}.into()))?;
                 let entry = Entry::App("channel".into(), app_definitions::Channel{name: query_param["value"].to_string(), 
                                 parent: channel_anchor.clone(), privacy: app_definitions::Privacy::Public, channel_type: app_definitions::ChannelType::Tag}.into()).into();
+                hdk::debug("Commiting tag channel anchor")?;
                 let address = hdk::commit_entry(&entry)?;
+                hdk::debug(format!("Committed address: {}", address))?;
                 hdk::api::link_entries(&channel_anchor, &address, "channel", &query_param["value"])?;
+                hdk::debug(format!("Linked tag: {} to channel anchor", query_param["value"]))?;
                 hdk::api::link_entries(&expression, &address, "expression_channels", &query_param["value"])?;
+                hdk::debug("Linked entry to global tag entry")?;
             },
 
             "type" => {
@@ -35,6 +39,7 @@ pub fn create_post_attributes(query_points: &Vec<HashMap<String, String>>, expre
                                                     parent: type_anchor.clone(), privacy: app_definitions::Privacy::Public, channel_type: app_definitions::ChannelType::Type}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
                 hdk::api::link_entries(&type_anchor, &address, "expression_type", &query_param["value"])?;
+                hdk::debug(format!("Linked type: {} to type anchor", query_param["value"]))?;
                 hdk::api::link_entries(expression, &address, "expression_type", &query_param["value"])?;
             },
 
@@ -44,6 +49,7 @@ pub fn create_post_attributes(query_points: &Vec<HashMap<String, String>>, expre
                                         parent: time_anchor.clone(), time_type: app_definitions::TimeType::Year}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
                 hdk::api::link_entries(&time_anchor, &address, "time", &query_param["value"])?;
+                hdk::debug(format!("Linked time: {} to time anchor", query_param["value"]))?;
                 hdk::api::link_entries(expression, &address, "time", "year")?;
             },
 
@@ -53,6 +59,7 @@ pub fn create_post_attributes(query_points: &Vec<HashMap<String, String>>, expre
                                         parent: time_anchor.clone(), time_type: app_definitions::TimeType::Month}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
                 hdk::api::link_entries(&time_anchor, &address, "time", &query_param["value"])?;
+                hdk::debug(format!("Linked time: {} to time anchor", query_param["value"]))?;
                 hdk::api::link_entries(&expression, &address, "time", "month")?;
             },
 
@@ -62,6 +69,7 @@ pub fn create_post_attributes(query_points: &Vec<HashMap<String, String>>, expre
                                         parent: time_anchor.clone(), time_type: app_definitions::TimeType::Day}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
                 hdk::api::link_entries(&time_anchor, &address, "time", &query_param["value"])?;
+                hdk::debug(format!("Linked time: {} to time anchor", query_param["value"]))?;
                 hdk::api::link_entries(&expression, &address, "time", "day")?;
             },
 
@@ -71,6 +79,7 @@ pub fn create_post_attributes(query_points: &Vec<HashMap<String, String>>, expre
                                         parent: time_anchor.clone(), time_type: app_definitions::TimeType::Hour}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
                 hdk::api::link_entries(&time_anchor, &address, "time", &query_param["value"])?;
+                hdk::debug(format!("Linked time: {} to time anchor", query_param["value"]))?;
                 hdk::api::link_entries(&expression, &address, "time", "hour")?;
             },
 
@@ -87,6 +96,7 @@ pub fn create_post_index(query_points: Vec<HashMap<String, String>>, context: &A
     let current_user_hash = user::get_user_username_by_agent_address()?.address;
     match hdk::utils::get_as_type::<app_definitions::Channel>(context.clone()) {
         Ok(context_entry) => {
+            hdk::debug("Context type channel, running auth")?;
             if context_entry.channel_type != app_definitions::ChannelType::Den{
                 return Err(ZomeApiError::from("When context is a channel it must be of type den - you cannot post into other channel types".to_string()))
             };
@@ -98,6 +108,7 @@ pub fn create_post_index(query_points: Vec<HashMap<String, String>>, context: &A
             hdk::api::link_entries(&context, expression, link_type, index_string)?;
         },
         Err(_err) => {
+            hdk::debug("Context type group, running auth")?;
             let context_entry = hdk::utils::get_as_type::<app_definitions::Group>(context.clone()).map_err(|_err| ZomeApiError::from("Context address was not a channel, group or dna address (global context)".to_string()))?;
             if context_entry.privacy != app_definitions::Privacy::Public {
                 if (group::is_group_owner(context.clone(), current_user_hash.clone())? == false) | (group::is_group_member(context.clone(), current_user_hash.clone())? == false){
@@ -109,7 +120,9 @@ pub fn create_post_index(query_points: Vec<HashMap<String, String>>, context: &A
         }
     };
     
-    //Create links between anchor(s) and types/channels/times - likely that this will be removed in the future as saving big indexing even on bucket collection is not ideal - these indexes however should be relatively small (except channel index)
+    //Code below is used to allow a given context to see which index points posts exist on in their context
+    //TODO might make more sense just to link to global entry - why do we need more entries for the same thing? - we are no longer linking from these entries so there is no scaling considerations
+    hdk::debug("Creating entries for each index in each context and linking expression")?;
     for query_param in query_points{
         match query_param["type"].as_ref(){
             "tag" => {
