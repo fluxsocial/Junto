@@ -63,25 +63,15 @@ pub struct JuntoUser{
     pub user_perspective: EntryAndAddress<app_definitions::Channel>,
 }
 
-#[derive(Serialize, Deserialize, DefaultJson, Debug, Clone)]
-pub struct UserPack{
-    pub pack: EntryAndAddress<app_definitions::Group>
-}
-
 #[derive(Debug, Serialize, Deserialize)]
 pub struct GroupMembers{
     pub members: Vec<EntryAndAddress<app_definitions::UserName>>
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ExpressionResults<T>{
-    pub expressions: Vec<EntryAndAddress<T>>
-}
-
 #[derive(Clone)]
 pub enum HooksResultTypes{
     TimeToExpression(Vec<Address>),
-    CreatePack(UserPack),
+    CreatePack(EntryAndAddress<app_definitions::Group>),
     CreateDen(UserDens),
     LinkExpression(String),
     CreatePostIndex(String)
@@ -121,7 +111,7 @@ impl HooksResultTypes{
     //         _ => Err(ZomeApiError::from("Hook result enum value not: TimeToExpression".to_string())),
     //     }
     // }
-    pub fn create_pack_result(self) -> ZomeApiResult<UserPack> {
+    pub fn create_pack_result(self) -> ZomeApiResult<EntryAndAddress<app_definitions::Group>> {
         match self {
             HooksResultTypes::CreatePack(r) => Ok(r),
             _ => Err(ZomeApiError::from("Hook result enum value not: CreatePack".to_string())),
@@ -156,18 +146,6 @@ impl<T> PartialEq for EntryAndAddress<T>{
 impl From<GroupMembers> for JsonString {
     fn from(result: GroupMembers) -> JsonString {
         JsonString::from(json!(default_to_json(result)))
-    }
-}
-
-impl From<ExpressionResults<app_definitions::UserName>> for JsonString {
-    fn from(result: ExpressionResults<app_definitions::UserName>) -> JsonString{
-        JsonString::from(default_to_json(result.expressions))
-    }
-}
-
-impl From<ExpressionResults<app_definitions::ExpressionPost>> for JsonString {
-    fn from(result: ExpressionResults<app_definitions::ExpressionPost>) -> JsonString{
-        JsonString::from(default_to_json(result.expressions))
     }
 }
 

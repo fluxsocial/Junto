@@ -24,7 +24,6 @@ use super::definitions::{
         UserDens,
         EntryAndAddress,
         CreateUserInformation,
-        UserPack,
         Env,
         JuntoUser
     }
@@ -71,7 +70,7 @@ pub fn handle_create_user(user_data: CreateUserInformation) -> ZomeApiResult<Jun
     let dens = hook_result[2].clone().create_den_result()?;
     let user_perspective = channel::create_perspective("Default Perspective".to_string())?;
     let junto_user = JuntoUser{profile: EntryAndAddress{entry: user_meta_data.into(), address: address}, username: EntryAndAddress{entry: username_struct.into(), address: username_address},
-                                private_den: dens.private_den, shared_den: dens.shared_den, public_den: dens.public_den, pack: pack.pack, user_perspective: user_perspective};
+                                private_den: dens.private_den, shared_den: dens.shared_den, public_den: dens.public_den, pack: pack, user_perspective: user_perspective};
     Ok(junto_user)
 }
 
@@ -142,7 +141,7 @@ pub fn get_user_dens(user: Address) -> ZomeApiResult<UserDens>{
     Ok(UserDens{private_den: private_den.unwrap(), shared_den: shared_den.unwrap(), public_den: public_den.unwrap()})
 }
 
-pub fn get_user_pack(username_address: HashString) -> ZomeApiResult<UserPack>{
+pub fn get_user_pack(username_address: HashString) -> ZomeApiResult<EntryAndAddress<app_definitions::Group>>{
     let pack_links = utils::get_links_and_load_type::<app_definitions::Group>(&username_address, Some("group".to_string()), Some("pack".to_string()))?;
     hdk::debug(format!("Pack links on username: {}", pack_links.len().to_string()))?;
     if pack_links.len() > 1{
@@ -150,7 +149,7 @@ pub fn get_user_pack(username_address: HashString) -> ZomeApiResult<UserPack>{
     } else if pack_links.len() == 0{
         return Err(ZomeApiError::from("No pack links on user".to_string()))
     }
-    Ok(UserPack{pack: pack_links[0].clone()})
+    Ok(pack_links[0].clone())
 }
 
 pub fn get_user_member_packs(username_address: HashString) -> ZomeApiResult<Vec<EntryAndAddress<app_definitions::Group>>>{
