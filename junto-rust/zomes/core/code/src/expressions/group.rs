@@ -18,14 +18,13 @@ use super::definitions::{
         FunctionDescriptor,
         FunctionParameters,
         GroupMembers,
-        EntryAndAddress,
-        UserPack
+        EntryAndAddress
     }
 };
 use super::user;
 
 //Creates a user "group" - more specifically in this case a pack
-pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiResult<UserPack> {
+pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiResult<EntryAndAddress<app_definitions::Group>> {
     hdk::debug("Creating pack")?;
     let pack = app_definitions::Group{ //Create default pack data
         parent: username_address.clone(),
@@ -43,12 +42,12 @@ pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiRes
 
     let _hook_result = utils::handle_hooks("Group".to_string(), hook_definitions)?;
     //channel::create_collective_channel(&address)?;
-    Ok(UserPack{pack: EntryAndAddress{entry: pack, address: address}})
+    Ok(EntryAndAddress{entry: pack, address: address})
 }
 
 pub fn add_pack_member(username_address: Address) -> ZomeApiResult<JsonString>{
     let current_user_username = user::get_user_username_by_agent_address()?.address;
-    let group = user::get_user_pack(current_user_username)?.pack;   
+    let group = user::get_user_pack(current_user_username)?;   
     add_member_to_group(username_address.clone(), group.address.clone())
 }
 

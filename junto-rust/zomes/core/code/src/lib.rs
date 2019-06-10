@@ -1,4 +1,4 @@
-#![feature(try_from)]
+#![feature(try_from, vec_remove_item)]
 #[macro_use]
 extern crate hdk;
 extern crate serde;
@@ -12,6 +12,7 @@ extern crate serde_json;
 extern crate holochain_core_types_derive;
 extern crate chrono;
 extern crate regex;
+extern crate rand;
 
 use hdk::{
     error::ZomeApiResult,
@@ -84,7 +85,7 @@ define_zome! {
         }
         user_pack: {
             inputs: |username_address: HashString|,
-            outputs: |result: ZomeApiResult<function_definitions::UserPack>|,
+            outputs: |result: ZomeApiResult<function_definitions::EntryAndAddress<app_definitions::Group>>|,
             handler: expressions::user::get_user_pack
         }
         add_pack_member: {
@@ -113,11 +114,10 @@ define_zome! {
             handler: expressions::group::is_group_member
         }
         get_expressions: {
-            inputs: |query_root: Address, query_points: Vec<String>, context: Address,  
-                        query_options: function_definitions::QueryOptions, target_type: function_definitions::QueryTarget, 
-                        query_type: function_definitions::QueryType|,
+            inputs: |perspective: String, query_points: Vec<String>, query_options: function_definitions::QueryOptions, 
+                    target_type: function_definitions::QueryTarget, _query_type: function_definitions::QueryType, dos: i32|,
             outputs: |result: ZomeApiResult<JsonString>|,
-            handler: expressions::query::handle_get_expression
+            handler: expressions::query::get_expression
         }
         post_expression: {
             inputs: |expression: app_definitions::ExpressionPost, channels: Vec<String>, context: Vec<Address>|,

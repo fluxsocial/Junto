@@ -200,3 +200,22 @@ pub fn get_and_check_perspective(perspective: &Address) -> ZomeApiResult<app_def
         None => Err(ZomeApiError::from("No perspective entry at specified address".to_string()))
     }
 }
+
+///Sorts vector of times into ordered vector from year -> hour
+pub fn sort_time_vector(mut times: Vec<String>) -> Vec<String> {
+    let mut time_key = HashMap::new();
+    time_key.insert("time:y>", 1);
+    time_key.insert("time:m>", 2);
+    time_key.insert("time:d>", 3);
+    time_key.insert("time:h>", 4);
+    for i in 0..times.len() {
+        for j in (0..i).rev() {
+            if time_key[times[j].split("<").collect::<Vec<&str>>()[1].clone()] >= time_key[times[j+1].split("<").collect::<Vec<&str>>()[1].clone()] {
+                times.swap(j, j + 1);
+            } else {
+                break
+            }
+        };
+    };
+    times
+}

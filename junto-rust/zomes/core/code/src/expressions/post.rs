@@ -62,8 +62,9 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut t
         _ => {}
     };
 
-    //query params are saved in following order: tag1/tag2/tag3/tag4/user/type/time:y/time:m/time:d/time:h - thus tag for each expression link will also be in this order and if there is not four tags present placeholder value will be used
-    let index_string = query_points.clone().iter().map(|qp| qp["value"].clone()).collect::<Vec<String>>().join("/");
+    //query params are saved in following order: tag1<tag>/tag2<tag>/tag3<tag>/tag4<tag>/user<user>/type<type>/time:y<time>/time:m<time>/time:d<time>/time:h<time> 
+    //thus tag for each expression link will also be in this order and if there is not four tags present placeholder value will be used
+    let index_string = query_points.clone().iter().map(|qp| qp["value"].clone() + "<" + &qp["type"].clone() + ">" ).collect::<Vec<String>>().join("/");
     hdk::api::link_entries(&username_entry_address.address, &address, "expression_post".to_string(), index_string.clone())?; //link expression to users agent - with index string
     indexing::create_post_attributes(&query_points, &address)?;
     let hook_definitions = build_hooks(context, &address, &query_points, index_string)?; //build function hooks that need to be ran on expression based on which contexts are being used
@@ -80,7 +81,7 @@ pub fn build_hooks(contexts: Vec<Address>, address: &Address, query_points: &Vec
     };
 
     let user_name_address = user::get_user_username_by_agent_address()?.address;
-    let user_pack = user::get_user_pack(user_name_address.clone())?.pack.address;
+    let user_pack = user::get_user_pack(user_name_address.clone())?.address;
     let member_results: Vec<Address> = user::get_user_member_packs(user_name_address.clone())?.iter().map(|pack| pack.address.clone()).collect();
     let den_result = user::get_user_dens(user_name_address.clone())?;
     let private_den = den_result.private_den.address;
@@ -143,7 +144,7 @@ pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
         _ => {}
     };
     let user_name_address = user::get_user_username_by_agent_address()?.address;
-    let user_pack = user::get_user_pack(user_name_address.clone())?.pack.address;
+    let user_pack = user::get_user_pack(user_name_address.clone())?.address;
 
     let channels = utils::get_links_and_load_type::<app_definitions::Channel>(&expression, Some("expression_channels".to_string()), None)?;
     let times = utils::get_links_and_load_type::<app_definitions::Time>(&expression, Some("time".to_string()), None)?;
