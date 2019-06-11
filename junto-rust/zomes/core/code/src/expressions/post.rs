@@ -5,7 +5,12 @@ use hdk::{
         cas::content::Address,
         entry::Entry
     },
-    api::DNA_ADDRESS
+    api::DNA_ADDRESS,
+    holochain_wasm_utils::api_serialization::{
+        get_entry::{
+            GetEntryOptions, GetEntryResultType
+        }
+    }
 };
 
 use std::collections::HashMap;
@@ -26,7 +31,9 @@ use super::indexing;
 
 pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut tags: Vec<String>, context: Vec<Address>) -> ZomeApiResult<Address>{
     hdk::debug("Handling post expression")?;
-    if tags.len() > 4 {
+    //TODO implement expression type assertion
+    tags = tags.into_iter().map(|tag| tag.to_lowercase()).collect::<Vec<String>>();
+    if tags.len() > 4 { //TODO implement duplicate tag checking
         return Err(ZomeApiError::from("You are not allowed to specify more than 4 tags on a given expression".to_string()))
     } else if tags.len() < 4{
         tags.sort_by(|a, b| b.cmp(&a)); //Order tags vector in reverse alphabetical order
@@ -49,20 +56,18 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut t
     query_points.push(hashmap!{"type".to_string() => "user".to_string(), "value".to_string() => username_entry_address.entry.username.to_string().to_lowercase()});
     query_points.push(hashmap!{"type".to_string() => "type".to_string(), "value".to_string() => expression_type.to_string().to_lowercase()});
 
-    match entry{
-        Entry::ChainHeader(header) => {
-            let iso_timestamp = serde_json::to_string(header.timestamp());
-            match iso_timestamp{
-                Ok(iso_timestamp) => {
-                    query_points.push(hashmap!{"type".to_string() => "time:y".to_string(), "value".to_string() => iso_timestamp[0..4].to_string().to_lowercase()}); //add year slice to query params
-                    query_points.push(hashmap!{"type".to_string() => "time:m".to_string(), "value".to_string() => iso_timestamp[5..7].to_string().to_lowercase()}); //add month slice to query params
-                    query_points.push(hashmap!{"type".to_string() => "time:d".to_string(), "value".to_string() => iso_timestamp[8..10].to_string().to_lowercase()}); //add day slice to query params
-                    query_points.push(hashmap!{"type".to_string() => "time:h".to_string(), "value".to_string() => iso_timestamp[11..13].to_string().to_lowercase()}) //add hour slice to query params
-                },
-                Err(hdk_err) => return Err(ZomeApiError::from(hdk_err.to_string()))
-            }
-        },
-        _ => {}
+     match hdk::get_entry_result(&address, GetEntryOptions {headers: true, ..Default::default()},)?.result {
+        GetEntryResultType::Single(result) => {
+            let iso_timestamp = serde_json::to_string(&result.headers[0].timestamp()).map_err(|err| ZomeApiError::from(err.to_string()))?; //TODO: ensure this is the actual header we want to use
+            hdk::debug(format!("Got iso timestamp: {:?}", iso_timestamp))?;
+            query_points.push(hashmap!{"type".to_string() => "time:y".to_string(), "value".to_string() => iso_timestamp[1..5].to_string().to_lowercase()}); //add year slice to query params
+            query_points.push(hashmap!{"type".to_string() => "time:m".to_string(), "value".to_string() => iso_timestamp[6..8].to_string().to_lowercase()}); //add month slice to query params
+            query_points.push(hashmap!{"type".to_string() => "time:d".to_string(), "value".to_string() => iso_timestamp[9..11].to_string().to_lowercase()}); //add day slice to query params
+            query_points.push(hashmap!{"type".to_string() => "time:h".to_string(), "value".to_string() => iso_timestamp[12..14].to_string().to_lowercase()}); //add hour slice to query params
+        },  
+        GetEntryResultType::All(_entry_history) => {
+            return Err(ZomeApiError::from("EntryResultType not of enum variant Single".to_string()))
+        }
     };
 
     hdk::debug(format!("Generated query_points: {:?}", query_points))?;
