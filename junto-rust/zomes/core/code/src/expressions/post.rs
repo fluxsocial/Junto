@@ -80,6 +80,7 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut t
     indexing::create_post_attributes(&query_points, &address)?;
     hdk::debug("Created post attributes")?;
     let hook_definitions = build_hooks(context, &address, &query_points, index_string)?; //build function hooks that need to be ran on expression based on which contexts are being used
+    hdk::debug("Hook defnitions generated")?;
 
     utils::handle_hooks("ExpressionPost".to_string(), hook_definitions)?;
     Ok(address)

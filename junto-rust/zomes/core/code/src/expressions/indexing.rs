@@ -27,23 +27,27 @@ pub fn create_post_attributes(query_points: &Vec<HashMap<String, String>>, expre
                 hdk::debug("Commiting tag channel anchor")?;
                 let address = hdk::commit_entry(&entry)?;
                 hdk::debug(format!("Committed address: {}", address))?;
-                hdk::api::link_entries(&channel_anchor, &address, "channel", &query_param["value"])?;
-                hdk::debug(format!("Linked tag: {} to channel anchor", query_param["value"]))?;
+                hdk::api::link_entries(&channel_anchor, &address, "tag", &query_param["value"])?;
+                hdk::debug(format!("Linked tag: {} to tag anchor", query_param["value"]))?;
                 hdk::api::link_entries(&expression, &address, "expression_channels", &query_param["value"])?;
                 hdk::debug("Linked entry to global tag entry")?;
             },
 
             "type" => {
+                hdk::debug("Linking type to expression")?;
                 let type_anchor = hdk::commit_entry(&Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: "expression_type".to_string()}.into()))?;
                 let entry = Entry::App("channel".into(), app_definitions::Channel{name: query_param["value"].to_string(), 
                                                     parent: type_anchor.clone(), privacy: app_definitions::Privacy::Public, channel_type: app_definitions::ChannelType::Type}.into()).into();
+                hdk::debug("Commiting type channel anchor")?;
                 let address = hdk::commit_entry(&entry)?;
+                hdk::debug(format!("Committed address: {}", address))?;
                 hdk::api::link_entries(&type_anchor, &address, "expression_type", &query_param["value"])?;
                 hdk::debug(format!("Linked type: {} to type anchor", query_param["value"]))?;
                 hdk::api::link_entries(expression, &address, "expression_type", &query_param["value"])?;
             },
 
             "time:y" => {
+                hdk::debug("Linking time:y to expression")?;
                 let time_anchor = hdk::commit_entry(&Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: "time".to_string()}.into()))?;   
                 let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
                                         parent: time_anchor.clone(), time_type: app_definitions::TimeType::Year}.into()).into();
@@ -54,6 +58,7 @@ pub fn create_post_attributes(query_points: &Vec<HashMap<String, String>>, expre
             },
 
             "time:m" => {
+                hdk::debug("Linking time:m to expression")?;
                 let time_anchor = hdk::commit_entry(&Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: "time".to_string()}.into()))?;   
                 let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
                                         parent: time_anchor.clone(), time_type: app_definitions::TimeType::Month}.into()).into();
@@ -64,6 +69,7 @@ pub fn create_post_attributes(query_points: &Vec<HashMap<String, String>>, expre
             },
 
             "time:d" => {
+                hdk::debug("Linking time:d to expression")?;
                 let time_anchor = hdk::commit_entry(&Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: "time".to_string()}.into()))?;   
                 let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
                                         parent: time_anchor.clone(), time_type: app_definitions::TimeType::Day}.into()).into();
@@ -74,6 +80,7 @@ pub fn create_post_attributes(query_points: &Vec<HashMap<String, String>>, expre
             },
 
             "time:h" => {
+                hdk::debug("Linking time:h to expression")?;
                 let time_anchor = hdk::commit_entry(&Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: "time".to_string()}.into()))?;   
                 let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
                                         parent: time_anchor.clone(), time_type: app_definitions::TimeType::Hour}.into()).into();
@@ -81,6 +88,10 @@ pub fn create_post_attributes(query_points: &Vec<HashMap<String, String>>, expre
                 hdk::api::link_entries(&time_anchor, &address, "time", &query_param["value"])?;
                 hdk::debug(format!("Linked time: {} to time anchor", query_param["value"]))?;
                 hdk::api::link_entries(&expression, &address, "time", "hour")?;
+            },
+
+            "user" => {
+                //nothing currently needs to be done for user - expression -> owner link has already been done in handle_post_expression
             },
 
             _ => {
@@ -111,7 +122,7 @@ pub fn create_post_index(query_points: Vec<HashMap<String, String>>, context: &A
             hdk::debug("Context type group, running auth")?;
             let context_entry = hdk::utils::get_as_type::<app_definitions::Group>(context.clone()).map_err(|_err| ZomeApiError::from("Context address was not a channel, group or dna address (global context)".to_string()))?;
             if context_entry.privacy != app_definitions::Privacy::Public {
-                if (group::is_group_owner(context.clone(), current_user_hash.clone())? == false) | (group::is_group_member(context.clone(), current_user_hash.clone())? == false){
+                if (group::is_group_owner(context.clone(), current_user_hash.clone())? == false) & (group::is_group_member(context.clone(), current_user_hash.clone())? == false){
                     return Err(ZomeApiError::from("You are attempting to post an expression into a group you are not permitted to interact with".to_string()))
                 };
             };
@@ -165,6 +176,10 @@ pub fn create_post_index(query_points: Vec<HashMap<String, String>>, context: &A
                                         parent: context.clone(), time_type: app_definitions::TimeType::Hour}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
                 hdk::api::link_entries(&context, &address, "time", &query_param["value"])?;
+            },
+
+            "user" => {
+                //nothing currently needs to be done for user - expression -> owner link has already been done in handle_post_expression
             },
 
             _ => {

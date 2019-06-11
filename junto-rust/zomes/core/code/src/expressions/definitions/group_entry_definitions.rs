@@ -96,7 +96,7 @@ pub fn group_definition() -> ValidatingEntryType {
             ),
             to!(
                 "channel",
-                link_type: "channel", //Channel within group
+                link_type: "tag", //Channel within group
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

@@ -120,7 +120,7 @@ define_zome! {
             handler: expressions::query::get_expression
         }
         post_expression: {
-            inputs: |expression: app_definitions::ExpressionPost, channels: Vec<String>, context: Vec<Address>|,
+            inputs: |expression: app_definitions::ExpressionPost, tags: Vec<String>, context: Vec<Address>|,
             outputs: |result: ZomeApiResult<Address>|,
             handler: expressions::post::handle_post_expression
         }
