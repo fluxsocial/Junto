@@ -37,7 +37,7 @@ pub fn anchor_definition() -> ValidatingEntryType {
             ),
             to!(
                 "channel",
-                link_type: "channel",
+                link_type: "tag",
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -49,7 +49,7 @@ pub fn anchor_definition() -> ValidatingEntryType {
             ),
             to!(
                 "channel",
-                link_type: "type",
+                link_type: "expression_type",
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

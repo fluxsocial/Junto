@@ -29,7 +29,7 @@ use super::random;
 ///Function to handle the getting of expression for a given perspective and query point(s)
 ///for example: perspective: dos & query_points: [2018<timestamp>, holochain<tag>, dht<tag>, eric<user>]
 //TODO: Switch to normal Entry (JsonString as returned from get_entry & get_links) for EntryAndAddress across the whole application
-pub fn get_expression(perspective: String, query_points: Vec<String>, query_options: QueryOptions, target_type: QueryTarget, _query_type: QueryType, dos: i32) -> ZomeApiResult<JsonString> {
+pub fn get_expression(perspective: String, query_points: Vec<String>, query_options: QueryOptions, target_type: QueryTarget, query_type: QueryType, dos: i32, seed: String) -> ZomeApiResult<JsonString> {
     let query_string = query_vec_to_string(query_points)?;
     match perspective.as_ref() {
         "random" => {
@@ -49,7 +49,7 @@ pub fn get_expression(perspective: String, query_points: Vec<String>, query_opti
             if dos < 1 || dos > 6{return Err(ZomeApiError::from("DOS not within bounds 1 -> 6".to_string()))};
             match target_type {
                 QueryTarget::ExpressionPost => {
-                    let expressions = dos::dos_query::<app_definitions::ExpressionPost>(query_string , query_options, target_type, _query_type, dos)?;
+                    let expressions = dos::dos_query::<app_definitions::ExpressionPost>(query_string , query_options, target_type, query_type, dos, seed)?;
                     let mut out = vec![];
                     for exp in expressions{
                         match hdk::get_entry(&exp)? {
@@ -64,7 +64,7 @@ pub fn get_expression(perspective: String, query_points: Vec<String>, query_opti
                     return Ok(JsonString::from(out))
                 },
                 QueryTarget::User => {
-                    let expressions = dos::dos_query::<app_definitions::UserName>(query_string , query_options, target_type, _query_type, dos)?;
+                    let expressions = dos::dos_query::<app_definitions::UserName>(query_string , query_options, target_type, query_type, dos, seed)?;
                     let mut out = vec![];
                     for exp in expressions{
                         match hdk::get_entry(&exp)? {
@@ -123,5 +123,5 @@ pub fn query_vec_to_string(query_points: Vec<String>) -> ZomeApiResult<String> {
     if tags.len() < 4 {for _ in tags.len()..4{tags.push("*".to_string());};};
     times = utils::sort_time_vector(times);
     if times.len() < 4 {for _ in times.len()..4{times.push("*".to_string());};};
-    Ok(format!("{}{}{}{}", tags.join("/"), user[0], r#type[0], times.join("/")))
+    Ok(format!("{}/{}/{}/{}", tags.join("/"), user[0], r#type[0], times.join("/")))
 }

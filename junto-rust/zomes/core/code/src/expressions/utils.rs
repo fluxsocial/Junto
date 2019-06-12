@@ -50,14 +50,14 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
     }).collect();
     let mut hook_result_outputs = vec![];
     if hook_functions.len() > 0{
-        for hook_descriptor in hooks.iter(){ //iterate over hook function names provided in function call
+        for hook_descriptor in hooks{ //iterate over hook function names provided in function call
             if hook_functions.contains(&hook_descriptor.name){ //Check that is allowed on expression type
                 match &hook_descriptor.name{ //Match function names
                     &"time_to_expression" => {
                         match &hook_descriptor.parameters{
                             FunctionParameters::TimeToExpression {link_type, tag, direction, expression_address, context} => {
                                 hdk::debug("Running time_to_expression")?;
-                                let time_addresses = time::time_to_expression(link_type, tag, direction, &expression_address, &context)?;
+                                let time_addresses = time::time_to_expression(link_type.to_string(), tag.to_string(), direction.to_string(), &expression_address, &context)?;
                                 hdk::debug("Ran time_to_expression")?;
                                 hook_result_outputs.push(HooksResultTypes::TimeToExpression(time_addresses));
                             },
@@ -90,7 +90,7 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
                         match &hook_descriptor.parameters{
                             FunctionParameters::LinkExpression {link_type, tag, direction, parent_expression, child_expression} =>{
                                 hdk::debug("Running link_expression")?;
-                                let link_result = link_expression(link_type, tag, direction, &parent_expression, &child_expression)?;
+                                let link_result = link_expression(link_type.to_string(), tag.to_string(), direction.to_string(), &parent_expression, &child_expression)?;
                                 hdk::debug("Ran link_expression")?;
                                 hook_result_outputs.push(HooksResultTypes::LinkExpression(link_result))
                             },
@@ -121,11 +121,11 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
 }
 
 //Link two expression objects together in a given direction
-pub fn link_expression(link_type: &'static str, tag: &'static str, direction: &'static str, parent_expression: &Address, child_expression: &Address) -> ZomeApiResult<String>{
+pub fn link_expression(link_type: String, tag: String, direction: String, parent_expression: &Address, child_expression: &Address) -> ZomeApiResult<String>{
     hdk::debug("Linking expressions")?;
     if (direction == "reverse") | (direction == "both"){
         hdk::debug(format!("Linking expression: {} (child) to: {} (parent) with tag: {} and link_type: {}", child_expression.to_string(), parent_expression.to_string(), tag, link_type))?;
-        hdk::link_entries(&child_expression, &parent_expression, link_type, tag)?;
+        hdk::link_entries(&child_expression, &parent_expression, link_type.clone(), tag.clone())?;
     }
     if (direction == "forward") | (direction == "both"){
         hdk::debug(format!("Linking expression: {} (parent) to: {} (child) with tag: {} and link_type: {}", parent_expression.to_string(), child_expression.to_string(), tag, link_type))?;

@@ -25,8 +25,8 @@ use super::definitions::{
 pub fn commit_den(entry: &Entry, user: &Address) -> ZomeApiResult<Address> {
     let address = hdk::commit_entry(&entry)?;
     //Build vector describing hook functions which should run to correctly link this data
-    let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "channel", tag: "den", direction: "reverse", parent_expression: address.clone(), child_expression: user.clone()}},
-                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "auth", tag: "owner", direction: "forward", parent_expression: address.clone(), child_expression: user.clone()}}];
+    let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "channel".to_string(), tag: "den".to_string(), direction: "reverse".to_string(), parent_expression: address.clone(), child_expression: user.clone()}},
+                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "auth".to_string(), tag: "owner".to_string(), direction: "forward".to_string(), parent_expression: address.clone(), child_expression: user.clone()}}];
 
     utils::handle_hooks("Channel".to_string(), hook_definitions)?;
     Ok(address)

@@ -158,9 +158,9 @@ impl<T: Into<JsonString>> From<EntryAndAddress<T>> for JsonString  where T: Seri
 //Parameters for each function in holochain application
 pub enum FunctionParameters{
     TimeToExpression{
-        link_type: &'static str,
-        tag: &'static str, 
-        direction: &'static str, 
+        link_type: String,
+        tag: String, 
+        direction: String, 
         expression_address: Address,
         context: Address,
     },
@@ -173,9 +173,9 @@ pub enum FunctionParameters{
         first_name: String
     },
     LinkExpression{
-        link_type: &'static str,
-        tag: &'static str, 
-        direction: &'static str, 
+        link_type: String,
+        tag: String, 
+        direction: String, 
         parent_expression: Address, 
         child_expression: Address
     },

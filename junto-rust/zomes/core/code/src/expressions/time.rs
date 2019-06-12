@@ -16,7 +16,7 @@ use super::definitions::{
     app_definitions
 };
 
-pub fn time_to_expression(link_type: &'static str, tag: &'static str, direction: &'static str, expression_address: &Address, context: &Address) -> ZomeApiResult<Vec<Address>> {
+pub fn time_to_expression(link_type: String, tag: String, direction: String, expression_address: &Address, context: &Address) -> ZomeApiResult<Vec<Address>> {
     let timestamps = 
         match hdk::get_entry_result(expression_address, GetEntryOptions {headers: true, ..Default::default()},)?.result {
             GetEntryResultType::Single(result) => {
@@ -32,7 +32,7 @@ pub fn time_to_expression(link_type: &'static str, tag: &'static str, direction:
         return Err(ZomeApiError::from("Timestamps not found on header".to_string()))
     };
     for timestamp in &timestamps{
-        utils::link_expression(link_type, tag, direction, timestamp, expression_address)?;
+        utils::link_expression(link_type.clone(), tag.clone(), direction.clone(), timestamp, expression_address)?;
     };
 
     Ok(timestamps)  

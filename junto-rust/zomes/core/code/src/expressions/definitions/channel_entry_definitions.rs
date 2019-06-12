@@ -73,7 +73,7 @@ pub fn channel_definition() -> ValidatingEntryType {
             ),
             from!(
                 "channel",
-                link_type: "channel", //sub channel 
+                link_type: "tag", //sub channel 
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
