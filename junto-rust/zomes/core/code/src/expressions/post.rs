@@ -75,8 +75,6 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut t
     //thus tag for each expression link will also be in this order and if there is not four tags present placeholder value will be used
     let index_string = query_points.clone().iter().map(|qp| qp["value"].clone() + "<" + &qp["type"].clone() + ">" ).collect::<Vec<String>>().join("/");
     hdk::debug(format!("Index string: {}", index_string))?;
-    hdk::api::link_entries(&username_entry_address.address, &address, "expression_post".to_string(), index_string.clone())?; //link expression to users agent - with index string
-    hdk::debug("Linked entry to user with index string")?;
     indexing::create_post_attributes(&query_points, &address)?;
     hdk::debug("Created post attributes")?;
     let hook_definitions = build_hooks(context, &address, &query_points, index_string)?; //build function hooks that need to be ran on expression based on which contexts are being used
@@ -108,6 +106,8 @@ pub fn build_hooks(contexts: Vec<Address>, address: &Address, query_points: &Vec
     for context in &contexts {
         if context == &dna_hash_string {
             hdk::debug("Context is a global context")?;
+            //Link expression to user
+            hook_definitions.push(FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "expression_post".to_string(), tag: index_string.clone(), direction: "forward".to_string(), parent_expression: user_name_address.clone(), child_expression: address.clone()}});
             //Link expression to private den
             hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{query_points: query_points.clone(), context: private_den.clone(), privacy: app_definitions::Privacy::Private, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
             //Link expression to shared den
@@ -183,7 +183,7 @@ pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
     let index_string = query_points.clone().iter().map(|qp| qp["value"].clone()).collect::<Vec<String>>().join("/");
     //add link on expression to user who made the resonation?
     let hook_definitions = vec![FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{query_points: query_points.clone(), context: user_pack.clone(), privacy: app_definitions::Privacy::Shared, expression: expression.clone(), index_string: index_string.clone(), link_type: "resonation".to_string()}},
-                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "resonation", tag: "", direction: "both", parent_expression: user_pack, child_expression: expression}}];
+                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "resonation".to_string(), tag: "".to_string(), direction: "both".to_string(), parent_expression: user_pack, child_expression: expression}}];
     utils::handle_hooks("Resonation".to_string(), hook_definitions)?;
     Ok("Resonation Generated".to_string())
 }
