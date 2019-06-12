@@ -10,9 +10,8 @@ extern crate serde_derive;
 extern crate serde_json;
 #[macro_use]
 extern crate holochain_core_types_derive;
-extern crate chrono;
 extern crate regex;
-extern crate rand;
+extern crate multihash;
 
 use hdk::{
     error::ZomeApiResult,
@@ -113,9 +112,9 @@ define_zome! {
             outputs: |result: ZomeApiResult<bool>|,
             handler: expressions::group::is_group_member
         }
-        get_expressions: {
+        get_expression: {
             inputs: |perspective: String, query_points: Vec<String>, query_options: function_definitions::QueryOptions, 
-                    target_type: function_definitions::QueryTarget, _query_type: function_definitions::QueryType, dos: i32|,
+                    target_type: function_definitions::QueryTarget, query_type: function_definitions::QueryType, dos: i32, seed: String|,
             outputs: |result: ZomeApiResult<JsonString>|,
             handler: expressions::query::get_expression
         }
@@ -176,7 +175,7 @@ define_zome! {
             remove_group_member,
             group_members,
             is_group_member,
-            get_expressions,
+            get_expression,
             post_expression,
             resonation,
             get_channel_address,
