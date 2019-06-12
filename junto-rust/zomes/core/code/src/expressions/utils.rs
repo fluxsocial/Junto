@@ -28,26 +28,19 @@ use super::definitions::{
     }
 };
 
-//Handle hooked objects that need to be created/linked for a given data type
-//This is essentially a helper function which allows us to easily and dynamically handle all links/objects that need to be created
+//This is a helper function which allows us to easily and dynamically handle all functions calls that need to happen
 pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<HooksResultTypes>> {
     //First we get all hook functions which can be run on given expression types
-    let hook_items: Vec<HashMap<&'static str, &'static str>>;
+    let hook_functions: Vec<&'static str>;
     match expression_type.as_ref(){
-        "User" => hook_items = app_definitions::get_user_definitions().hooks,
-        "Channel" => hook_items = app_definitions::get_channel_definitions().hooks,
-        "ExpressionPost" => hook_items = app_definitions::get_post_expression_definitions().hooks,
-        "Group" => hook_items = app_definitions::get_group_definitions().hooks,
-        "Time" => hook_items = app_definitions::get_time_definitions().hooks,
-        "Resonation" => hook_items = app_definitions::get_resonation_definitions().hooks,
+        "User" => hook_functions = app_definitions::get_user_hook_definitions(),
+        "Channel" => hook_functions = app_definitions::get_channel_hook_definitions(),
+        "ExpressionPost" => hook_functions = app_definitions::get_post_expression_hook_definitions(),
+        "Group" => hook_functions = app_definitions::get_group_hook_definitions(),
+        "Time" => hook_functions = app_definitions::get_resonation_hook_definitions(),
+        "Resonation" => hook_functions = app_definitions::get_time_hook_definitions(),
         _ => return Err(ZomeApiError::from("Expression type does not exist".to_string()))
-    }
-    let hook_functions: Vec<&'static str> = hook_items.into_iter().map(|hook_map: HashMap<&'static str, &'static str>| { //Likely this neesds to be refactored - hooks hashmap could probably just be a vector of strings instead
-        match hook_map.get("function"){
-            Some(value) => value.clone(),
-            None => {""}
-        }
-    }).collect();
+    };
     let mut hook_result_outputs = vec![];
     if hook_functions.len() > 0{
         for hook_descriptor in hooks{ //iterate over hook function names provided in function call

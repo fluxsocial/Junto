@@ -35,13 +35,13 @@ scenario.runTape('Retrieve pack and make pack auth operations', async (t, {josh,
         //get joshs pack
         const get_josh_pack = await josh.callSync('core', 'user_pack', {username_address: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn'});
         console.log("Get josh pack result", get_josh_pack);
-        t.equal(JSON.stringify(get_josh_pack), JSON.stringify({"Ok":{"pack":{"address":"QmW8j2NrAvKzUTQxtYnPGXmz7PgRevrGgvkD21jHC2utHA","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"Josh\'s Pack","owner":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","privacy":"Shared"}}}}));
+        t.equal(JSON.stringify(get_josh_pack), JSON.stringify({"Ok":{"address":"QmW8j2NrAvKzUTQxtYnPGXmz7PgRevrGgvkD21jHC2utHA","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"Josh\'s Pack","owner":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","privacy":"Shared"}}}));
         console.log("Completed get josh pack\n\n\n");
 
         //get erics pack
         const get_eric_pack = await eric.callSync('core', 'user_pack', {username_address: 'QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU'});
         console.log("Get eric pack result", get_eric_pack);
-        t.equal(JSON.stringify(get_eric_pack), JSON.stringify({"Ok":{"pack":{"address":"QmTevRrtjaaJzNCESubqfZfZjNXxJH4RxFBKFb9Nd7LUWh","entry":{"parent":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","name":"Eric\'s Pack","owner":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","privacy":"Shared"}}}}));
+        t.equal(JSON.stringify(get_eric_pack), JSON.stringify({"Ok":{"address":"QmTevRrtjaaJzNCESubqfZfZjNXxJH4RxFBKFb9Nd7LUWh","entry":{"parent":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","name":"Eric\'s Pack","owner":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","privacy":"Shared"}}}));
         console.log("Completed get eric pack\n\n\n");
 
         const add_group_member = await josh.callSync('core', 'add_pack_member', {username_address: 'QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU'}); //add eric to josh's group
