@@ -81,5 +81,6 @@ scenario.runTape('Can register a profile and retrieve', async (t, {josh, eric}) 
                                                                             dos: 1,
                                                                             seed: "totally random seed"});
     console.log("Make 1 dos query result", make_1_dos_query);
+    t.equal(JSON.stringify(make_1_dos_query), JSON.stringify({"Ok":[{"address":"QmZ23wNYx8BNtHMcG6kYNufycR6s8dXyqWP6ySYsTbHnPg","entry":{"expression_type":"PostExpression","expression":{"PostExpression":{"post":"This is the first test expression"}}}}]}));
     console.log("Completed ")
 })
