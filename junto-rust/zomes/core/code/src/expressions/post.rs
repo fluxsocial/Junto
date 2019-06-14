@@ -36,11 +36,13 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut t
     if tags.len() > 4 { //TODO implement duplicate tag checking
         return Err(ZomeApiError::from("You are not allowed to specify more than 4 tags on a given expression".to_string()))
     } else if tags.len() < 4{
+        if utils::has_unique_elements(tags.clone()) == false {return Err(ZomeApiError::from("You have duplicated tags".to_string()))};
         tags.sort_by(|a, b| b.cmp(&a)); //Order tags vector in reverse alphabetical order
         for _ in tags.len()..4{
             tags.push("*Null*".to_string());
         };
     } else {
+        if utils::has_unique_elements(tags.clone()) == false {return Err(ZomeApiError::from("You have duplicated tags".to_string()))};
         tags.sort_by(|a, b| b.cmp(&a)); //Order tags vector in reverse alphabetical order
     };
     hdk::debug(format!("Sorted tags vector: {:?}", tags))?;

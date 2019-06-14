@@ -11,6 +11,8 @@ use hdk::{
 
 use std::collections::HashMap;
 use std::convert::TryFrom;
+use std::collections::HashSet;
+use std::hash::Hash;
 
 //Our module(s) imports
 use super::group;
@@ -211,4 +213,13 @@ pub fn sort_time_vector(mut times: Vec<String>) -> Vec<String> {
         };
     };
     times
+}
+
+pub fn has_unique_elements<T>(iter: T) -> bool
+where
+    T: IntoIterator,
+    T::Item: Eq + Hash,
+{
+    let mut uniq = HashSet::new();
+    iter.into_iter().all(move |x| uniq.insert(x))
 }
