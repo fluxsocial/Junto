@@ -11,7 +11,7 @@ const instanceJosh = Config.instance(agentJosh, dna)
 const instanceEric = Config.instance(agentEric, dna);
 const scenario = new Scenario([instanceJosh, instanceEric], {debugLog: true}) 
 
-scenario.runTape('Can add and get users from perspective', async (t, {josh, eric}) => {
+scenario.runTape('Can add, get users from perspective and get posts from a perspective', async (t, {josh, eric}) => {
     //create user josh
     const register_result = await josh.callSync('core', 'create_user', {user_data: {username: "jdeepee", first_name: "Josh", last_name: "Parkin", bio: "Junto Testing", profile_picture: "pictureurl"}});
     console.log("Register user result", register_result);
@@ -34,4 +34,44 @@ scenario.runTape('Can add and get users from perspective', async (t, {josh, eric
     console.log("User perspective results: ", perspective_users);
     t.equal(JSON.stringify(perspective_users), JSON.stringify({"Ok":[{"address":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","entry":{"username":"sunyatax"}}]}));
     console.log('Completed user perspective results');
+
+    const holochain_env = await eric.callSync('core', 'show_env', {});
+    console.log("Show env result, holochain_env", holochain_env);
+    const dna = holochain_env.Ok.dna_address;
+    console.log("DNA of application: ", dna, "\n\n\n");
+
+    //Post expression to one context (global) with all four tags specified - all unique with one tag having an uppercase letter
+    const post_global_expression = await eric.callSync('core', 'post_expression', {
+        expression: 
+                {
+                    expression: {
+                        PostExpression: {
+                            post: "This is the first test expression"
+                        }
+                    },
+                    expression_type: "PostExpression"
+                }, 
+        tags: ["holochain", "Junto", "social", "holo"], 
+        context: [dna]
+    });
+    console.log("Post expression 1 result", post_global_expression);
+    t.equal(JSON.stringify(post_global_expression), JSON.stringify({ Ok: 'QmZ23wNYx8BNtHMcG6kYNufycR6s8dXyqWP6ySYsTbHnPg' }));
+    console.log("Completed posting expression\n\n\n\n");
+
+    //Make query for post on the created perspective
+    let d = new Date();
+    let year = d.getFullYear();
+    let month = d.getUTCMonth() + 1;
+    let day = d.getUTCDate();
+    let hour = d.getUTCHours();    
+    const perspective_query = await josh.callSync('core', 'get_expression', {perspective: "QmcBgVN5mo8ACrX1Z1f2ZXNFzbRWSGhMskuNoJXe9fYQ71", 
+                                                                            query_points: ["social<tag>", "junto<tag>", "holochain<tag>", "holo<tag>", "sunyatax<user>", "postexpression<type>", year+"<time:y>", "0"+month+"<time:m>", day+"<time:d>", hour+"<time:h>"],
+                                                                            query_options: "FilterNew",
+                                                                            target_type: "ExpressionPost",
+                                                                            query_type: "And",
+                                                                            dos: 1,
+                                                                            seed: "totally random seed"});
+    console.log("Make 1 dos query result", perspective_query);
+    t.equal(JSON.stringify(perspective_query), JSON.stringify({"Ok":[{"address":"QmZ23wNYx8BNtHMcG6kYNufycR6s8dXyqWP6ySYsTbHnPg","entry":{"expression_type":"PostExpression","expression":{"PostExpression":{"post":"This is the first test expression"}}}}]}));
+    console.log("Completed\n")
 })
