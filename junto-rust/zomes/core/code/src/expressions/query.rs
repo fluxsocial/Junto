@@ -25,12 +25,15 @@ use super::definitions::{
 use super::utils;
 use super::dos;
 use super::random;
+use super::channel;
 
 ///Function to handle the getting of expression for a given perspective and query point(s)
 ///for example: perspective: dos & query_points: [2018<timestamp>, holochain<tag>, dht<tag>, eric<user>]
 //TODO: Switch to normal Entry (JsonString as returned from get_entry & get_links) for EntryAndAddress across the whole application
+//TODO/ORNOT: Support target_type of User
 pub fn get_expression(perspective: String, query_points: Vec<String>, query_options: QueryOptions, target_type: QueryTarget, query_type: QueryType, dos: i32, seed: String) -> ZomeApiResult<JsonString> {
     let query_string = query_vec_to_string(query_points)?;
+    hdk::debug(format!("Getting expressions with generated query string: {}", query_string))?;
     match perspective.as_ref() {
         "random" => {
             // match target_type {
@@ -43,6 +46,7 @@ pub fn get_expression(perspective: String, query_points: Vec<String>, query_opti
             //         Ok(JsonString::from(expressions))
             //     }
             // }
+            Ok(JsonString::from("random query"))
         },
 
         "dos" => {
@@ -61,7 +65,7 @@ pub fn get_expression(perspective: String, query_points: Vec<String>, query_opti
                             None => return Err(ZomeApiError::from("No group entry at specified address".to_string()))
                         };
                     };
-                    return Ok(JsonString::from(out))
+                    Ok(JsonString::from(out))
                 },
                 QueryTarget::User => {
                     let expressions = dos::dos_query::<app_definitions::UserName>(query_string , query_options, target_type, query_type, dos, seed)?;
@@ -76,16 +80,24 @@ pub fn get_expression(perspective: String, query_points: Vec<String>, query_opti
                             None => return Err(ZomeApiError::from("No group entry at specified address".to_string()))
                         };
                     };
-                    return Ok(JsonString::from(out))
+                    Ok(JsonString::from(out))
                 }
             }
         },
 
-        _ => {
+        _ => { //TODO: Add maximum post retrieval here - perhaps dont return over 50 posts - and posts should either be selected randomly or by a pagination query?
+            hdk::debug("Attempting a perspective query")?;
             let perspective_address = Address::from(perspective);
+            let perspective_users = channel::get_perspectives_users(perspective_address)?;
+            let mut out = vec![];
+        
+            for user in perspective_users{
+                let mut expressions = utils::get_links_and_load_type::<app_definitions::ExpressionPost>(&user.address, Some("expression_post".to_string()), Some(query_string.clone()))?;
+                out.append(&mut expressions);
+            };
+            Ok(JsonString::from(out))
         }
     }
-    Ok(JsonString::from("test"))
 }
 
 ///Converts a query_vec to a query_string in the following format: tag1<tag>/tag2<tag>/tag3<tag>/tag4<tag>/user<user>/type<type>/time:y<time>/time:m<time>/time:d<time>/time:h<time> 
@@ -118,10 +130,13 @@ pub fn query_vec_to_string(query_points: Vec<String>) -> ZomeApiResult<String> {
             times.push(query_point.clone())
         };
     };
-    if (user.len() > 1) | (r#type.len() > 1) {return Err(ZomeApiError::from(String::from("Invalid Query String")))};
     tags.sort_by(|a, b| b.cmp(&a));
-    if tags.len() < 4 {for _ in tags.len()..4{tags.push("*".to_string());};};
+    if tags.len() == 0 {for _ in 1..5{tags.push("*".to_string())};};
+    if user.len() == 0 {user.push("*".to_string())};
+    if r#type.len() == 0 {r#type.push("*".to_string())};
+
+    if (user.len() > 1) | (r#type.len() > 1) {return Err(ZomeApiError::from(String::from("Invalid Query String")))};
+    if tags.len() < 4 {for _ in tags.len()..5{tags.push("*".to_string());};};
     times = utils::sort_time_vector(times);
-    if times.len() < 4 {for _ in times.len()..4{times.push("*".to_string());};};
     Ok(format!("{}/{}/{}/{}", tags.join("/"), user[0], r#type[0], times.join("/")))
 }
