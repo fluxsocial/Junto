@@ -197,22 +197,19 @@ pub fn get_and_check_perspective(perspective: &Address) -> ZomeApiResult<app_def
 }
 
 ///Sorts vector of times into ordered vector from year -> hour
-pub fn sort_time_vector(mut times: Vec<String>) -> Vec<String> {
-    let mut time_key = HashMap::new();
-    time_key.insert("time:y>", 1);
-    time_key.insert("time:m>", 2);
-    time_key.insert("time:d>", 3);
-    time_key.insert("time:h>", 4);
-    for i in 0..times.len() {
-        for j in (0..i).rev() {
-            if time_key[times[j].split("<").collect::<Vec<&str>>()[1].clone()] >= time_key[times[j+1].split("<").collect::<Vec<&str>>()[1].clone()] {
-                times.swap(j, j + 1);
-            } else {
-                break
-            }
-        };
+pub fn sort_time_vector(times: Vec<String>) -> Vec<String> {
+    let search_times = vec!["time:y>".to_string(), "time:m>".to_string(), "time:d>".to_string(), "time:h>".to_string()];
+    let mut times_out = vec![];
+    let time_types = times.clone().into_iter().map(|time| time.split("<").collect::<Vec<_>>()[1].to_string()).collect::<Vec<_>>();
+    for search_time in &search_times{
+        match time_types.iter().position(|time_type| time_type == search_time){
+            Some(index) => {
+                times_out.push(times[index].clone())
+            },
+            None => times_out.push("*".to_string())
+        }; 
     };
-    times
+    times_out
 }
 
 pub fn has_unique_elements<T>(iter: T) -> bool
