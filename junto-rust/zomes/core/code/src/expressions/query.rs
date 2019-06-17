@@ -10,6 +10,7 @@ use hdk::{
 
 use regex::Regex;
 use std::convert::TryFrom;
+use itertools::Itertools;
 
 //Our modules for holochain actins
 use super::definitions::{
@@ -32,8 +33,8 @@ use super::channel;
 //TODO: Switch to normal Entry (JsonString as returned from get_entry & get_links) for EntryAndAddress across the whole application
 //TODO/ORNOT: Support target_type of User
 pub fn get_expression(perspective: String, query_points: Vec<String>, query_options: QueryOptions, target_type: QueryTarget, query_type: QueryType, dos: i32, seed: String) -> ZomeApiResult<JsonString> {
-    let query_string = query_vec_to_string(query_points)?;
-    hdk::debug(format!("Getting expressions with generated query string: {}", query_string))?;
+    let query_strings = query_vec_to_strings(query_points)?;
+    hdk::debug(format!("Getting expressions with generated query string(s): {:?}", query_strings))?;
     match perspective.as_ref() {
         "random" => {
             // match target_type {
@@ -53,7 +54,7 @@ pub fn get_expression(perspective: String, query_points: Vec<String>, query_opti
             if dos < 1 || dos > 6{return Err(ZomeApiError::from("DOS not within bounds 1 -> 6".to_string()))};
             match target_type {
                 QueryTarget::ExpressionPost => {
-                    let expressions = dos::dos_query::<app_definitions::ExpressionPost>(query_string , query_options, target_type, query_type, dos, seed)?;
+                    let expressions = dos::dos_query::<app_definitions::ExpressionPost>(query_strings , query_options, target_type, query_type, dos, seed)?;
                     let mut out = vec![];
                     for exp in expressions{
                         match hdk::get_entry(&exp)? {
@@ -68,7 +69,7 @@ pub fn get_expression(perspective: String, query_points: Vec<String>, query_opti
                     Ok(JsonString::from(out))
                 },
                 QueryTarget::User => {
-                    let expressions = dos::dos_query::<app_definitions::UserName>(query_string , query_options, target_type, query_type, dos, seed)?;
+                    let expressions = dos::dos_query::<app_definitions::UserName>(query_strings , query_options, target_type, query_type, dos, seed)?;
                     let mut out = vec![];
                     for exp in expressions{
                         match hdk::get_entry(&exp)? {
@@ -92,7 +93,10 @@ pub fn get_expression(perspective: String, query_points: Vec<String>, query_opti
             let mut out = vec![];
         
             for user in perspective_users{
-                let mut expressions = utils::get_links_and_load_type::<app_definitions::ExpressionPost>(&user.address, Some("expression_post".to_string()), Some(query_string.clone()))?;
+                let mut expressions = vec![];
+                for query_string in &query_strings{
+                    expressions.append(&mut utils::get_links_and_load_type::<app_definitions::ExpressionPost>(&user.address, Some("expression_post".to_string()), Some(query_string.clone()))?);
+                };
                 out.append(&mut expressions);
             };
             Ok(JsonString::from(out))
@@ -101,7 +105,7 @@ pub fn get_expression(perspective: String, query_points: Vec<String>, query_opti
 }
 
 ///Converts a query_vec to a query_string in the following format: tag1<tag>/tag2<tag>/tag3<tag>/tag4<tag>/user<user>/type<type>/time:y<time>/time:m<time>/time:d<time>/time:h<time> 
-pub fn query_vec_to_string(query_points: Vec<String>) -> ZomeApiResult<String> {
+pub fn query_vec_to_strings(query_points: Vec<String>) -> ZomeApiResult<Vec<String>> {
     let re = Regex::new(r"(.*<*>)$").unwrap(); //regex to check that each query point is of syntax: value<type>
     let re_tag = Regex::new(r"(.*<tag>)$").unwrap(); //regex to match each query point is not optimal - should instead for match on whole joined string rather than on each item in vec
     let re_user = Regex::new(r"(.*<user>)$").unwrap();
@@ -134,9 +138,50 @@ pub fn query_vec_to_string(query_points: Vec<String>) -> ZomeApiResult<String> {
     if tags.len() == 0 {for _ in 1..5{tags.push("*".to_string())};};
     if user.len() == 0 {user.push("*".to_string())};
     if r#type.len() == 0 {r#type.push("*".to_string())};
-
+    if times.len() > 4 {return Err(ZomeApiError::from("Invalid query string".to_string()))};
     if (user.len() > 1) | (r#type.len() > 1) {return Err(ZomeApiError::from(String::from("Invalid Query String")))};
-    if tags.len() < 4 {for _ in tags.len()..5{tags.push("*".to_string());};};
+    let tags = get_tag_combinations(tags.clone())?;
     times = utils::sort_time_vector(times);
-    Ok(format!("{}/{}/{}/{}", tags.join("/"), user[0], r#type[0], times.join("/")))
+
+    let out = tags.into_iter().map(|tag_combination| format!("{}/{}/{}/{}", tag_combination.join("/"), user[0], r#type[0], times.join("/"))).collect::<Vec<String>>();
+    Ok(out)
+}
+
+pub fn get_tag_combinations(mut tags: Vec<String>) -> ZomeApiResult<Vec<Vec<String>>> {
+    let mut out = vec![];
+
+    match tags.len(){
+        4 => out.push(tags.clone()),
+        3 => {
+            let mut current_tag_combination = vec!["*".to_string()];
+            current_tag_combination.append(&mut tags.clone());
+            out.push(current_tag_combination);
+            tags.append(&mut vec!["*".to_string()]);
+            out.push(tags.clone());
+        },
+        2 => {
+            let mut current_tag_combination = vec!["*".to_string()];
+            current_tag_combination.append(&mut tags.clone());
+            current_tag_combination.append(&mut vec!["*".to_string()]);
+            out.push(current_tag_combination);
+            current_tag_combination = vec!["*".to_string(), "*".to_string()];
+            current_tag_combination.append(&mut tags.clone());
+            out.push(current_tag_combination);
+            tags.append(&mut vec!["*".to_string(), "*".to_string()]);
+            out.push(tags.clone());
+        },
+        1 => {
+            out.push(vec![tags[0].clone(), "*".to_string(), "*".to_string(), "*".to_string()]);
+            out.push(vec!["*".to_string(), tags[0].clone(), "*".to_string(), "*".to_string()]);
+            out.push(vec!["*".to_string(), "*".to_string(), tags[0].clone(), "*".to_string()]);
+            out.push(vec!["*".to_string(), "*".to_string(), "*".to_string(), tags[0].clone()]);
+        },
+        0 => {
+            out.push(vec!["*".to_string(), "*".to_string(), "*".to_string(), "*".to_string()]);
+        },
+        _ => {
+            return Err(ZomeApiError::from("Invalid query string".to_string()))
+        }
+    };
+    Ok(out)
 }
