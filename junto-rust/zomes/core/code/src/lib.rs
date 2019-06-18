@@ -12,6 +12,7 @@ extern crate serde_json;
 extern crate holochain_core_types_derive;
 extern crate regex;
 extern crate multihash;
+extern crate rust_base58;
 
 use hdk::{
     error::ZomeApiResult,
@@ -36,7 +37,8 @@ define_zome! {
         expressions::definitions::channel_entry_definitions::channel_definition(),
         expressions::definitions::group_entry_definitions::group_definition(),
         expressions::definitions::post_entry_definitions::post_definition(),
-        expressions::definitions::anchor_entry_definitions::anchor_definition()
+        expressions::definitions::anchor_entry_definitions::anchor_definition(),
+        expressions::definitions::bucket_entry_definitions::bucket_definition()
     ]
 
     genesis: || { 
@@ -158,6 +160,11 @@ define_zome! {
             outputs: |result: ZomeApiResult<Vec<function_definitions::EntryAndAddress<app_definitions::UserName>>>|,
             handler: expressions::channel::get_perspectives_users
         }
+        update_bit_prefix: {
+            inputs: |bit_prefix: u32|,
+            outputs: |result: ZomeApiResult<u32>|,
+            handler: expressions::random::update_bit_prefix
+        }
     ]
 
     traits: {
@@ -182,7 +189,8 @@ define_zome! {
             get_time_address,
             show_env,
             add_user_to_perspective,
-            get_perspectives_users
+            get_perspectives_users,
+            update_bit_prefix
         ]
     }
 }

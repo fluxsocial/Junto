@@ -26,8 +26,9 @@ use super::definitions::{
 
 use super::utils;
 use super::user;
-use super::group;
 use super::indexing;
+use super::random;
+use super::group;
 
 pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut tags: Vec<String>, context: Vec<Address>) -> ZomeApiResult<Address>{
     hdk::debug("Handling post expression")?;
@@ -104,12 +105,18 @@ pub fn build_hooks(contexts: Vec<Address>, address: &Address, query_points: &Vec
     local_contexts.extend(&member_results);
     hdk::debug(format!("Building hooks for following contexts Member results: {:?}, private den: {}, shared_den: {}, public_den: {}, pack: {:?}", member_results, private_den, shared_den, public_den, user_pack))?;
     let mut hook_definitions = vec![];
+    let current_bit_prefix = random::get_current_bit_prefix()?;
+    let bit_prefix_value = random::hash_prefix(address.clone(), current_bit_prefix);
+    hdk::debug(format!("App being linked to prefix bucket: {}", bit_prefix_value))?;
+    let bit_bucket = hdk::commit_entry(&Entry::App("bucket".into(), app_definitions::Bucket{id: bit_prefix_value}.into()))?;
 
     for context in &contexts {
         if context == &dna_hash_string {
             hdk::debug("Context is a global context")?;
             //Link expression to user
             hook_definitions.push(FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "expression_post".to_string(), tag: index_string.clone(), direction: "forward".to_string(), parent_expression: user_name_address.clone(), child_expression: address.clone()}});
+            //Link between random bit bucket and expression so random post querying can happen on this post
+            hook_definitions.push(FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "expression_post".to_string(), tag: index_string.clone(), direction: "forward".to_string(), parent_expression: bit_bucket.clone(), child_expression: address.clone()}});
             //Link expression to private den
             hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{query_points: query_points.clone(), context: private_den.clone(), privacy: app_definitions::Privacy::Private, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
             //Link expression to shared den

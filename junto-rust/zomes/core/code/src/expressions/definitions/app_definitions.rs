@@ -49,6 +49,11 @@ pub struct Anchor {
     pub anchor_type: String,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone, DefaultJson)]
+pub struct Bucket {
+    pub id: u32,
+}
+
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct User {
     pub parent: HashString, //Parent HashString data objects to be contextual to given data trees
@@ -59,7 +64,7 @@ pub struct User {
     pub verified: bool
 }
 
-#[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
+#[derive(Serialize, Deserialize, Debug, DefaultJson, Clone, PartialEq, Eq, Hash)]
 pub struct UserName {
     pub username: String
 }

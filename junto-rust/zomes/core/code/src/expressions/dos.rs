@@ -2,8 +2,7 @@ use hdk::{
     error::ZomeApiResult,
     error::ZomeApiError,
     holochain_core_types::{
-        cas::content::Address,
-        entry::AppEntryValue
+        cas::content::Address
     }
 };
 
@@ -13,7 +12,6 @@ use multihash::{encode, Hash};
 //Our modules for holochain actins
 use super::definitions::{
     function_definitions::{
-        QueryTarget,
         QueryOptions,
         QueryType
     }
@@ -29,7 +27,7 @@ const USER_POST_SELECTION_COUNT: i32 = 5;
 pub fn generate_random_number(min: f32, max: f32, seed: &String) -> u32{
     let seed_hash = encode(Hash::SHA2256, seed.as_bytes()).unwrap();
     let bytes: &[u8] = multihash::decode(&seed_hash).unwrap().digest;
-    let mask: u32 = 2_u32.pow(14) - 1; //16383 - we shouldnt have to generate number outside of this bound
+    let mask: u32 = 2_u32.pow(14) - 1; //16383 - we shouldnt have to generate number outside of this bound - if we do then there is a big scaling problem
     let id = u32::from_ne_bytes([
 		bytes[0],
 		bytes[1],
@@ -77,7 +75,7 @@ pub fn get_packs_posts(pack_members: &Vec<Address>, query_strings: &Vec<String>,
 
 //TODO build dos post query and user query into seperate functions which are handled and called by dos_query
 //Currently this algorithm will iterate until either all searches are exhasted from each pack recursion tree or 50 posts are found or user/pack recursions have reached their max - then the loop will break and return whatever posts it has
-pub fn dos_query<T: TryFrom<AppEntryValue>>(query_strings: Vec<String>, _query_options: QueryOptions, target_type: QueryTarget, _query_type: QueryType, dos: i32, seed: String) -> ZomeApiResult<Vec<Address>>{
+pub fn dos_query(query_strings: Vec<String>, _query_options: QueryOptions, _query_type: QueryType, dos: i32, seed: String) -> ZomeApiResult<Vec<Address>>{
     let mut avoid_addresses = vec![];
     let mut post_addresses = vec![];
     let mut users_checked_count = 0;

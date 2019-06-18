@@ -1,5 +1,4 @@
 const { Config, Container, Scenario } = require("@holochain/holochain-nodejs")
-//const n3h = require('n3h');
 Scenario.setTape(require('tape'))
 
 const dnaPath = "./dist/junto-rust.dna.json"
@@ -31,6 +30,11 @@ scenario.runTape('Can post expression and do basic DOS query', async (t, {josh, 
     console.log("Show env result, holochain_env", holochain_env);
     const dna = holochain_env.Ok.dna_address;
     console.log("DNA of application: ", dna, "\n\n\n");
+
+    const update_bit_prefix_value = await josh.callSync('core', 'update_bit_prefix', {bit_prefix: 2});
+    console.log("Update bit prefix result", update_bit_prefix_value);
+    t.equal(JSON.stringify(update_bit_prefix_value), JSON.stringify({ Ok: 2}));
+    console.log("Completed bit prefix config setting")
 
     //Post expression to one context (global) with all four tags specified - all unique with one tag having an uppercase letter
     const post_global_expression = await josh.callSync('core', 'post_expression', {
