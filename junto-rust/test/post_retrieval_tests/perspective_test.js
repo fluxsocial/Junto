@@ -50,17 +50,18 @@ scenario.runTape('Can add, get users from perspective and get posts from a persp
         expression: 
                 {
                     expression: {
-                        PostExpression: {
-                            post: "This is the first test expression"
+                        ShortForm: {
+                            background: "",
+                            body: "This is the first test expression"
                         }
                     },
-                    expression_type: "PostExpression"
+                    expression_type: "ShortForm"
                 }, 
         tags: ["holochain", "Junto", "social", "holo"], 
         context: [dna]
     });
     console.log("Post expression 1 result", post_global_expression);
-    t.equal(JSON.stringify(post_global_expression), JSON.stringify({ Ok: 'QmZ23wNYx8BNtHMcG6kYNufycR6s8dXyqWP6ySYsTbHnPg' }));
+    t.equal(JSON.stringify(post_global_expression), JSON.stringify({"Ok":"QmT9LnUxYb6dBUpwvwfDnLTsDcKTAmKYqj9LHcW3ZWyyQW"}));
     console.log("Completed posting expression\n\n\n\n");
 
     //Make query for post on the created perspective
@@ -70,13 +71,13 @@ scenario.runTape('Can add, get users from perspective and get posts from a persp
     let day = d.getUTCDate();
     let hour = d.getUTCHours();    
     const perspective_query = await josh.callSync('core', 'get_expression', {perspective: "QmcBgVN5mo8ACrX1Z1f2ZXNFzbRWSGhMskuNoJXe9fYQ71", 
-                                                                            query_points: ["social<tag>", "junto<tag>", "holochain<tag>", "holo<tag>", "sunyatax<user>", "postexpression<type>", year+"<time:y>", "0"+month+"<time:m>", day+"<time:d>", hour+"<time:h>"],
+                                                                            query_points: ["social<tag>", "junto<tag>", "holochain<tag>", "holo<tag>", "sunyatax<user>", "shortform<type>", year+"<time:y>", "0"+month+"<time:m>", day+"<time:d>", hour+"<time:h>"],
                                                                             query_options: "FilterNew",
                                                                             target_type: "ExpressionPost",
                                                                             query_type: "And",
                                                                             dos: 1,
                                                                             seed: "totally random seed"});
     console.log("Make 1 dos query result", perspective_query);
-    t.equal(JSON.stringify(perspective_query), JSON.stringify({"Ok":[{"address":"QmZ23wNYx8BNtHMcG6kYNufycR6s8dXyqWP6ySYsTbHnPg","entry":{"expression_type":"PostExpression","expression":{"PostExpression":{"post":"This is the first test expression"}}}}]}));
+    t.equal(JSON.stringify(perspective_query), JSON.stringify({"Ok":[{"address":"QmT9LnUxYb6dBUpwvwfDnLTsDcKTAmKYqj9LHcW3ZWyyQW","entry":{"expression_type":"ShortForm","expression":{"ShortForm":{"background":"","body":"This is the first test expression"}}}}]}));
     console.log("Completed\n")
 })

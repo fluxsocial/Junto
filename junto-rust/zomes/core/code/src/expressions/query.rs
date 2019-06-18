@@ -133,7 +133,8 @@ pub fn query_vec_to_strings(query_points: Vec<String>) -> ZomeApiResult<Vec<Stri
     let mut r#type = vec![];
     let mut times = vec![];
 
-    for query_point in query_points{
+    for mut query_point in query_points{
+        query_point = query_point.to_lowercase();
         if re.is_match(&query_point) == false { //check that query point has type and value and of correct format
             return Err(ZomeApiError::from(format!("Invalid format for query point: {}", query_point)))
         };

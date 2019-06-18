@@ -6,7 +6,7 @@ const dnaPath = "./dist/junto-rust.dna.json"
 const dna = Config.dna(dnaPath)
 const agentJosh = Config.agent("josh")
 const instanceJosh = Config.instance(agentJosh, dna)
-const scenario = new Scenario([instanceJosh], {debugLog: true}) 
+const scenario = new Scenario([instanceJosh], {debugLog: false}) 
 
 scenario.runTape('Can post expression and do basic random query', async (t, {josh}) => {
     const register_result = await josh.callSync('core', 'create_user', {user_data: {username: "jdeepee", first_name: "Josh", last_name: "Parkin", bio: "Junto Testing", profile_picture: "pictureurl"}});
@@ -29,17 +29,18 @@ scenario.runTape('Can post expression and do basic random query', async (t, {jos
         expression: 
                 {
                     expression: {
-                        PostExpression: {
-                            post: "This is the first test expression"
+                        ShortForm: {
+                            background: "",
+                            body: "This is the first test expression"
                         }
                     },
-                    expression_type: "PostExpression"
+                    expression_type: "ShortForm"
                 }, 
         tags: ["holochain", "Junto", "social", "holo"], 
         context: [dna]
     });
     console.log("Post expression 1 result", post_global_expression);
-    t.equal(JSON.stringify(post_global_expression), JSON.stringify({ Ok: 'QmZ23wNYx8BNtHMcG6kYNufycR6s8dXyqWP6ySYsTbHnPg' }));
+    t.equal(JSON.stringify(post_global_expression), JSON.stringify({"Ok":"QmT9LnUxYb6dBUpwvwfDnLTsDcKTAmKYqj9LHcW3ZWyyQW"}));
     console.log("Completed posting expression\n\n\n\n");
 
     let d = new Date();
@@ -48,11 +49,12 @@ scenario.runTape('Can post expression and do basic random query', async (t, {jos
     let day = d.getUTCDate();
     let hour = d.getUTCHours();    
     const random_query = await josh.callSync('core', 'get_expression', {perspective: "random", 
-                                                                        query_points: ["social<tag>", "junto<tag>", "holochain<tag>", "holo<tag>", "jdeepee<user>", "postexpression<type>", year+"<time:y>", "0"+month+"<time:m>", day+"<time:d>", hour+"<time:h>"],
+                                                                        query_points: ["social<tag>", "junto<tag>", "holochain<tag>", "holo<tag>", "jdeepee<user>", "ShortForm<type>", year+"<time:y>", "0"+month+"<time:m>", day+"<time:d>", hour+"<time:h>"],
                                                                         query_options: "FilterNew",
                                                                         target_type: "ExpressionPost",
                                                                         query_type: "And",
                                                                         dos: 1,
                                                                         seed: "otally random seed"});
     console.log("Random query result: ", random_query)
+    t.equal(JSON.stringify(random_query), JSON.stringify({"Ok":[{"address":"QmT9LnUxYb6dBUpwvwfDnLTsDcKTAmKYqj9LHcW3ZWyyQW","entry":{"expression_type":"ShortForm","expression":{"ShortForm":{"background":"","body":"This is the first test expression"}}}}]}));
 })
