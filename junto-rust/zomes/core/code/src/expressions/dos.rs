@@ -38,7 +38,7 @@ pub fn generate_random_number(min: f32, max: f32, seed: &String) -> u32{
     ((id * (max - min + 1.0)).floor() + min) as u32
 }
 
-pub fn choose_pack_member(mut pack_members: Vec<Address>, depth: i32, avoid_addresses: &Vec<Address>, seed: &String) -> ZomeApiResult<Address>{
+pub fn choose_pack_member(mut pack_members: Vec<Address>, depth: u32, avoid_addresses: &Vec<Address>, seed: &String) -> ZomeApiResult<Address>{
     pack_members.retain(|pack_member| avoid_addresses.contains(&pack_member) == false);
     if pack_members.len() == 0{
         Err(ZomeApiError::from(format!("Search exhasted at pack depth: {}", depth)))   
@@ -75,7 +75,7 @@ pub fn get_packs_posts(pack_members: &Vec<Address>, query_strings: &Vec<String>,
 
 //TODO build dos post query and user query into seperate functions which are handled and called by dos_query
 //Currently this algorithm will iterate until either all searches are exhasted from each pack recursion tree or 50 posts are found or user/pack recursions have reached their max - then the loop will break and return whatever posts it has
-pub fn dos_query(query_strings: Vec<String>, _query_options: QueryOptions, _query_type: QueryType, dos: i32, seed: String) -> ZomeApiResult<Vec<Address>>{
+pub fn dos_query(query_strings: Vec<String>, _query_options: QueryOptions, _query_type: QueryType, dos: u32, seed: String) -> ZomeApiResult<Vec<Address>>{
     let mut avoid_addresses = vec![];
     let mut post_addresses = vec![];
     let mut users_checked_count = 0;

@@ -116,7 +116,7 @@ define_zome! {
         }
         get_expression: {
             inputs: |perspective: String, query_points: Vec<String>, query_options: function_definitions::QueryOptions, 
-                    target_type: function_definitions::QueryTarget, query_type: function_definitions::QueryType, dos: i32, seed: String|,
+                    target_type: function_definitions::QueryTarget, query_type: function_definitions::QueryType, dos: u32, seed: String|,
             outputs: |result: ZomeApiResult<JsonString>|,
             handler: expressions::query::get_expression
         }

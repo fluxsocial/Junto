@@ -34,7 +34,7 @@ use super::channel;
 ///for example: perspective: dos & query_points: [2018<timestamp>, holochain<tag>, dht<tag>, eric<user>]
 //TODO: Switch to normal Entry (JsonString as returned from get_entry & get_links) for EntryAndAddress across the whole application
 //TODO/ORNOT: Support target_type of User
-pub fn get_expression(perspective: String, query_points: Vec<String>, query_options: QueryOptions, target_type: QueryTarget, query_type: QueryType, dos: i32, seed: String) -> ZomeApiResult<JsonString> {
+pub fn get_expression(perspective: String, query_points: Vec<String>, query_options: QueryOptions, target_type: QueryTarget, query_type: QueryType, dos: u32, seed: String) -> ZomeApiResult<JsonString> {
     let query_strings = query_vec_to_strings(query_points)?;
     hdk::debug(format!("Getting expressions with generated query string(s): {:?}", query_strings))?;
     match perspective.as_ref() {
