@@ -32,7 +32,7 @@ Error: {Err:  {Error Type: 'Error Message'} }
 ###### Request: 
 ```
 Endpoint: /get_expressions
-Arguments: { query_root: "address of query root", query_points: ["point-to-query-with", ...], query_options: QueryOptions, context: "address of context in which expression exists", target_type: QueryTarget, query_type: QueryType) }
+Arguments: { perspective: "string of perspective type", query_points: ["point-to-query-with", ...], query_options: QueryOptions, target_type: QueryTarget, query_type: QueryType, dos: dos-u32, seed: "string-to-randomize-searching" }
 ```
 
 ###### Response:
@@ -44,7 +44,7 @@ Error: {Err: {Error Type: 'Error Message')}}
 **Other Notes**:
 The get_expressions function has a few arguments which might not be easily understandable as to what they do. I will go over each argument here detailing how to use the argument and how they effect the results. Please note this is the first iteration of trying to handle our more advance query functionality into a Holochain application. It is likely this will be refined in the future as we become more comfortable with Holochain/Rust and the optimal designs start to reveal themselves.
 
-**Query Root**: This is the root object where you want to begin the query. In most cases this will either be a channel object or time object. In Holochain all entries are stored "independently" (not related) to each other, in order to create relations between entries you use links. Thus if you want to get expressions you need to start at a given entry and then get links from here.
+**Perspective**: String which outlines which perspective to view posts from. This can be any of the following values: "dos", "random" or "address". Dos tells the function to make degree of seperation query. Random tells function to make a random query for posts. Otherwise it should be an address: this address should be for a user created perspective.
 
 **Query Points**: This is the parameter which defines how your query will be run in the function. The query parameter should be in the following format: ["query_value<query_type>", ...] (and so on for each parameter)". Each parameter will confine expression result(s) to only those objects. 
 
@@ -56,4 +56,8 @@ The get_expressions function has a few arguments which might not be easily under
 
 **Query Type**: QueryType is a Rust Enum - the parameters for this enum are as follows: And, Or. This argument details if the query string should be searching using and/or. And signifies that the function will get all expressions which are present in __every__ query paramter. Or signifies that it will get expression from __each__ query parameter no matter if it is present in other query parameters or not.
 
+**Dos**: Degree of seperation: value to determine how many pack layers deep the DOS query functionality will go. Must be between 1-6.
+
+**Seed**: This is a string which will be used to help randomize (or return the same) results for DOS & random queries. This can be a string of literaly anything - but you most likley want some degree of randomness. Taking the current time in milliseconds since a given date would be an example of a "good enough" random string.
+ 
 **Example**: If you are using get_expressions to search for a user. You have two possible options which may not be readily apparent. You can either pass a user object into the query parameter which will do a regular user search using the username. Or you can pass other parameters (and no username parameter); this will do a traditional ExpressionPost search but then get all ExpressionPost owners and then return these users. This is an interesting way to search for users, an example: being able to search via channels/time and then filter this using QueryOptions to see which user is a high contributor for any given time period/channel.

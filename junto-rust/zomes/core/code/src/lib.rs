@@ -1,4 +1,4 @@
-#![feature(try_from)]
+#![feature(try_from, vec_remove_item)]
 #[macro_use]
 extern crate hdk;
 extern crate serde;
@@ -10,11 +10,11 @@ extern crate serde_derive;
 extern crate serde_json;
 #[macro_use]
 extern crate holochain_core_types_derive;
-extern crate chrono;
 extern crate regex;
+extern crate multihash;
+extern crate rust_base58;
 
 use hdk::{
-    api::DNA_ADDRESS,
     error::ZomeApiResult,
     holochain_core_types::{
         json::JsonString, 
@@ -36,8 +36,9 @@ define_zome! {
         expressions::definitions::time_entry_definitions::time_definiton(),
         expressions::definitions::channel_entry_definitions::channel_definition(),
         expressions::definitions::group_entry_definitions::group_definition(),
-        expressions::definitions::post_entry_definitions::post_definition()
-        //expressions::definitions::post_entry_definitions::resonation_definition()
+        expressions::definitions::post_entry_definitions::post_definition(),
+        expressions::definitions::anchor_entry_definitions::anchor_definition(),
+        expressions::definitions::bucket_entry_definitions::bucket_definition()
     ]
 
     genesis: || { 
@@ -60,28 +61,18 @@ define_zome! {
         }
         get_user_profile_from_address: {
             inputs: |username_address: Address|,
-            outputs: |result: ZomeApiResult<app_definitions::User>|,
+            outputs: |result: ZomeApiResult<function_definitions::EntryAndAddress<app_definitions::User>>|,
             handler: expressions::user::get_user_profile_from_address
         }
         get_user_profile_by_agent_address: {
             inputs: | |,
-            outputs: |result: ZomeApiResult<app_definitions::User>|,
+            outputs: |result: ZomeApiResult<function_definitions::EntryAndAddress<app_definitions::User>>|,
             handler: expressions::user::get_user_profile_by_agent_address
-        }
-        get_user_profile_address_by_agent_address: {
-            inputs: | |,
-            outputs: |result: ZomeApiResult<Address>|,
-            handler: expressions::user::get_user_profile_address_by_agent_address 
         }
         get_user_username_by_agent_address: {
             inputs: | |,
-            outputs: |result: ZomeApiResult<app_definitions::UserName>|,
+            outputs: |result: ZomeApiResult<function_definitions::EntryAndAddress<app_definitions::UserName>>|,
             handler: expressions::user::get_user_username_by_agent_address
-        }
-        get_user_username_address_by_agent_address: {
-            inputs: | |,
-            outputs: |result: ZomeApiResult<Address>|,
-            handler: expressions::user::get_user_username_address_by_agent_address
         }
         user_dens: {
             inputs: |username_address: Address|,
@@ -95,7 +86,7 @@ define_zome! {
         }
         user_pack: {
             inputs: |username_address: HashString|,
-            outputs: |result: ZomeApiResult<function_definitions::UserPack>|,
+            outputs: |result: ZomeApiResult<function_definitions::EntryAndAddress<app_definitions::Group>>|,
             handler: expressions::user::get_user_pack
         }
         add_pack_member: {
@@ -123,15 +114,14 @@ define_zome! {
             outputs: |result: ZomeApiResult<bool>|,
             handler: expressions::group::is_group_member
         }
-        get_expressions: {
-            inputs: |query_root: Address, query_points: Vec<String>, context: Address,  
-                        query_options: function_definitions::QueryOptions, target_type: function_definitions::QueryTarget, 
-                        query_type: function_definitions::QueryType|,
+        get_expression: {
+            inputs: |perspective: String, query_points: Vec<String>, query_options: function_definitions::QueryOptions, 
+                    target_type: function_definitions::QueryTarget, query_type: function_definitions::QueryType, dos: u32, seed: String|,
             outputs: |result: ZomeApiResult<JsonString>|,
-            handler: expressions::query::handle_get_expression
+            handler: expressions::query::get_expression
         }
         post_expression: {
-            inputs: |expression: app_definitions::ExpressionPost, channels: Vec<String>, context: Vec<Address>|,
+            inputs: |expression: app_definitions::ExpressionPost, tags: Vec<String>, context: Vec<Address>|,
             outputs: |result: ZomeApiResult<Address>|,
             handler: expressions::post::handle_post_expression
         }
@@ -155,6 +145,26 @@ define_zome! {
             outputs: |result: ZomeApiResult<function_definitions::Env>|,
             handler: expressions::user::show_env
         }
+        create_perspective: {
+            inputs: |name: String|,
+            outputs: |result: ZomeApiResult<function_definitions::EntryAndAddress<app_definitions::Channel>>|,
+            handler: expressions::channel::create_perspective
+        }
+        add_user_to_perspective: {
+            inputs: |perspective: Address, target_user: Address|,
+            outputs: |result: ZomeApiResult<Address>|,
+            handler: expressions::channel::add_user_to_perspective
+        }
+        get_perspectives_users: {
+            inputs: |perspective: Address|,
+            outputs: |result: ZomeApiResult<Vec<function_definitions::EntryAndAddress<app_definitions::UserName>>>|,
+            handler: expressions::channel::get_perspectives_users
+        }
+        update_bit_prefix: {
+            inputs: |bit_prefix: u32|,
+            outputs: |result: ZomeApiResult<u32>|,
+            handler: expressions::random::update_bit_prefix
+        }
     ]
 
     traits: {
@@ -163,9 +173,7 @@ define_zome! {
             get_username_from_address,
             get_user_profile_from_address,
             get_user_profile_by_agent_address,
-            get_user_profile_address_by_agent_address,
             get_user_username_by_agent_address,
-            get_user_username_address_by_agent_address,
             user_dens,
             is_den_owner,
             user_pack,
@@ -174,12 +182,15 @@ define_zome! {
             remove_group_member,
             group_members,
             is_group_member,
-            get_expressions,
+            get_expression,
             post_expression,
             resonation,
             get_channel_address,
             get_time_address,
-            show_env
+            show_env,
+            add_user_to_perspective,
+            get_perspectives_users,
+            update_bit_prefix
         ]
     }
 }

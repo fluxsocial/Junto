@@ -24,11 +24,11 @@ use super::definitions::{
         UserDens,
         EntryAndAddress,
         CreateUserInformation,
-        UserPack,
         Env,
         JuntoUser
     }
 };
+use super::channel;
 
 /// This handler shows how you can access the globals that are always available
 /// inside a zome.  In this case it just creates an object with their values
@@ -54,20 +54,23 @@ pub fn handle_create_user(user_data: CreateUserInformation) -> ZomeApiResult<Jun
     let user_meta_data = app_definitions::User{parent: username_address.clone(), first_name: user_data.first_name.clone(), last_name: user_data.last_name, bio: user_data.bio, profile_picture: user_data.profile_picture, verified: true};
     let entry = Entry::App("user".into(), user_meta_data.clone().into());
     let address = hdk::commit_entry(&entry)?;
-    hdk::link_entries(&AGENT_ADDRESS, &address, "user")?; 
-    hdk::link_entries(&AGENT_ADDRESS, &username_address, "username")?; 
-    hdk::link_entries(&username_address, &address, "profile")?;
-    //hdk::link_entries(&hdk::api::DNA_ADDRESS, &username_address, user_data.username.clone())?; //add link on DNA address where tag is username so this can be used for searching later
+    let user_anchor = hdk::commit_entry(&Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: "registered".to_string()}.into()))?;
+
+    hdk::link_entries(&AGENT_ADDRESS, &address, "user", "")?; 
+    hdk::link_entries(&AGENT_ADDRESS, &username_address, "username", "")?; 
+    hdk::link_entries(&username_address, &address, "profile", "")?;
+    hdk::link_entries(&user_anchor, &username_address, "registered", &user_data.username.clone())?; //add link on DNA address where tag is username so this can be used for searching later
     //Build hook definitions to link user to timestamps and create pack/den
-    let hook_definitions = vec![FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{tag: "user", direction: "forward", expression_address: username_address.clone(), context: Address::from(DNA_ADDRESS.to_string())}},
+    let hook_definitions = vec![FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{link_type: "user".to_string(), tag: "".to_string(), direction: "forward".to_string(), expression_address: username_address.clone(), context: Address::from(DNA_ADDRESS.to_string())}},
                                 FunctionDescriptor{name: "create_pack", parameters: FunctionParameters::CreatePack{username_address: username_address.clone(), first_name: user_data.first_name.clone()}},
                                 FunctionDescriptor{name: "create_den", parameters: FunctionParameters::CreateDen{username_address: username_address.clone(), first_name: user_data.first_name}}];
 
     let hook_result = utils::handle_hooks("User".to_string(), hook_definitions)?;
     let pack = hook_result[1].clone().create_pack_result()?;
     let dens = hook_result[2].clone().create_den_result()?;
+    let user_perspective = channel::create_perspective("Default Perspective".to_string())?;
     let junto_user = JuntoUser{profile: EntryAndAddress{entry: user_meta_data.into(), address: address}, username: EntryAndAddress{entry: username_struct.into(), address: username_address},
-                                private_den: dens.private_den, shared_den: dens.shared_den, public_den: dens.public_den, pack: pack.pack};
+                                private_den: dens.private_den, shared_den: dens.shared_den, public_den: dens.public_den, pack: pack, user_perspective: user_perspective};
     Ok(junto_user)
 }
 
@@ -88,49 +91,32 @@ pub fn get_username_from_address(username_address: Address) -> JsonString {
     }
 }
 
-pub fn get_user_profile_from_address(username_address: Address) -> ZomeApiResult<app_definitions::User> {
-    let user_links = utils::get_links_and_load_type::<String, app_definitions::User>(&username_address, "profile".to_string())?;
+pub fn get_user_profile_from_address(username_address: Address) -> ZomeApiResult<EntryAndAddress<app_definitions::User>> {
+    let user_links = utils::get_links_and_load_type::<app_definitions::User>(&username_address, Some("profile".to_string()), None)?;
     if user_links.len() == 0{
         return Err(ZomeApiError::from("User address does not have any profile links".to_string()))
     };
-    Ok(user_links[0].entry.clone())
+    Ok(user_links[0].clone())
 }
 
-pub fn get_user_profile_by_agent_address() -> ZomeApiResult<app_definitions::User>{
-    let user_links = utils::get_links_and_load_type::<String, app_definitions::User>(&AGENT_ADDRESS, "user".to_string())?;
+pub fn get_user_profile_by_agent_address() -> ZomeApiResult<EntryAndAddress<app_definitions::User>>{
+    let user_links = utils::get_links_and_load_type::<app_definitions::User>(&AGENT_ADDRESS, Some("user".to_string()), None)?;
     if user_links.len() == 0{
         return Err(ZomeApiError::from("agent does not have any profile links".to_string()))
     };
-    Ok(user_links[0].entry.clone())
+    Ok(user_links[0].clone())
 }
 
-pub fn get_user_profile_address_by_agent_address() -> ZomeApiResult<Address>{
-    let user_links = utils::get_links_and_load_type::<String, app_definitions::User>(&AGENT_ADDRESS, "user".to_string())?;
-    if user_links.len() == 0{
-        return Err(ZomeApiError::from("agent does not have any profile links".to_string()))
-    };
-    Ok(user_links[0].address.clone())
-}
-
-pub fn get_user_username_by_agent_address() -> ZomeApiResult<app_definitions::UserName>{
-    let user_name_links = utils::get_links_and_load_type::<String, app_definitions::UserName>(&AGENT_ADDRESS, "username".to_string())?;
+pub fn get_user_username_by_agent_address() -> ZomeApiResult<EntryAndAddress<app_definitions::UserName>>{
+    let user_name_links = utils::get_links_and_load_type::<app_definitions::UserName>(&AGENT_ADDRESS, Some("username".to_string()), None)?;
     if user_name_links.len() == 0{
         return Err(ZomeApiError::from("agent does not have any profile links".to_string()))
     };
-    Ok(user_name_links[0].entry.clone())
-}
-
-
-pub fn get_user_username_address_by_agent_address() -> ZomeApiResult<Address>{
-    let user_name_links = utils::get_links_and_load_type::<String, app_definitions::UserName>(&AGENT_ADDRESS, "username".to_string())?;
-    if user_name_links.len() == 0{
-        return Err(ZomeApiError::from("agent does not have any profile links".to_string()))
-    };
-    Ok(user_name_links[0].address.clone())
+    Ok(user_name_links[0].clone())
 }
 
 pub fn get_user_dens(user: Address) -> ZomeApiResult<UserDens>{
-    let den_links = utils::get_links_and_load_type::<String, app_definitions::Channel>(&user, "den".to_string())?;
+    let den_links = utils::get_links_and_load_type::<app_definitions::Channel>(&user, Some("channel".to_string()), Some("den".to_string()))?;
     let mut private_den = None;
     let mut shared_den = None;
     let mut public_den = None;
@@ -155,19 +141,19 @@ pub fn get_user_dens(user: Address) -> ZomeApiResult<UserDens>{
     Ok(UserDens{private_den: private_den.unwrap(), shared_den: shared_den.unwrap(), public_den: public_den.unwrap()})
 }
 
-pub fn get_user_pack(username_address: HashString) -> ZomeApiResult<UserPack>{
-    let pack_links = utils::get_links_and_load_type::<String, app_definitions::Group>(&username_address, "pack".to_string())?;
+pub fn get_user_pack(username_address: HashString) -> ZomeApiResult<EntryAndAddress<app_definitions::Group>>{
+    let pack_links = utils::get_links_and_load_type::<app_definitions::Group>(&username_address, Some("group".to_string()), Some("pack".to_string()))?;
     hdk::debug(format!("Pack links on username: {}", pack_links.len().to_string()))?;
     if pack_links.len() > 1{
         return Err(ZomeApiError::from("Pack links on user greater than 1".to_string()))
     } else if pack_links.len() == 0{
         return Err(ZomeApiError::from("No pack links on user".to_string()))
     }
-    Ok(UserPack{pack: pack_links[0].clone()})
+    Ok(pack_links[0].clone())
 }
 
 pub fn get_user_member_packs(username_address: HashString) -> ZomeApiResult<Vec<EntryAndAddress<app_definitions::Group>>>{
-    let pack_links = utils::get_links_and_load_type::<String, app_definitions::Group>(&username_address, "pack_member".to_string())?;
+    let pack_links = utils::get_links_and_load_type::<app_definitions::Group>(&username_address, Some("auth".to_string()), Some("member".to_string()))?;
     let mut packs: Vec<EntryAndAddress<app_definitions::Group>> = vec![];
     for pack in pack_links{
         packs.push(pack.clone());

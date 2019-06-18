@@ -17,6 +17,7 @@ use hdk::{
 
 use std::collections::HashMap;
 use serde::Serialize;
+use std::fmt::Debug;
 
 use super::app_definitions;
 
@@ -59,11 +60,7 @@ pub struct JuntoUser{
     pub pack: EntryAndAddress<app_definitions::Group>,
     pub profile: EntryAndAddress<app_definitions::User>,
     pub username: EntryAndAddress<app_definitions::UserName>,
-}
-
-#[derive(Serialize, Deserialize, DefaultJson, Debug, Clone)]
-pub struct UserPack{
-    pub pack: EntryAndAddress<app_definitions::Group>
+    pub user_perspective: EntryAndAddress<app_definitions::Channel>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -71,18 +68,13 @@ pub struct GroupMembers{
     pub members: Vec<EntryAndAddress<app_definitions::UserName>>
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-pub struct ExpressionResults<T>{
-    pub expressions: Vec<EntryAndAddress<T>>
-}
-
 #[derive(Clone)]
 pub enum HooksResultTypes{
     TimeToExpression(Vec<Address>),
-    CreatePack(UserPack),
+    CreatePack(EntryAndAddress<app_definitions::Group>),
     CreateDen(UserDens),
     LinkExpression(String),
-    CreateQueryPoints(String)
+    CreatePostIndex(String)
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -106,20 +98,20 @@ pub enum QueryType {
 
 pub type EntryAndAddressResult<T> = Vec<EntryAndAddress<T>>;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Eq, Hash)]
 pub struct EntryAndAddress<T>{
 	pub address: HashString,
 	pub entry: T
 }
 
 impl HooksResultTypes{
-    pub fn time_to_expression_result(self) -> ZomeApiResult<Vec<Address>> {
-        match self {
-            HooksResultTypes::TimeToExpression(r) => Ok(r),
-            _ => Err(ZomeApiError::from("Hook result enum value not: TimeToExpression".to_string())),
-        }
-    }
-    pub fn create_pack_result(self) -> ZomeApiResult<UserPack> {
+    // pub fn time_to_expression_result(self) -> ZomeApiResult<Vec<Address>> {
+    //     match self {
+    //         HooksResultTypes::TimeToExpression(r) => Ok(r),
+    //         _ => Err(ZomeApiError::from("Hook result enum value not: TimeToExpression".to_string())),
+    //     }
+    // }
+    pub fn create_pack_result(self) -> ZomeApiResult<EntryAndAddress<app_definitions::Group>> {
         match self {
             HooksResultTypes::CreatePack(r) => Ok(r),
             _ => Err(ZomeApiError::from("Hook result enum value not: CreatePack".to_string())),
@@ -131,18 +123,18 @@ impl HooksResultTypes{
             _ => Err(ZomeApiError::from("Hook result enum value not: CreateDen".to_string())),
         }
     }
-    pub fn link_expression_result(self) -> ZomeApiResult<String> {
-        match self {
-            HooksResultTypes::LinkExpression(r) => Ok(r),
-            _ => Err(ZomeApiError::from("Hook result enum value not: LinkExpression".to_string())),
-        }
-    }
-    pub fn create_query_points_result(self) -> ZomeApiResult<String> {
-        match self {
-            HooksResultTypes::CreateQueryPoints(r) => Ok(r),
-            _ => Err(ZomeApiError::from("Hook result enum value not: CreateQueryPoints".to_string())),
-        }
-    }
+    // pub fn link_expression_result(self) -> ZomeApiResult<String> {
+    //     match self {
+    //         HooksResultTypes::LinkExpression(r) => Ok(r),
+    //         _ => Err(ZomeApiError::from("Hook result enum value not: LinkExpression".to_string())),
+    //     }
+    // }
+    // pub fn create_post_index_result(self) -> ZomeApiResult<String> {
+    //     match self {
+    //         HooksResultTypes::CreateQueryPoints(r) => Ok(r),
+    //         _ => Err(ZomeApiError::from("Hook result enum value not: CreateQueryPoints".to_string())),
+    //     }
+    // }
 }
 
 impl<T> PartialEq for EntryAndAddress<T>{
@@ -157,42 +149,18 @@ impl From<GroupMembers> for JsonString {
     }
 }
 
-impl From<ExpressionResults<app_definitions::UserName>> for JsonString {
-    fn from(result: ExpressionResults<app_definitions::UserName>) -> JsonString{
-        JsonString::from(default_to_json(result.expressions))
-    }
-}
-
-impl From<ExpressionResults<app_definitions::ExpressionPost>> for JsonString {
-    fn from(result: ExpressionResults<app_definitions::ExpressionPost>) -> JsonString{
-        JsonString::from(default_to_json(result.expressions))
-    }
-}
-
-impl<T: Into<JsonString>> From<EntryAndAddress<T>> for JsonString  where T: Serialize{
+impl<T: Into<JsonString>> From<EntryAndAddress<T>> for JsonString  where T: Serialize + Debug{
     fn from(result: EntryAndAddress<T>) -> JsonString {
-        let entry = serde_json::to_string(&result.entry);
-        let entry_string: String;
-        match entry {
-            Ok(entry) => entry_string = entry,
-            Err(e) => return JsonString::from(HolochainError::SerializationError(e.to_string()))
-        };
-        let address = serde_json::to_string(&result.address);
-        let address_string: String;
-        match address{
-            Ok(address) => address_string = address,
-            Err(e) => return JsonString::from(HolochainError::SerializationError(e.to_string()))
-        }
-
-        json!(&format!("{{\"address\": {}, \"entry\": {}}}", address_string, entry_string)).into()
+        JsonString::from(default_to_json(result))
     }
 }
 
 //Parameters for each function in holochain application
 pub enum FunctionParameters{
     TimeToExpression{
-        tag: &'static str, 
-        direction: &'static str, 
+        link_type: String,
+        tag: String, 
+        direction: String, 
         expression_address: Address,
         context: Address,
     },
@@ -205,16 +173,18 @@ pub enum FunctionParameters{
         first_name: String
     },
     LinkExpression{
-        tag: &'static str, 
-        direction: &'static str, 
+        link_type: String,
+        tag: String, 
+        direction: String, 
         parent_expression: Address, 
         child_expression: Address
     },
-    CreateQueryPoints{
+    CreatePostIndex{
         query_points: Vec<HashMap<String, String>>, 
         context: Address, 
         privacy: app_definitions::Privacy,
-        query_type: String,
-        expression: Address
+        expression: Address,
+        index_string: String,
+        link_type: String
     }
 }

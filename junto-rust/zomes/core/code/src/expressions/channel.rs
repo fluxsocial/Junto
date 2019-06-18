@@ -9,7 +9,7 @@ use hdk::{
 };
 
 use super::utils;
-use super::group;
+// use super::group;
 use super::user;
 use super::definitions::{
     app_definitions,
@@ -25,8 +25,8 @@ use super::definitions::{
 pub fn commit_den(entry: &Entry, user: &Address) -> ZomeApiResult<Address> {
     let address = hdk::commit_entry(&entry)?;
     //Build vector describing hook functions which should run to correctly link this data
-    let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "den", direction: "reverse", parent_expression: address.clone(), child_expression: user.clone()}},
-                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{tag: "owner", direction: "forward", parent_expression: address.clone(), child_expression: user.clone()}}];
+    let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "channel".to_string(), tag: "den".to_string(), direction: "reverse".to_string(), parent_expression: address.clone(), child_expression: user.clone()}},
+                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "auth".to_string(), tag: "owner".to_string(), direction: "forward".to_string(), parent_expression: address.clone(), child_expression: user.clone()}}];
 
     utils::handle_hooks("Channel".to_string(), hook_definitions)?;
     Ok(address)
@@ -67,29 +67,39 @@ pub fn create_den(username_address: &Address, first_name: String) -> ZomeApiResu
 }
 
 pub fn is_den_owner(den: Address, user: Address) -> ZomeApiResult<bool>{
-    let den_owner_results = utils::get_links_and_load_type::<String, app_definitions::UserName>(&den, "owner".to_string())?;
+    let den_owner_results = utils::get_links_and_load_type::<app_definitions::UserName>(&den, Some("auth".to_string()), Some("owner".to_string()))?;
     Ok(den_owner_results[0].address == user)
-}
-
-pub fn create_collective_channel(context: &Address) -> ZomeApiResult<Address> {
-    let channel_entry: app_definitions::Channel;
-    if context == &Address::from(hdk::api::DNA_ADDRESS.to_string()) {
-        channel_entry = app_definitions::Channel{parent: context.clone(), name: "Collective".to_string(), 
-                                        privacy: app_definitions::Privacy::Public, channel_type: app_definitions::ChannelType::Tag};
-    } else { 
-        let user_name_address = user::get_user_username_address_by_agent_address()?;
-        if (group::is_group_member(context.clone(), user_name_address.clone())? == true) | (group::is_group_owner(context.clone(), user_name_address.clone())? == true) {
-            channel_entry = app_definitions::Channel{parent: context.clone(), name: "Collective".to_string(), 
-                                        privacy: app_definitions::Privacy::Shared, channel_type: app_definitions::ChannelType::Tag};
-        } else {
-            return Err(ZomeApiError::from("You are not a member/owner of given channel".to_string()))
-        };
-    };
-    let channel_collective_entry = Entry::App("channel".into(), channel_entry.into());
-    let address = hdk::commit_entry(&channel_collective_entry)?;
-    Ok(address)
 }
 
 pub fn get_channel_address(channel: app_definitions::Channel) -> ZomeApiResult<Address> {
     hdk::api::entry_address(&Entry::App("channel".into(), channel.into()))
+}
+
+pub fn create_perspective(name: String) -> ZomeApiResult<EntryAndAddress<app_definitions::Channel>>{
+    hdk::debug("Creating user perspective")?;
+    let current_user = user::get_user_username_by_agent_address()?;
+    let perspective_entry = app_definitions::Channel{name: name, parent: current_user.address.clone(), privacy: app_definitions::Privacy::Private, channel_type: app_definitions::ChannelType::Perspective};
+    let perspective_address = hdk::api::commit_entry(&Entry::App("channel".into(), perspective_entry.clone().into()))?;
+    hdk::api::link_entries(&current_user.address, &perspective_address, "perspective", "")?;
+    Ok(EntryAndAddress{address: perspective_address, entry: perspective_entry})
+}
+
+pub fn add_user_to_perspective(perspective: Address, target_user: Address) -> ZomeApiResult<Address>{
+    let _perspective_entry = utils::get_and_check_perspective(&perspective)?;
+    let _user_entry = hdk::api::get_entry(&target_user)?.ok_or(ZomeApiError::from("No such target user".to_string()))?;
+    let current_user = user::get_user_username_by_agent_address()?;
+    hdk::api::link_entries(&target_user, &current_user.address, "follower", "")?;
+    hdk::api::link_entries(&current_user.address, &target_user, "following", "")?;
+    hdk::api::link_entries(&perspective, &target_user, "user_perspective", "")
+}
+
+pub fn get_perspectives_users(perspective: Address) -> ZomeApiResult<Vec<EntryAndAddress<app_definitions::UserName>>> {
+    let perspective_entry = utils::get_and_check_perspective(&perspective)?;
+    let current_user = user::get_user_username_by_agent_address()?;
+    if perspective_entry.parent == current_user.address{
+        let perspective_users = utils::get_links_and_load_type::<app_definitions::UserName>(&perspective, Some("user_perspective".to_string()), None)?;
+        Ok(perspective_users)
+    } else {
+        Err(ZomeApiError::from("That is not your perspective".to_string()))
+    }
 }
