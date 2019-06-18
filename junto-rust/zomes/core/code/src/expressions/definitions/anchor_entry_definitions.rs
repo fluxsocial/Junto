@@ -36,6 +36,18 @@ pub fn anchor_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
+                "anchor",
+                link_type: "bit_prefix", //bit_prefix config entry
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
                 "channel",
                 link_type: "tag",
 

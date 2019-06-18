@@ -5,12 +5,14 @@ use hdk::{
         cas::content::Address,
         entry::Entry, 
         json::JsonString,
+        hash::HashString
     }
 };
 
 use regex::Regex;
 use std::convert::TryFrom;
 use itertools::Itertools;
+use multihash::Hash;
 
 //Our modules for holochain actins
 use super::definitions::{
@@ -37,30 +39,53 @@ pub fn get_expression(perspective: String, query_points: Vec<String>, query_opti
     hdk::debug(format!("Getting expressions with generated query string(s): {:?}", query_strings))?;
     match perspective.as_ref() {
         "random" => {
-            // match target_type {
-            //     QueryTarget::ExpressionPost => {
-            //         let expressions = get_expression::<app_definitions::ExpressionPost>(query_root, query_points, context, query_options, target_type, _query_type)?;
-            //         Ok(JsonString::from(expressions))
-            //     },
-            //     QueryTarget::User => {
-            //         let expressions = get_expression::<app_definitions::UserName>(query_root, query_points, context, query_options, target_type, _query_type)?;
-            //         Ok(JsonString::from(expressions))
-            //     }
-            // }
-            Ok(JsonString::from("random query"))
+            let seed = HashString::encode_from_str(&seed, Hash::SHA2256);
+            hdk::debug(format!("Seed addresss: {}", seed.to_string()))?;
+            let current_bit_prefix = random::get_current_bit_prefix()?;
+            let bit_prefix_bucket_id = random::hash_prefix(Address::from(seed), current_bit_prefix); //get and id for bucket to make query from using seed passed into function
+            hdk::debug(format!("Making random query with bit prefix: {}", bit_prefix_bucket_id))?;
+            let bit_prefix_bucket = hdk::entry_address(&Entry::App("bucket".into(), app_definitions::Bucket{id: bit_prefix_bucket_id}.into()))?;
+            let mut results = vec![];
+            for query_string in &query_strings{
+                results.append(&mut hdk::get_links(&bit_prefix_bucket, Some(String::from("expression_post")), Some(query_string.clone()))?.addresses());
+            };
+            match target_type{
+                QueryTarget::ExpressionPost => {
+                    let mut out = vec![];
+                    for result in results{
+                        match hdk::get_entry(&result)?{
+                            Some(Entry::App(_, entry_value)) => {
+                                let entry = app_definitions::ExpressionPost::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Links retreived from random query were not of type expression post".to_string()))?;
+                                out.push(EntryAndAddress{entry: entry, address: result})
+                            },
+                            Some(_) => {},
+                            None => {}
+                        };
+                    };
+                    Ok(JsonString::from(out))
+                },
+                QueryTarget::User => {
+                    let mut out = vec![];
+                    for result in results{
+                        out.push(utils::get_links_and_load_type::<app_definitions::UserName>(&result, Some(String::from("auth")), Some(String::from("owner")))?[0].clone());
+                    };
+                    Ok(JsonString::from(out.into_iter().unique().collect::<Vec<_>>()))
+                }
+            }
         },
 
         "dos" => {
             if dos < 1 || dos > 6{return Err(ZomeApiError::from("DOS not within bounds 1 -> 6".to_string()))};
-            match target_type {
+            let mut expressions = dos::dos_query(query_strings, query_options, query_type, dos, seed)?;
+            expressions = expressions.into_iter().unique().collect::<Vec<_>>(); //ensure all posts returned are unique
+            match target_type{
                 QueryTarget::ExpressionPost => {
-                    let expressions = dos::dos_query::<app_definitions::ExpressionPost>(query_strings , query_options, target_type, query_type, dos, seed)?;
                     let mut out = vec![];
-                    for exp in expressions{
-                        match hdk::get_entry(&exp)? {
+                    for expression in expressions{
+                        match hdk::get_entry(&expression)?{
                             Some(Entry::App(_, entry_value)) => {
                                 let entry = app_definitions::ExpressionPost::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Links retreived from DOS query were not of type expression post".to_string()))?;
-                                out.push(EntryAndAddress{entry: entry, address: exp});
+                                out.push(EntryAndAddress{entry: entry, address: expression});
                             },
                             Some(_) => return Err(ZomeApiError::from("Group address was not an app entry".to_string())),
                             None => return Err(ZomeApiError::from("No group entry at specified address".to_string()))
@@ -69,19 +94,11 @@ pub fn get_expression(perspective: String, query_points: Vec<String>, query_opti
                     Ok(JsonString::from(out))
                 },
                 QueryTarget::User => {
-                    let expressions = dos::dos_query::<app_definitions::UserName>(query_strings , query_options, target_type, query_type, dos, seed)?;
                     let mut out = vec![];
-                    for exp in expressions{
-                        match hdk::get_entry(&exp)? {
-                            Some(Entry::App(_, entry_value)) => {
-                                let entry = app_definitions::UserName::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Links retreived from DOS query were not of type username".to_string()))?;
-                                out.push(EntryAndAddress{entry: entry, address: exp});
-                            },
-                            Some(_) => return Err(ZomeApiError::from("Group address was not an app entry".to_string())),
-                            None => return Err(ZomeApiError::from("No group entry at specified address".to_string()))
-                        };
+                    for expression in expressions{
+                        out.push(utils::get_links_and_load_type::<app_definitions::UserName>(&expression, Some(String::from("auth")), Some(String::from("owner")))?[0].clone());
                     };
-                    Ok(JsonString::from(out))
+                    Ok(JsonString::from(out.into_iter().unique().collect::<Vec<_>>()))
                 }
             }
         },

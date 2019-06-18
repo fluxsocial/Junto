@@ -98,7 +98,7 @@ pub enum QueryType {
 
 pub type EntryAndAddressResult<T> = Vec<EntryAndAddress<T>>;
 
-#[derive(Serialize, Deserialize, Debug, Clone)]
+#[derive(Serialize, Deserialize, Debug, Clone, Eq, Hash)]
 pub struct EntryAndAddress<T>{
 	pub address: HashString,
 	pub entry: T

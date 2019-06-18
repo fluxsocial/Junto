@@ -105,6 +105,8 @@ pub fn create_post_attributes(query_points: &Vec<HashMap<String, String>>, expre
 pub fn create_post_index(query_points: Vec<HashMap<String, String>>, context: &Address, privacy: &app_definitions::Privacy, 
                             expression: &Address, index_string: String, link_type: String) -> ZomeApiResult<String>{
     let current_user_hash = user::get_user_username_by_agent_address()?.address;
+    //The auth here does not protect application - instead just for correct API calls
+    //if someone wants to post expression somewhere they are not allowed the function should say that and not just silently fail in validation
     match hdk::utils::get_as_type::<app_definitions::Channel>(context.clone()) {
         Ok(context_entry) => {
             hdk::debug("Context type channel, running auth")?;
