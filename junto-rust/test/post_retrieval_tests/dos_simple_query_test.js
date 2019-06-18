@@ -41,34 +41,36 @@ scenario.runTape('Can post expression and do basic DOS query', async (t, {josh, 
                                                                                     expression: 
                                                                                             {
                                                                                                 expression: {
-                                                                                                    PostExpression: {
-                                                                                                        post: "This is the first test expression"
+                                                                                                    ShortForm: {
+                                                                                                        background: "",
+                                                                                                        body: "This is the first test expression"
                                                                                                     }
                                                                                                 },
-                                                                                                expression_type: "PostExpression"
+                                                                                                expression_type: "ShortForm"
                                                                                             }, 
                                                                                     tags: ["holochain", "Junto", "social", "holo"], 
                                                                                     context: [dna]
                                                                                 });
     console.log("Post expression 1 result", post_global_expression);
-    t.equal(JSON.stringify(post_global_expression), JSON.stringify({ Ok: 'QmZ23wNYx8BNtHMcG6kYNufycR6s8dXyqWP6ySYsTbHnPg' }));
+    t.equal(JSON.stringify(post_global_expression), JSON.stringify({"Ok":"QmT9LnUxYb6dBUpwvwfDnLTsDcKTAmKYqj9LHcW3ZWyyQW"}));
     console.log("Completed posting expression\n\n\n\n");
 
     const post_private_pack_expression = await josh.callSync('core', 'post_expression', {
         expression: 
                 {
                     expression: {
-                        PostExpression: {
-                            post: "This is the second test expression"
+                        ShortForm: {
+                            background: "",
+                            body: "This is the second test expression"
                         }
                     },
-                    expression_type: "PostExpression"
+                    expression_type: "ShortForm"
                 }, 
         tags: ["holochain", "Junto", "social", "holo"], 
         context: ["QmV7H3Mhpdpj9NfFq2pgwzRd83uEjQupsHa5zwVVeCWSd2"]
     });
-    console.log("Post expression 1 result", post_private_pack_expression);
-    t.equal(JSON.stringify(post_global_expression), JSON.stringify({ Ok: 'QmZ23wNYx8BNtHMcG6kYNufycR6s8dXyqWP6ySYsTbHnPg' }));
+    console.log("Post expression 2 result", post_private_pack_expression);
+    t.equal(JSON.stringify(post_global_expression), JSON.stringify({"Ok":"QmT9LnUxYb6dBUpwvwfDnLTsDcKTAmKYqj9LHcW3ZWyyQW"}));
     console.log("Completed posting expression\n\n\n\n");
 
     let d = new Date();
@@ -77,13 +79,13 @@ scenario.runTape('Can post expression and do basic DOS query', async (t, {josh, 
     let day = d.getUTCDate();
     let hour = d.getUTCHours();    
     const make_1_dos_query = await eric.callSync('core', 'get_expression', {perspective: "dos", 
-                                                                            query_points: ["social<tag>", "junto<tag>", "holochain<tag>", "holo<tag>", "jdeepee<user>", "postexpression<type>", year+"<time:y>", "0"+month+"<time:m>", day+"<time:d>", hour+"<time:h>"],
+                                                                            query_points: ["social<tag>", "junto<tag>", "holochain<tag>", "holo<tag>", "jdeepee<user>", "shortform<type>", year+"<time:y>", "0"+month+"<time:m>", day+"<time:d>", hour+"<time:h>"],
                                                                             query_options: "FilterNew",
                                                                             target_type: "ExpressionPost",
                                                                             query_type: "And",
                                                                             dos: 1,
                                                                             seed: "totally random seed"});
     console.log("Make 1 dos query result", make_1_dos_query);
-    t.equal(JSON.stringify(make_1_dos_query), JSON.stringify({"Ok":[{"address":"QmZ23wNYx8BNtHMcG6kYNufycR6s8dXyqWP6ySYsTbHnPg","entry":{"expression_type":"PostExpression","expression":{"PostExpression":{"post":"This is the first test expression"}}}}]}));
+    t.equal(JSON.stringify(make_1_dos_query), JSON.stringify({"Ok":[{"address":"QmT9LnUxYb6dBUpwvwfDnLTsDcKTAmKYqj9LHcW3ZWyyQW","entry":{"expression_type":"ShortForm","expression":{"ShortForm":{"background":"","body":"This is the first test expression"}}}}]}));
     console.log("Completed ")
 });

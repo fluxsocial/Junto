@@ -32,14 +32,27 @@ pub enum TimeType {
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone)]
 pub enum Expression {
-    PostExpression{
-        post: String
+    LongForm{
+        title: String,
+        body: String
     },
-    VideoExpression{
-        video: String
+    ShortForm{
+        background: String,
+        body: String
     },
-    LongFormExpression{
-        post: String
+    PhotoForm{
+        image: String,
+        caption: String
+    },
+    EventForm{
+        title: String,
+        date: String,
+        location: String,
+        details: String
+    },
+    BulletForm{
+        title: String,
+        bullets: Vec<String>
     }
 }
 
