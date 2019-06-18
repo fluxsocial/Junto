@@ -24,18 +24,6 @@ pub fn anchor_definition() -> ValidatingEntryType {
 
         links: [            
             to!(
-                "username",
-                link_type: "registered",
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
                 "anchor",
                 link_type: "bit_prefix", //bit_prefix config entry
 

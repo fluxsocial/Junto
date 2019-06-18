@@ -161,8 +161,7 @@ pub enum FunctionParameters{
         link_type: String,
         tag: String, 
         direction: String, 
-        expression_address: Address,
-        context: Address,
+        expression_address: Address
     },
     CreatePack{
         username_address: Address,

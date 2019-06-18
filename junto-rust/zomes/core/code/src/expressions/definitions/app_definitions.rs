@@ -96,7 +96,6 @@ pub struct Group {
 //Possible that Time could be handles by Channel Expression Object
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct Time {
-    pub parent: HashString,
     pub time: String,
     pub time_type: TimeType
 }  

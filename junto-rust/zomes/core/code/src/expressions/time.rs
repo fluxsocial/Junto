@@ -16,12 +16,12 @@ use super::definitions::{
     app_definitions
 };
 
-pub fn time_to_expression(link_type: String, tag: String, direction: String, expression_address: &Address, context: &Address) -> ZomeApiResult<Vec<Address>> {
+pub fn time_to_expression(link_type: String, tag: String, direction: String, expression_address: &Address) -> ZomeApiResult<Vec<Address>> {
     let timestamps = 
         match hdk::get_entry_result(expression_address, GetEntryOptions {headers: true, ..Default::default()},)?.result {
             GetEntryResultType::Single(result) => {
                 let iso_timestamp = serde_json::to_string(&result.headers[0].timestamp()).map_err(|err| ZomeApiError::from(err.to_string()))?;
-                create_timestamps(context, &iso_timestamp)?
+                create_timestamps(&iso_timestamp)?
             },  
             GetEntryResultType::All(_entry_history) => {
                 return Err(ZomeApiError::from("EntryResultType not of enum variant Single".to_string()))
@@ -40,11 +40,11 @@ pub fn time_to_expression(link_type: String, tag: String, direction: String, exp
 
 //Create timestamp functions should not use datatime but instead should use the timestamp in the entry header for the expression that will be linked to the timestamp
 //Create and link current timestamps (year, month, day) to given parent address - returns vector of timestamps
-pub fn create_timestamps(parent: &Address, iso_timestamp: &String) -> ZomeApiResult<Vec<Address>> {
-    let timestamps = vec![Entry::App("time".into(), app_definitions::Time{time: iso_timestamp[0..5].to_string(), parent: parent.clone(), time_type: app_definitions::TimeType::Year}.into()),
-                        Entry::App("time".into(), app_definitions::Time{time: iso_timestamp[6..8].to_string(), parent: parent.clone(), time_type: app_definitions::TimeType::Month}.into()),
-                        Entry::App("time".into(), app_definitions::Time{time: iso_timestamp[9..11].to_string(), parent: parent.clone(), time_type: app_definitions::TimeType::Day}.into()),
-                        Entry::App("time".into(), app_definitions::Time{time: iso_timestamp[12..14].to_string(), parent: parent.clone(), time_type: app_definitions::TimeType::Hour}.into())];
+pub fn create_timestamps(iso_timestamp: &String) -> ZomeApiResult<Vec<Address>> {
+    let timestamps = vec![Entry::App("time".into(), app_definitions::Time{time: iso_timestamp[0..5].to_string(), time_type: app_definitions::TimeType::Year}.into()),
+                        Entry::App("time".into(), app_definitions::Time{time: iso_timestamp[6..8].to_string(), time_type: app_definitions::TimeType::Month}.into()),
+                        Entry::App("time".into(), app_definitions::Time{time: iso_timestamp[9..11].to_string(), time_type: app_definitions::TimeType::Day}.into()),
+                        Entry::App("time".into(), app_definitions::Time{time: iso_timestamp[12..14].to_string(), time_type: app_definitions::TimeType::Hour}.into())];
     let mut timestamp_address = vec![];
 
     for timestamp in timestamps{

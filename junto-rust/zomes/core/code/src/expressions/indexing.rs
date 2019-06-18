@@ -47,46 +47,34 @@ pub fn create_post_attributes(query_points: &Vec<HashMap<String, String>>, expre
             },
 
             "time:y" => {
-                hdk::debug("Linking time:y to expression")?;
-                let time_anchor = hdk::commit_entry(&Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: "time".to_string()}.into()))?;   
+                hdk::debug("Linking time:y to expression")?; 
                 let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
-                                        parent: time_anchor.clone(), time_type: app_definitions::TimeType::Year}.into()).into();
+                                        time_type: app_definitions::TimeType::Year}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(&time_anchor, &address, "time", &query_param["value"])?;
-                hdk::debug(format!("Linked time: {} to time anchor", query_param["value"]))?;
                 hdk::api::link_entries(expression, &address, "time", "year")?;
             },
 
             "time:m" => {
-                hdk::debug("Linking time:m to expression")?;
-                let time_anchor = hdk::commit_entry(&Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: "time".to_string()}.into()))?;   
+                hdk::debug("Linking time:m to expression")?; 
                 let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
-                                        parent: time_anchor.clone(), time_type: app_definitions::TimeType::Month}.into()).into();
+                                        time_type: app_definitions::TimeType::Month}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(&time_anchor, &address, "time", &query_param["value"])?;
-                hdk::debug(format!("Linked time: {} to time anchor", query_param["value"]))?;
                 hdk::api::link_entries(&expression, &address, "time", "month")?;
             },
 
             "time:d" => {
-                hdk::debug("Linking time:d to expression")?;
-                let time_anchor = hdk::commit_entry(&Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: "time".to_string()}.into()))?;   
+                hdk::debug("Linking time:d to expression")?; 
                 let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
-                                        parent: time_anchor.clone(), time_type: app_definitions::TimeType::Day}.into()).into();
+                                        time_type: app_definitions::TimeType::Day}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(&time_anchor, &address, "time", &query_param["value"])?;
-                hdk::debug(format!("Linked time: {} to time anchor", query_param["value"]))?;
                 hdk::api::link_entries(&expression, &address, "time", "day")?;
             },
 
             "time:h" => {
-                hdk::debug("Linking time:h to expression")?;
-                let time_anchor = hdk::commit_entry(&Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: "time".to_string()}.into()))?;   
+                hdk::debug("Linking time:h to expression")?; 
                 let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
-                                        parent: time_anchor.clone(), time_type: app_definitions::TimeType::Hour}.into()).into();
+                                        time_type: app_definitions::TimeType::Hour}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(&time_anchor, &address, "time", &query_param["value"])?;
-                hdk::debug(format!("Linked time: {} to time anchor", query_param["value"]))?;
                 hdk::api::link_entries(&expression, &address, "time", "hour")?;
             },
 
@@ -154,28 +142,28 @@ pub fn create_post_index(query_points: Vec<HashMap<String, String>>, context: &A
 
             "time:y" => {
                 let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
-                                        parent: context.clone(), time_type: app_definitions::TimeType::Year}.into()).into();
+                                        time_type: app_definitions::TimeType::Year}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
                 hdk::api::link_entries(&context, &address, "time", &query_param["value"])?;
             },
 
             "time:m" => {
                 let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
-                                        parent: context.clone(), time_type: app_definitions::TimeType::Month}.into()).into();
+                                        time_type: app_definitions::TimeType::Month}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
                 hdk::api::link_entries(&context, &address, "time", &query_param["value"])?;
             },
 
             "time:d" => {
                 let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
-                                        parent: context.clone(), time_type: app_definitions::TimeType::Day}.into()).into();
+                                        time_type: app_definitions::TimeType::Day}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
                 hdk::api::link_entries(&context, &address, "time", &query_param["value"])?;
             },
 
             "time:h" => {
                 let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
-                                        parent: context.clone(), time_type: app_definitions::TimeType::Hour}.into()).into();
+                                        time_type: app_definitions::TimeType::Hour}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
                 hdk::api::link_entries(&context, &address, "time", &query_param["value"])?;
             },
