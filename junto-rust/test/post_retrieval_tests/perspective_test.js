@@ -9,7 +9,7 @@ const agentEric = Config.agent("eric");
 const agentJosh = Config.agent("josh")
 const instanceJosh = Config.instance(agentJosh, dna)
 const instanceEric = Config.instance(agentEric, dna);
-const scenario = new Scenario([instanceJosh, instanceEric], {debugLog: false}) 
+const scenario = new Scenario([instanceJosh, instanceEric], {debugLog: true}) 
 
 scenario.runTape('Can add, get users from perspective and get posts from a perspective', async (t, {josh, eric}) => {
     //create user josh
