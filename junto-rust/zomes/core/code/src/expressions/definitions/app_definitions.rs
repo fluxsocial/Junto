@@ -67,6 +67,12 @@ pub struct Bucket {
     pub id: u32,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone, DefaultJson)]
+pub struct Config {
+    pub config_type: String,
+    pub value: String,
+}
+
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct User {
     pub parent: HashString, //Parent HashString data objects to be contextual to given data trees

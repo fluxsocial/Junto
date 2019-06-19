@@ -7,3 +7,4 @@ pub mod user_entry_definitions;
 pub mod function_definitions;
 pub mod anchor_entry_definitions;
 pub mod bucket_entry_definitions;
+pub mod config_entry_definitions;

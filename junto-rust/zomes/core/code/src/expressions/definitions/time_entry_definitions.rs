@@ -70,7 +70,7 @@ pub fn time_definiton() -> ValidatingEntryType {
                     Ok(())
                 }
             ),
-            to!(
+            from!(
                 "group",
                 link_type: "group", //Link groups to time which they are created
     
@@ -82,7 +82,7 @@ pub fn time_definiton() -> ValidatingEntryType {
                     Ok(())
                 }            
             ),
-            to!(
+            from!(
                 "username",
                 link_type: "user", //Link user to time which they are created
 

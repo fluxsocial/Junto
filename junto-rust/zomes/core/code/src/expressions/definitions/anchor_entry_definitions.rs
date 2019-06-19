@@ -25,7 +25,7 @@ pub fn anchor_definition() -> ValidatingEntryType {
 
         links: [            
             to!(
-                "anchor",
+                "config",
                 link_type: "bit_prefix", //bit_prefix config entry
 
                 validation_package: || {
