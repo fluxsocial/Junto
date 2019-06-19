@@ -8,7 +8,7 @@ const agentJosh = Config.agent("josh")
 const agentEric = Config.agent("eric")
 const instanceJosh = Config.instance(agentJosh, dna)
 const instanceEric = Config.instance(agentEric, dna)
-const scenario = new Scenario([instanceJosh, instanceEric], {debugLog: false}) 
+const scenario = new Scenario([instanceJosh, instanceEric], {debugLog: true}) 
 
 scenario.runTape('Can post expression and do basic DOS query', async (t, {josh, eric}) => {
     const register_result = await josh.callSync('core', 'create_user', {user_data: {username: "jdeepee", first_name: "Josh", last_name: "Parkin", bio: "Junto Testing", profile_picture: "pictureurl"}});

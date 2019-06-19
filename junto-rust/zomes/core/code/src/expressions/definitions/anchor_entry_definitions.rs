@@ -2,8 +2,9 @@ use hdk::{
     self,
     entry_definition::ValidatingEntryType,
     holochain_core_types::{
+        entry::Entry,
         dna::entry_types::Sharing
-    },
+    }
 };
 
 use super::app_definitions;
@@ -43,8 +44,38 @@ pub fn anchor_definition() -> ValidatingEntryType {
                     hdk::ValidationPackageDefinition::Entry
                 },
 
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
+                validation: |validation_data: hdk::LinkValidationData| {
+                    let bit_prefix_base_anchor = hdk::entry_address(&Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: "bit_prefix".to_string()}.into()))?;
+                    match validation_data{
+                        hdk::LinkValidationData::LinkAdd{link, validation_data} => {
+                            if *link.link.base() != bit_prefix_base_anchor{
+                                Err("Base of link is not equal to bit prefix anchor".to_string())
+                            } else {
+                                // let provenances = validation_data.package.chain_header.provenances();
+                                // hdk::debug(format!("Provenances: {:?}", provenances))?;
+                                // let entry = hdk::get_entry(link.link.target())?.unwrap();
+                                // hdk::debug(format!("Target entry: {:?}", entry))?;
+                                // if provenances[0].source != pub_key_of_our_agent | hdk::verify_signature(provenances[0], entry){ //validate source against our agent
+                                //     return Err("You are not allowed to make that link".to_string())
+                                // };
+                                Ok(())
+                            }
+                        },
+                        hdk::LinkValidationData::LinkRemove{link, validation_data} =>{
+                            if *link.link.base() != bit_prefix_base_anchor{
+                                Err("Base of link is not equal to bit prefix anchor".to_string())
+                            } else {
+                                // let provenances = validation_data.package.chain_header.provenances();
+                                // hdk::debug(format!("Provenances: {:?}", provenances))?;
+                                // let entry = hdk::get_entry(link.link.target())?.unwrap();
+                                // hdk::debug(format!("Target entry: {:?}", entry))?;
+                                // if provenances[0].source != pub_key_of_our_agent | hdk::verify_signature(provenances[0], entry){ //validate source against our agent
+                                //     return Err("You are not allowed to make that link".to_string())
+                                // };
+                                Ok(())
+                            }
+                        }
+                    }
                 }
             ),
             to!(
