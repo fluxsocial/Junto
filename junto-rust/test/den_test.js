@@ -7,7 +7,7 @@ const dnaPath = "./dist/junto-rust.dna.json";
 const dna = Config.dna(dnaPath);
 const agentJosh = Config.agent("josh");
 const instanceJosh = Config.instance(agentJosh, dna);
-const scenario = new Scenario([instanceJosh]);
+const scenario = new Scenario([instanceJosh], {debugLog: true});
 
 scenario.runTape('Retrieve den(s) and make auth operations on den.', async (t, {josh}) => {
     //create user
