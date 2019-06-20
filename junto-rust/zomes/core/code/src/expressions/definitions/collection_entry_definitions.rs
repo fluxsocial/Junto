@@ -8,17 +8,17 @@ use hdk::{
 //Entry Definition(s)
 use super::app_definitions;
 
-pub fn channel_definition() -> ValidatingEntryType {
+pub fn collection_definition() -> ValidatingEntryType {
     entry!(
-        name: "channel",
-        description: "Channel Object Entry",
+        name: "collection",
+        description: "Collection Object Entry",
         sharing: Sharing::Public,
 
         validation_package: || {
             hdk::ValidationPackageDefinition::Entry
         },
 
-        validation: |_validation_data: hdk::EntryValidationData<app_definitions::Channel>| {
+        validation: |_validation_data: hdk::EntryValidationData<app_definitions::Collection>| {
             Ok(())
         },
 
@@ -37,7 +37,7 @@ pub fn channel_definition() -> ValidatingEntryType {
             ),
             to!(
                 "time",
-                link_type: "time", //Link for channels which are being used as an anchor for users to store a collection of private/shared/public posts
+                link_type: "time", //Time attribute of collections creation 
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -49,7 +49,7 @@ pub fn channel_definition() -> ValidatingEntryType {
             ), 
             to!( 
                 "expression_post",
-                link_type: "expression_post", //post to channel which is being used as an anchor for users to store a collection of private/shared/public posts
+                link_type: "expression_post", 
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -74,18 +74,6 @@ pub fn channel_definition() -> ValidatingEntryType {
             to!(
                 "tag",
                 link_type: "expression_type",
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
-                "username",
-                link_type: "user_perspective", //link to a user who is part of a given perspective
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

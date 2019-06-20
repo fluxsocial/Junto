@@ -34,7 +34,8 @@ define_zome! {
         expressions::definitions::user_entry_definitions::user_name_definition(),
         expressions::definitions::user_entry_definitions::user_definition(),
         expressions::definitions::time_entry_definitions::time_definiton(),
-        expressions::definitions::channel_entry_definitions::channel_definition(),
+        expressions::definitions::collection_entry_definitions::collection_definition(),
+        expressions::definitions::perspective_entry_definitions::perspective_definition(),
         expressions::definitions::group_entry_definitions::group_definition(),
         expressions::definitions::post_entry_definitions::post_definition(),
         expressions::definitions::anchor_entry_definitions::anchor_definition(),
@@ -84,7 +85,7 @@ define_zome! {
         is_den_owner: {
             inputs: |den: Address, user: Address|,
             outputs: |result: ZomeApiResult<bool>|,
-            handler: expressions::channel::is_den_owner
+            handler: expressions::collection::is_den_owner
         }
         user_pack: {
             inputs: |username_address: HashString|,
@@ -132,11 +133,6 @@ define_zome! {
             outputs: |result: ZomeApiResult<String>|,
             handler: expressions::post::handle_resonation
         }
-        get_channel_address: {
-            inputs: |channel: app_definitions::Channel|,
-            outputs: |result: ZomeApiResult<Address>|,
-            handler: expressions::channel::get_channel_address
-        }
         get_time_address: {
             inputs: |time: app_definitions::Time|,
             outputs: |result: ZomeApiResult<Address>|,
@@ -149,18 +145,18 @@ define_zome! {
         }
         create_perspective: {
             inputs: |name: String|,
-            outputs: |result: ZomeApiResult<function_definitions::EntryAndAddress<app_definitions::Channel>>|,
-            handler: expressions::channel::create_perspective
+            outputs: |result: ZomeApiResult<function_definitions::EntryAndAddress<app_definitions::Perspective>>|,
+            handler: expressions::perspective::create_perspective
         }
         add_user_to_perspective: {
             inputs: |perspective: Address, target_user: Address|,
             outputs: |result: ZomeApiResult<Address>|,
-            handler: expressions::channel::add_user_to_perspective
+            handler: expressions::perspective::add_user_to_perspective
         }
         get_perspectives_users: {
             inputs: |perspective: Address|,
             outputs: |result: ZomeApiResult<Vec<function_definitions::EntryAndAddress<app_definitions::UserName>>>|,
-            handler: expressions::channel::get_perspectives_users
+            handler: expressions::perspective::get_perspectives_users
         }
         update_bit_prefix: {
             inputs: |bit_prefix: u32|,
@@ -187,7 +183,6 @@ define_zome! {
             get_expression,
             post_expression,
             resonation,
-            get_channel_address,
             get_time_address,
             show_env,
             add_user_to_perspective,

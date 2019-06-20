@@ -47,20 +47,20 @@ pub struct FunctionDescriptor{
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct UserDens{
-    pub private_den: EntryAndAddress<app_definitions::Channel>,
-    pub shared_den: EntryAndAddress<app_definitions::Channel>,
-    pub public_den: EntryAndAddress<app_definitions::Channel>,
+    pub private_den: EntryAndAddress<app_definitions::Collection>,
+    pub shared_den: EntryAndAddress<app_definitions::Collection>,
+    pub public_den: EntryAndAddress<app_definitions::Collection>,
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 pub struct JuntoUser{
-    pub private_den: EntryAndAddress<app_definitions::Channel>,
-    pub shared_den: EntryAndAddress<app_definitions::Channel>,
-    pub public_den: EntryAndAddress<app_definitions::Channel>,
+    pub private_den: EntryAndAddress<app_definitions::Collection>,
+    pub shared_den: EntryAndAddress<app_definitions::Collection>,
+    pub public_den: EntryAndAddress<app_definitions::Collection>,
     pub pack: EntryAndAddress<app_definitions::Group>,
     pub profile: EntryAndAddress<app_definitions::User>,
     pub username: EntryAndAddress<app_definitions::UserName>,
-    pub user_perspective: EntryAndAddress<app_definitions::Channel>,
+    pub user_perspective: EntryAndAddress<app_definitions::Perspective>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]

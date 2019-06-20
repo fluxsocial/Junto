@@ -15,12 +15,6 @@ pub enum Privacy {
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone)]
-pub enum ChannelType {
-    Den,
-    Perspective
-}
-
-#[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone)]
 pub enum TagType {
     Tag,
     Type
@@ -93,13 +87,19 @@ pub struct UserName {
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
-pub struct Channel {
-    //Channels expressions through given objects to provide searchable tree's 
-    pub parent: HashString, //This allows unique channels no matter the name - for example dens from agents with the same first name
+pub struct Collection {
+    pub parent: HashString,
     pub name: String,
-    pub privacy: Privacy, //Privacy enum 
-    pub channel_type: ChannelType
+    pub privacy: Privacy //Privacy enum 
 }
+
+#[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
+pub struct Perspective {
+    pub parent: HashString,
+    pub name: String
+}
+
+// Attribute - channel, time and type
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct Tag {

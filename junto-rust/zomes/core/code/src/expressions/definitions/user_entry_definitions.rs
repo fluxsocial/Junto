@@ -119,8 +119,8 @@ pub fn user_name_definition() -> ValidatingEntryType {
                 }
             ),
             to!( 
-                "channel",
-                link_type: "channel", //Link type to associate a channel with a user - tag can then define channel type; in our case/implementation: den
+                "collection",
+                link_type: "collection", //Link type to associate a collection with a user - tag can then define collection type; in our case/implementation: den
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -131,7 +131,7 @@ pub fn user_name_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "channel",
+                "perspective",
                 link_type: "perspective", //link to a users perspective
 
                 validation_package: || {

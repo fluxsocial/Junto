@@ -36,7 +36,7 @@ pub fn post_definition() -> ValidatingEntryType {
             ),
             to!(
                 "tag",
-                link_type: "tags", //channels which an expression is a part of 
+                link_type: "tags", 
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
