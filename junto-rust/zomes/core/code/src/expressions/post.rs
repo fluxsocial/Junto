@@ -175,7 +175,7 @@ pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
     let user_name_address = user::get_user_username_by_agent_address()?.address;
     let user_pack = user::get_user_pack(user_name_address.clone())?.address;
 
-    let channels = utils::get_links_and_load_type::<app_definitions::Channel>(&expression, Some("expression_channels".to_string()), None)?;
+    let channels = utils::get_links_and_load_type::<app_definitions::Channel>(&expression, Some("tags".to_string()), None)?;
     let times = utils::get_links_and_load_type::<app_definitions::Time>(&expression, Some("time".to_string()), None)?;
     let exp_type = utils::get_links_and_load_type::<app_definitions::Channel>(&expression, Some("expression_type".to_string()), None)?;
     
