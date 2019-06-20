@@ -128,27 +128,3 @@ pub struct Time {
     pub time: String,
     pub time_type: TimeType
 }  
-
-pub fn get_user_hook_definitions() -> Vec<&'static str> {
-    vec!["time_to_expression", "create_pack", "create_den"]
-}
-
-pub fn get_channel_hook_definitions() -> Vec<&'static str> {
-    vec!["link_expression"]
-}
-
-pub fn get_post_expression_hook_definitions() -> Vec<&'static str> {
-    vec!["time_to_expression", "link_expression", "create_post_index"]
-}
-
-pub fn get_group_hook_definitions() -> Vec<&'static str> {
-    vec!["time_to_expression", "link_expression"]
-}
-
-pub fn get_resonation_hook_definitions() -> Vec<&'static str> {
-    vec![]
-}
-
-pub fn get_time_hook_definitions() -> Vec<&'static str>{
-    vec![]
-}

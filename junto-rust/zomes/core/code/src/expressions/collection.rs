@@ -28,7 +28,7 @@ pub fn commit_den(entry: &Entry, user: &Address) -> ZomeApiResult<Address> {
     let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "collection".to_string(), tag: "den".to_string(), direction: "reverse".to_string(), parent_expression: address.clone(), child_expression: user.clone()}},
                                 FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "auth".to_string(), tag: "owner".to_string(), direction: "forward".to_string(), parent_expression: address.clone(), child_expression: user.clone()}}];
 
-    utils::handle_hooks("Channel".to_string(), hook_definitions)?;
+    utils::handle_hooks(hook_definitions)?;
     Ok(address)
 }
 

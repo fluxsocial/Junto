@@ -84,7 +84,7 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut t
     let hook_definitions = build_hooks(context, &address, &query_points, index_string)?; //build function hooks that need to be ran on expression based on which contexts are being used
     hdk::debug("Hook defnitions generated")?;
 
-    utils::handle_hooks("ExpressionPost".to_string(), hook_definitions)?;
+    utils::handle_hooks(hook_definitions)?;
     Ok(address)
 }
 
@@ -194,6 +194,6 @@ pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
     //add link on expression to user who made the resonation?
     let hook_definitions = vec![FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{query_points: query_points.clone(), context: user_pack.clone(), privacy: app_definitions::Privacy::Shared, expression: expression.clone(), index_string: index_string.clone(), link_type: "resonation".to_string()}},
                                 FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "resonation".to_string(), tag: "".to_string(), direction: "both".to_string(), parent_expression: user_pack, child_expression: expression}}];
-    utils::handle_hooks("Resonation".to_string(), hook_definitions)?;
+    utils::handle_hooks(hook_definitions)?;
     Ok("Resonation Generated".to_string())
 }

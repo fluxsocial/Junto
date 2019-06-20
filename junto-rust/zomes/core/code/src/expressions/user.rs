@@ -64,7 +64,7 @@ pub fn handle_create_user(user_data: CreateUserInformation) -> ZomeApiResult<Jun
                                 FunctionDescriptor{name: "create_pack", parameters: FunctionParameters::CreatePack{username_address: username_address.clone(), first_name: user_data.first_name.clone()}},
                                 FunctionDescriptor{name: "create_den", parameters: FunctionParameters::CreateDen{username_address: username_address.clone(), first_name: user_data.first_name}}];
 
-    let hook_result = utils::handle_hooks("User".to_string(), hook_definitions)?;
+    let hook_result = utils::handle_hooks(hook_definitions)?;
     let pack = hook_result[1].clone().create_pack_result()?;
     let dens = hook_result[2].clone().create_den_result()?;
     let user_perspective = perspective::create_perspective("Default Perspective".to_string())?;

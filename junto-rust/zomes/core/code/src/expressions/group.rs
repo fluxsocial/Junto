@@ -37,7 +37,7 @@ pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiRes
                                 FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "group".to_string(), tag: "pack".to_string(), direction: "reverse".to_string(), parent_expression: address.clone(), child_expression: username_address.clone()}},
                                 FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "auth".to_string(), tag: "owner".to_string(), direction: "forward".to_string(), parent_expression: address.clone(), child_expression: username_address.clone()}}];
 
-    let _hook_result = utils::handle_hooks("Group".to_string(), hook_definitions)?;
+    let _hook_result = utils::handle_hooks(hook_definitions)?;
     //channel::create_collective_channel(&address)?;
     Ok(EntryAndAddress{entry: pack, address: address})
 }
