@@ -13,8 +13,8 @@ use super::definitions::app_definitions;
 
 pub fn get_current_bit_prefix() -> ZomeApiResult<u32>{
     let bit_prefix_anchor = hdk::commit_entry(&Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: String::from("bit_prefix")}.into()))?;
-    let bit_prefixs = hdk::utils::get_links_and_load_type::<app_definitions::Anchor>(&bit_prefix_anchor, Some(String::from("bit_prefix")), None)?;
-    Ok(bit_prefixs[0].anchor_type.parse::<u32>().unwrap())
+    let bit_prefixs = hdk::utils::get_links_and_load_type::<app_definitions::Config>(&bit_prefix_anchor, Some(String::from("bit_prefix")), None)?;
+    Ok(bit_prefixs[0].value.parse::<u32>().unwrap())
 }
 
 pub fn update_bit_prefix(bit_prefix: u32) -> ZomeApiResult<u32>{
@@ -23,7 +23,7 @@ pub fn update_bit_prefix(bit_prefix: u32) -> ZomeApiResult<u32>{
     if bit_prefixs.len() > 0{
         hdk::remove_link(&bit_prefix_anchor, &bit_prefixs[0], "bit_prefix", "")?;
     };
-    let bit_prefix_entry = Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: bit_prefix.to_string()}.into());
+    let bit_prefix_entry = Entry::App("config".into(), app_definitions::Config{value: bit_prefix.to_string(), config_type: "bit_prefix".to_string()}.into());
     let bit_prefix_address = hdk::commit_entry(&bit_prefix_entry)?;
     hdk::link_entries(&bit_prefix_anchor, &bit_prefix_address, "bit_prefix", "")?;
     Ok(bit_prefix)

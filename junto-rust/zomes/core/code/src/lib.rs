@@ -38,7 +38,9 @@ define_zome! {
         expressions::definitions::group_entry_definitions::group_definition(),
         expressions::definitions::post_entry_definitions::post_definition(),
         expressions::definitions::anchor_entry_definitions::anchor_definition(),
-        expressions::definitions::bucket_entry_definitions::bucket_definition()
+        expressions::definitions::bucket_entry_definitions::bucket_definition(),
+        expressions::definitions::config_entry_definitions::config_definition(),
+        expressions::definitions::tag_entry_definitions::tag_definition()
     ]
 
     genesis: || { 

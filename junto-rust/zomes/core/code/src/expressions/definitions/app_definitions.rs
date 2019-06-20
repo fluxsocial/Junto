@@ -16,10 +16,14 @@ pub enum Privacy {
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone)]
 pub enum ChannelType {
-    Tag, 
     Den,
-    Type,
     Perspective
+}
+
+#[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone)]
+pub enum TagType {
+    Tag,
+    Type
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone)]
@@ -67,9 +71,15 @@ pub struct Bucket {
     pub id: u32,
 }
 
+#[derive(Serialize, Deserialize, Debug, Clone, DefaultJson, PartialEq)]
+pub struct Config {
+    pub config_type: String,
+    pub value: String,
+}
+
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct User {
-    pub parent: HashString, //Parent HashString data objects to be contextual to given data trees
+    pub parent: HashString, //Parent HashString allows user object to be unique for a given username
     pub first_name: String,
     pub last_name: String,
     pub bio: String,
@@ -85,10 +95,18 @@ pub struct UserName {
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct Channel {
     //Channels expressions through given objects to provide searchable tree's 
-    pub parent: HashString, //Should either be app hash for normal expression channel or user hash for den
+    pub parent: HashString, //This allows unique channels no matter the name - for example dens from agents with the same first name
     pub name: String,
     pub privacy: Privacy, //Privacy enum 
     pub channel_type: ChannelType
+}
+
+#[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
+pub struct Tag {
+    //Attribute of an expressions post - topics & type
+    pub value: String,
+    pub privacy: Privacy, //Privacy enum 
+    pub tag_type: TagType
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
@@ -100,16 +118,13 @@ pub struct ExpressionPost {
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct Group {
-    pub parent: HashString,
     pub name: String,
     pub owner: Address,
     pub privacy: Privacy 
 }
 
-//Possible that Time could be handles by Channel Expression Object
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct Time {
-    pub parent: HashString,
     pub time: String,
     pub time_type: TimeType
 }  

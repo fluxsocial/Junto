@@ -49,9 +49,9 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
                 match &hook_descriptor.name{ //Match function names
                     &"time_to_expression" => {
                         match &hook_descriptor.parameters{
-                            FunctionParameters::TimeToExpression {link_type, tag, direction, expression_address, context} => {
+                            FunctionParameters::TimeToExpression {link_type, tag, direction, expression_address} => {
                                 hdk::debug("Running time_to_expression")?;
-                                let time_addresses = time::time_to_expression(link_type.to_string(), tag.to_string(), direction.to_string(), &expression_address, &context)?;
+                                let time_addresses = time::time_to_expression(link_type.to_string(), tag.to_string(), direction.to_string(), &expression_address)?;
                                 hdk::debug("Ran time_to_expression")?;
                                 hook_result_outputs.push(HooksResultTypes::TimeToExpression(time_addresses));
                             },
