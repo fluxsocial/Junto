@@ -39,7 +39,7 @@ pub struct CreateUserInformation{
     pub bio: String
 }
 
-//Basic struct to be used to describe a function and its parameters to the handle_hooks & handle_contextual_links functions
+//Basic struct to be used to describe a function and its parameters to the handle_hooks function
 pub struct FunctionDescriptor{  
     pub name: &'static str,
     pub parameters: FunctionParameters,

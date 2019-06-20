@@ -22,30 +22,6 @@ pub fn group_definition() -> ValidatingEntryType {
         },
 
         links: [
-            from!(
-                "username",
-                link_type: "group", //Link type to associate a group with a user - tag can then define group type; in our case/implementation: pack
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            from!(
-                "username",
-                link_type: "auth", //link type which will handle all auth links e.g: owner, member etc
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
             to!(
                 "username",
                 link_type: "auth", //link type which will handle all auth links e.g: owner, member etc
@@ -58,7 +34,7 @@ pub fn group_definition() -> ValidatingEntryType {
                     Ok(())
                 }
             ),
-            from!(
+            to!(
                 "time",
                 link_type: "group", //Link groups to time which they are created
 
@@ -95,7 +71,7 @@ pub fn group_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "channel",
+                "tag",
                 link_type: "tag", //Channel within group
 
                 validation_package: || {
@@ -107,7 +83,7 @@ pub fn group_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "channel",
+                "tag",
                 link_type: "expression_type", //Channel within group
 
                 validation_package: || {

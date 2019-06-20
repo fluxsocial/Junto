@@ -22,55 +22,7 @@ pub fn post_definition() -> ValidatingEntryType {
         },
 
         links: [
-            from!(
-                "username",
-                link_type: "expression_post", //users posts links
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            from!(
-                "channel",
-                link_type: "expression_post", //links on public channels
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            from!(
-                "channel",
-                link_type: "local_expression_post", //links on private channels
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            from!(
-                "group",
-                link_type: "expression_post",  //links from within groups to expression
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            from!(
+            to!(
                 "time",
                 link_type: "expression_post", 
 
@@ -83,8 +35,8 @@ pub fn post_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "channel",
-                link_type: "expression_channels", //channels which an expression is a part of 
+                "tag",
+                link_type: "tags", //channels which an expression is a part of 
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -95,7 +47,7 @@ pub fn post_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "channel",
+                "tag",
                 link_type: "expression_type", //type which expression is
 
                 validation_package: || {

@@ -23,18 +23,6 @@ pub fn channel_definition() -> ValidatingEntryType {
         },
 
         links: [
-            from!( 
-                "username",
-                link_type: "channel", //Link type to associate a channel with a user - tag can then define channel type; in our case/implementation: den
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
             to!(
                 "username",
                 link_type: "auth", //link type which will handle all auth links e.g: owner, member etc
@@ -71,9 +59,9 @@ pub fn channel_definition() -> ValidatingEntryType {
                     Ok(())
                 }
             ),
-            from!(
-                "channel",
-                link_type: "tag", //sub channel 
+            to!(
+                "tag",
+                link_type: "tag", 
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -83,33 +71,9 @@ pub fn channel_definition() -> ValidatingEntryType {
                     Ok(())
                 }
             ),
-            from!(
-                "channel",
-                link_type: "expression_type", //sub channel (type)
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            from!( //group related links
-                "group",
-                link_type: "channel", //channel inside group
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            from!(
-                "expression_post",
-                link_type: "expression_channels", //channels on any expression
+            to!(
+                "tag",
+                link_type: "expression_type",
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

@@ -46,45 +46,9 @@ pub fn time_definiton() -> ValidatingEntryType {
                     Ok(())
                 }
             ),
-            from!(
-                "expression_post",
-                link_type: "time", //time entries which the expression is associated to
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
             to!(
                 "expression_post",
                 link_type: "expression_post", //expression posts which are associated to this time
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            from!(
-                "group",
-                link_type: "group", //Link groups to time which they are created
-    
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }            
-            ),
-            from!(
-                "username",
-                link_type: "user", //Link user to time which they are created
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
