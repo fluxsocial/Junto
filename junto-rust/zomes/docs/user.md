@@ -15,7 +15,7 @@ Success: {Ok: {
     private_den: {address: address, entry: {"parent":"parent object (user address)", "name": "den_name", "privacy": "Private", "channel_type": "Den"}},
     shared_den: {address: address, entry: {"parent":"parent object (user address)", "name": "den_name", "privacy": "Shared", "channel_type": "Den"}},
     public_den: {address: address, entry:  {"parent":"parent object (user address)", "name": "den_name", "privacy": "Public", "channel_type": "Den"}},
-    pack: {address: address, entry: {"parent": "parent object(user address)", "name": "pack name", "owner": "user address", "privacy": "Shared"}},
+    pack: {address: address, entry: {"name": "pack name", "owner": "user address", "privacy": "Shared"}},
     profile:  {address: address, entry:{ parent: 'parent object (user address)', first_name: 'first_name', last_name: 'last_name', bio: 'bio', profile_picture: 'profile_picture',verified: true/false }},
     username: {address: address, entry: { username: 'username' }},
     user_perspective: {address: address, entry: {parent: 'parent object (user address)',"name": 'perspective_name', 'privacy':'Private', 'channel_type': 'Perspective'}}
@@ -52,7 +52,7 @@ Arguments: { username_address: "address of user"}
 
 ###### Response: 
 ```
-Success: { Ok: {"address": "pack address", "entry": {"parent": "parent object(user address)", "name": "pack name", "owner": "user address", "privacy": "Shared"}}}
+Success: { Ok: {"address": "pack address", "entry": {"name": "pack name", "owner": "user address", "privacy": "Shared"}}}
 Error: {Err:  {Error Type: 'Error Message'} }
 ```
 

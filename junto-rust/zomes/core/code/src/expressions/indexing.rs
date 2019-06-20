@@ -124,14 +124,14 @@ pub fn create_post_index(query_points: Vec<HashMap<String, String>>, context: &A
         match query_param["type"].as_ref(){
             "tag" => {
                 let entry = Entry::App("tag".into(), app_definitions::Tag{value: query_param["value"].to_string(), 
-                                privacy: app_definitions::Privacy::Public, tag_type: app_definitions::TagType::Tag}.into()).into();
+                                privacy: privacy.clone(), tag_type: app_definitions::TagType::Tag}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
                 hdk::api::link_entries(&context, &address, "tag", &query_param["value"])?;
             },
 
             "type" => {
                 let entry = Entry::App("tag".into(), app_definitions::Tag{value: query_param["value"].to_string(), 
-                                privacy: app_definitions::Privacy::Public, tag_type: app_definitions::TagType::Type}.into()).into();
+                                privacy: privacy.clone(), tag_type: app_definitions::TagType::Type}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
                 hdk::api::link_entries(&context, &address, "expression_type", &query_param["value"])?;
             },

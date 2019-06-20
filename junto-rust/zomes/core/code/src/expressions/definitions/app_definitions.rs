@@ -118,7 +118,6 @@ pub struct ExpressionPost {
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct Group {
-    pub parent: HashString,
     pub name: String,
     pub owner: Address,
     pub privacy: Privacy 

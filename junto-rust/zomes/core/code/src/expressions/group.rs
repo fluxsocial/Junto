@@ -27,7 +27,6 @@ use super::user;
 pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiResult<EntryAndAddress<app_definitions::Group>> {
     hdk::debug("Creating pack")?;
     let pack = app_definitions::Group{ //Create default pack data
-        parent: username_address.clone(),
         name: (first_name + "'s Pack").to_string(),
         owner: username_address.clone(),
         privacy: app_definitions::Privacy::Shared 
