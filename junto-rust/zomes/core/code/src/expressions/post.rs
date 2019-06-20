@@ -30,6 +30,7 @@ use super::indexing;
 use super::random;
 use super::group;
 
+//tags = attributes
 pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut tags: Vec<String>, context: Vec<Address>) -> ZomeApiResult<Address>{
     hdk::debug("Handling post expression")?;
     //TODO implement expression type assertion
@@ -175,11 +176,11 @@ pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
     let user_name_address = user::get_user_username_by_agent_address()?.address;
     let user_pack = user::get_user_pack(user_name_address.clone())?.address;
 
-    let channels = utils::get_links_and_load_type::<app_definitions::Channel>(&expression, Some("tags".to_string()), None)?;
+    let channels = utils::get_links_and_load_type::<app_definitions::Tag>(&expression, Some("tags".to_string()), None)?;
     let times = utils::get_links_and_load_type::<app_definitions::Time>(&expression, Some("time".to_string()), None)?;
-    let exp_type = utils::get_links_and_load_type::<app_definitions::Channel>(&expression, Some("expression_type".to_string()), None)?;
+    let exp_type = utils::get_links_and_load_type::<app_definitions::Tag>(&expression, Some("expression_type".to_string()), None)?;
     
-    let mut query_points: Vec<HashMap<String, String>> = channels.iter().map(|channel| hashmap!{"value".to_string() => channel.entry.name.clone(), "type".to_string() => "channel".to_string()}).collect();
+    let mut query_points: Vec<HashMap<String, String>> = channels.iter().map(|channel| hashmap!{"value".to_string() => channel.entry.value.clone(), "type".to_string() => "channel".to_string()}).collect();
     for time in times{
         match time.entry.time_type{
             app_definitions::TimeType::Year => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "time:Y".to_string()});},
@@ -188,7 +189,7 @@ pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
             app_definitions::TimeType::Hour => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "time:H".to_string()});}
         };
     }
-    query_points.push(hashmap!{"value".to_string() => exp_type[0].entry.name.clone(), "type".to_string() => "type".to_string()});
+    query_points.push(hashmap!{"value".to_string() => exp_type[0].entry.value.clone(), "type".to_string() => "type".to_string()});
     let index_string = query_points.clone().iter().map(|qp| qp["value"].clone()).collect::<Vec<String>>().join("/");
     //add link on expression to user who made the resonation?
     let hook_definitions = vec![FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{query_points: query_points.clone(), context: user_pack.clone(), privacy: app_definitions::Privacy::Shared, expression: expression.clone(), index_string: index_string.clone(), link_type: "resonation".to_string()}},

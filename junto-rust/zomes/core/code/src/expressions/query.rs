@@ -28,12 +28,15 @@ use super::definitions::{
 use super::utils;
 use super::dos;
 use super::random;
-use super::channel;
+use super::collection;
+use super::perspective;
 
 ///Function to handle the getting of expression for a given perspective and query point(s)
-///for example: perspective: dos & query_points: [2018<timestamp>, holochain<tag>, dht<tag>, eric<user>]
+///for example: perspective: dos & query_points: [2018<timestamp>, holochain<channel>, dht<channel>, eric<channel>]
 //TODO: Switch to normal Entry (JsonString as returned from get_entry & get_links) for EntryAndAddress across the whole application
 //TODO/ORNOT: Support target_type of User
+//query string tag = channel
+//query_point = attributes
 pub fn get_expression(perspective: String, query_points: Vec<String>, query_options: QueryOptions, target_type: QueryTarget, query_type: QueryType, dos: u32, seed: String) -> ZomeApiResult<JsonString> {
     let query_strings = query_vec_to_strings(query_points)?;
     hdk::debug(format!("Getting expressions with generated query string(s): {:?}", query_strings))?;
@@ -106,7 +109,7 @@ pub fn get_expression(perspective: String, query_points: Vec<String>, query_opti
         _ => { //TODO: Add maximum post retrieval here - perhaps dont return over 50 posts - and posts should either be selected randomly or by a pagination query?
             hdk::debug("Attempting a perspective query")?;
             let perspective_address = Address::from(perspective);
-            let perspective_users = channel::get_perspectives_users(perspective_address)?;
+            let perspective_users = perspective::get_perspectives_users(perspective_address)?;
             let mut out = vec![];
         
             for user in perspective_users{

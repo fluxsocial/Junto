@@ -1,4 +1,3 @@
-//Module to handle all channel related operations
 use hdk::{
     error::ZomeApiResult,
     error::ZomeApiError,
@@ -13,7 +12,8 @@ use std::collections::HashMap;
 use super::definitions::app_definitions;
 use super::group;
 use super::user;
-use super::channel;
+use super::collection;
+use super::perspective;
 
 pub fn create_post_attributes(query_points: &Vec<HashMap<String, String>>, expression: &Address) -> ZomeApiResult<String>{
     //Creates links between expression and its global attributes (tags, types, times etc)
@@ -84,22 +84,19 @@ pub fn create_post_index(query_points: Vec<HashMap<String, String>>, context: &A
     let current_user_hash = user::get_user_username_by_agent_address()?.address;
     //The auth here does not protect application - instead just for correct API calls
     //if someone wants to post expression somewhere they are not allowed the function should say that and not just silently fail in validation
-    match hdk::utils::get_as_type::<app_definitions::Channel>(context.clone()) {
+    match hdk::utils::get_as_type::<app_definitions::Collection>(context.clone()) {
         Ok(context_entry) => {
-            hdk::debug("Context type channel, running auth")?;
-            if context_entry.channel_type != app_definitions::ChannelType::Den{
-                return Err(ZomeApiError::from("When context is a channel it must be of type den - you cannot post into other channel types".to_string()))
-            };
+            hdk::debug("Context type collection, running auth")?;
             //check that current user making post is owner of den they are trying to post into
-            if channel::is_den_owner(context.clone(), current_user_hash.clone())? == false{
-                return Err(ZomeApiError::from("You are attempting to get results from a private channel which you do not own".to_string()))
+            if collection::is_den_owner(context.clone(), current_user_hash.clone())? == false{
+                return Err(ZomeApiError::from("You are attempting to get results from a private collection which you do not own".to_string()))
             };
-            //make link on channel (den) context
+            //make link on collection context
             hdk::api::link_entries(&context, expression, link_type, index_string)?;
         },
         Err(_err) => {
             hdk::debug("Context type group, running auth")?;
-            let context_entry = hdk::utils::get_as_type::<app_definitions::Group>(context.clone()).map_err(|_err| ZomeApiError::from("Context address was not a channel, group or dna address (global context)".to_string()))?;
+            let context_entry = hdk::utils::get_as_type::<app_definitions::Group>(context.clone()).map_err(|_err| ZomeApiError::from("Context address was not a collection, group or dna address (global context)".to_string()))?;
             if context_entry.privacy != app_definitions::Privacy::Public {
                 if (group::is_group_owner(context.clone(), current_user_hash.clone())? == false) & (group::is_group_member(context.clone(), current_user_hash.clone())? == false){
                     return Err(ZomeApiError::from("You are attempting to post an expression into a group you are not permitted to interact with".to_string()))

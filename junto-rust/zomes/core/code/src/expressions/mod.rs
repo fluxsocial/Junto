@@ -1,4 +1,3 @@
-pub mod channel;
 pub mod group;
 pub mod post;
 pub mod time;
@@ -9,3 +8,5 @@ pub mod indexing;
 pub mod query;
 pub mod dos;
 pub mod random;
+pub mod collection;
+pub mod perspective;

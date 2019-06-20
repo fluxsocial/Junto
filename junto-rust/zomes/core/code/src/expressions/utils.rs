@@ -15,7 +15,7 @@ use std::hash::Hash;
 
 //Our module(s) imports
 use super::group;
-use super::channel;
+use super::collection;
 use super::time;
 use super::indexing;
 use super::definitions::{
@@ -73,7 +73,7 @@ pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> 
                         match &hook_descriptor.parameters{
                             FunctionParameters::CreateDen {username_address, first_name} =>{
                                 hdk::debug("Running create_den")?;
-                                let dens = channel::create_den(username_address, first_name.to_string())?;
+                                let dens = collection::create_den(username_address, first_name.to_string())?;
                                 hdk::debug(format!("Ran create_den, dens: {:?}", dens.clone()))?;
                                 hook_result_outputs.push(HooksResultTypes::CreateDen(dens))
                             },
@@ -179,16 +179,12 @@ pub fn get_links_and_load_type<R: TryFrom<AppEntryValue>>(base: &HashString, lin
 	.collect())
 }
 
-pub fn get_and_check_perspective(perspective: &Address) -> ZomeApiResult<app_definitions::Channel>{
+pub fn get_and_check_perspective(perspective: &Address) -> ZomeApiResult<app_definitions::Perspective>{
     let entry = hdk::api::get_entry(perspective)?;
     match entry {
         Some(Entry::App(_, entry_value)) => {
-            let perspective_entry = app_definitions::Channel::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Specified perspective address is not of type Channel".to_string()))?; //will return error here if cannot ser entry to group
-            if perspective_entry.channel_type != app_definitions::ChannelType::Perspective{
-                Err(ZomeApiError::from("Channel is not of type perspective".to_string()))
-            } else {
-                Ok(perspective_entry)
-            }
+            let perspective_entry = app_definitions::Perspective::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Specified perspective address is not of type Perspective".to_string()))?; //will return error here if cannot ser entry to group
+            Ok(perspective_entry)
         },
         Some(_) => Err(ZomeApiError::from("Context address was not an app entry".to_string())),
         None => Err(ZomeApiError::from("No perspective entry at specified address".to_string()))
