@@ -20,18 +20,11 @@ pub fn create_post_attributes(query_points: &Vec<HashMap<String, String>>, expre
     for query_param in query_points{
         match query_param["type"].as_ref(){
             "tag" => {
-                //save channels/types and times to a global anchor for each point - these anchors will eventually use bucket set pattern - for now they are like this
-                //may also be removed - but its nice to be able to see all of these values
-                let channel_anchor = hdk::commit_entry(&Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: "tag".to_string()}.into()))?;
+                hdk::debug("Linking entry to tag entry")?;
                 let entry = Entry::App("tag".into(), app_definitions::Tag{value: query_param["value"].to_string(), 
                                 privacy: app_definitions::Privacy::Public, tag_type: app_definitions::TagType::Tag}.into()).into();
-                hdk::debug("Commiting tag channel anchor")?;
                 let address = hdk::commit_entry(&entry)?;
-                hdk::debug(format!("Committed address: {}", address))?;
-                hdk::api::link_entries(&channel_anchor, &address, "tag", &query_param["value"])?;
-                hdk::debug(format!("Linked tag: {} to tag anchor", query_param["value"]))?;
                 hdk::api::link_entries(&expression, &address, "tags", &query_param["value"])?;
-                hdk::debug("Linked entry to global tag entry")?;
             },
 
             "type" => {
