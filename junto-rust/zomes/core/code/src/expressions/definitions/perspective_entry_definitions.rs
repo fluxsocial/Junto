@@ -34,6 +34,18 @@ pub fn perspective_definition() -> ValidatingEntryType {
                 validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
+            ),
+            to!(
+                "attribute",
+                link_type: "created_at", 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
             )
         ]
     )

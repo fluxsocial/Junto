@@ -30,25 +30,23 @@ use super::indexing;
 use super::random;
 use super::group;
 
-//tags = attributes
-pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut tags: Vec<String>, context: Vec<Address>) -> ZomeApiResult<Address>{
+pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut attributes: Vec<String>, context: Vec<Address>) -> ZomeApiResult<Address>{
     hdk::debug("Handling post expression")?;
     //TODO implement expression type assertion
-    tags = tags.into_iter().map(|tag| tag.to_lowercase()).collect::<Vec<String>>();
-    if tags.len() > 4 { //TODO implement duplicate tag checking
-        return Err(ZomeApiError::from("You are not allowed to specify more than 4 tags on a given expression".to_string()))
-    } else if tags.len() < 4{
-        if utils::has_unique_elements(tags.clone()) == false {return Err(ZomeApiError::from("You have duplicated tags".to_string()))};
-        tags.sort_by(|a, b| b.cmp(&a)); //Order tags vector in reverse alphabetical order
-        for _ in tags.len()..4{
-            tags.push("*Null*".to_string());
+    attributes = attributes.into_iter().map(|attribute| attribute.to_lowercase()).collect::<Vec<String>>();
+    if utils::has_unique_elements(attributes.clone()) == false {return Err(ZomeApiError::from("You have duplicated attributes".to_string()))};
+    if attributes.len() > 4 { //TODO implement duplicate tag checking
+        return Err(ZomeApiError::from("You are not allowed to specify more than 4 attributes on a given expression".to_string()))
+    } else if attributes.len() < 4{
+        attributes.sort_by(|a, b| b.cmp(&a)); //Order tags vector in reverse alphabetical order
+        for _ in attributes.len()..4{
+            attributes.push("*Null*".to_string());
         };
     } else {
-        if utils::has_unique_elements(tags.clone()) == false {return Err(ZomeApiError::from("You have duplicated tags".to_string()))};
-        tags.sort_by(|a, b| b.cmp(&a)); //Order tags vector in reverse alphabetical order
+        attributes.sort_by(|a, b| b.cmp(&a)); //Order attributes vector in reverse alphabetical order
     };
-    hdk::debug(format!("Sorted tags vector: {:?}", tags))?;
-    let mut query_points: Vec<HashMap<String, String>> = tags.iter().map(|tag| hashmap!{"type".to_string() => "tag".to_string(), "value".to_string() => tag.to_string().to_lowercase()}).collect();
+    hdk::debug(format!("Sorted attributes vector: {:?}", attributes))?;
+    let mut indexes: Vec<HashMap<String, String>> = attributes.iter().map(|attribute| hashmap!{"type".to_string() => "channel".to_string(), "value".to_string() => attribute.to_string().to_lowercase()}).collect();
 
     let expression_type = expression.expression_type.clone();
     let entry = Entry::App("expression_post".into(), expression.into());
@@ -57,38 +55,38 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut t
 
     hdk::debug("Link user to expression as owner")?;
     hdk::api::link_entries(&address, &username_entry_address.address, "auth".to_string(), "owner".to_string())?;
-    query_points.push(hashmap!{"type".to_string() => "user".to_string(), "value".to_string() => username_entry_address.entry.username.to_string().to_lowercase()});
-    query_points.push(hashmap!{"type".to_string() => "type".to_string(), "value".to_string() => expression_type.to_string().to_lowercase()});
+    indexes.push(hashmap!{"type".to_string() => "user".to_string(), "value".to_string() => username_entry_address.entry.username.to_string().to_lowercase()});
+    indexes.push(hashmap!{"type".to_string() => "type".to_string(), "value".to_string() => expression_type.to_string().to_lowercase()});
 
      match hdk::get_entry_result(&address, GetEntryOptions {headers: true, ..Default::default()},)?.result {
         GetEntryResultType::Single(result) => {
             let iso_timestamp = serde_json::to_string(&result.headers[0].timestamp()).map_err(|err| ZomeApiError::from(err.to_string()))?; //TODO: ensure this is the actual header we want to use
             hdk::debug(format!("Got iso timestamp: {:?}", iso_timestamp))?;
-            query_points.push(hashmap!{"type".to_string() => "time:y".to_string(), "value".to_string() => iso_timestamp[1..5].to_string().to_lowercase()}); //add year slice to query params
-            query_points.push(hashmap!{"type".to_string() => "time:m".to_string(), "value".to_string() => iso_timestamp[6..8].to_string().to_lowercase()}); //add month slice to query params
-            query_points.push(hashmap!{"type".to_string() => "time:d".to_string(), "value".to_string() => iso_timestamp[9..11].to_string().to_lowercase()}); //add day slice to query params
-            query_points.push(hashmap!{"type".to_string() => "time:h".to_string(), "value".to_string() => iso_timestamp[12..14].to_string().to_lowercase()}); //add hour slice to query params
+            indexes.push(hashmap!{"type".to_string() => "time:y".to_string(), "value".to_string() => iso_timestamp[1..5].to_string().to_lowercase()}); //add year slice to query params
+            indexes.push(hashmap!{"type".to_string() => "time:m".to_string(), "value".to_string() => iso_timestamp[6..8].to_string().to_lowercase()}); //add month slice to query params
+            indexes.push(hashmap!{"type".to_string() => "time:d".to_string(), "value".to_string() => iso_timestamp[9..11].to_string().to_lowercase()}); //add day slice to query params
+            indexes.push(hashmap!{"type".to_string() => "time:h".to_string(), "value".to_string() => iso_timestamp[12..14].to_string().to_lowercase()}); //add hour slice to query params
         },  
         GetEntryResultType::All(_entry_history) => {
             return Err(ZomeApiError::from("EntryResultType not of enum variant Single".to_string()))
         }
     };
 
-    hdk::debug(format!("Generated query_points: {:?}", query_points))?;
-    //query params are saved in following order: tag1<tag>/tag2<tag>/tag3<tag>/tag4<tag>/user<user>/type<type>/time:y<time>/time:m<time>/time:d<time>/time:h<time> 
-    //thus tag for each expression link will also be in this order and if there is not four tags present placeholder value will be used
-    let index_string = query_points.clone().iter().map(|qp| qp["value"].clone() + "<" + &qp["type"].clone() + ">" ).collect::<Vec<String>>().join("/");
+    hdk::debug(format!("Generated indexes: {:?}", indexes))?;
+    //query params are saved in following order: tag1<channel>/tag2<channel>/tag3<channel>/tag4<channel>/user<user>/type<type>/time:y<time>/time:m<time>/time:d<time>/time:h<time> 
+    //thus tag for each expression link will also be in this order and if there is not four channels present placeholder value will be used
+    let index_string = indexes.clone().iter().map(|qp| qp["value"].clone() + "<" + &qp["type"].clone() + ">" ).collect::<Vec<String>>().join("/");
     hdk::debug(format!("Index string: {}", index_string))?;
-    indexing::create_post_attributes(&query_points, &address)?;
+    indexing::create_post_attributes(&indexes, &address)?;
     hdk::debug("Created post attributes")?;
-    let hook_definitions = build_hooks(context, &address, &query_points, index_string)?; //build function hooks that need to be ran on expression based on which contexts are being used
+    let hook_definitions = build_hooks(context, &address, &indexes, index_string)?; //build function hooks that need to be ran on expression based on which contexts are being used
     hdk::debug("Hook defnitions generated")?;
 
     utils::handle_hooks(hook_definitions)?;
     Ok(address)
 }
 
-pub fn build_hooks(contexts: Vec<Address>, address: &Address, query_points: &Vec<HashMap<String, String>>, index_string: String) -> ZomeApiResult<Vec<FunctionDescriptor>> {
+pub fn build_hooks(contexts: Vec<Address>, address: &Address, indexes: &Vec<HashMap<String, String>>, index_string: String) -> ZomeApiResult<Vec<FunctionDescriptor>> {
     let dna_hash_string = Address::from(DNA_ADDRESS.to_string());
     let collective_count = contexts.iter().filter(|&c| *c == *&dna_hash_string).count();
     if collective_count > 1{
@@ -119,15 +117,15 @@ pub fn build_hooks(contexts: Vec<Address>, address: &Address, query_points: &Vec
             //Link between random bit bucket and expression so random post querying can happen on this post
             hook_definitions.push(FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "expression_post".to_string(), tag: index_string.clone(), direction: "forward".to_string(), parent_expression: bit_bucket.clone(), child_expression: address.clone()}});
             //Link expression to private den
-            hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{query_points: query_points.clone(), context: private_den.clone(), privacy: app_definitions::Privacy::Private, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
+            hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes.clone(), context: private_den.clone(), privacy: app_definitions::Privacy::Private, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
             //Link expression to shared den
-            hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{query_points: query_points.clone(), context: shared_den.clone(), privacy: app_definitions::Privacy::Shared, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
+            hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes.clone(), context: shared_den.clone(), privacy: app_definitions::Privacy::Shared, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
             //Link expression to public den
-            hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{query_points: query_points.clone(), context: public_den.clone(), privacy: app_definitions::Privacy::Public, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
+            hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes.clone(), context: public_den.clone(), privacy: app_definitions::Privacy::Public, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
             //Link expression to user pack
-            hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{query_points: query_points.clone(), context: user_pack.clone(), privacy: app_definitions::Privacy::Shared, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
+            hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes.clone(), context: user_pack.clone(), privacy: app_definitions::Privacy::Shared, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
             for pack in &member_results{ //Link expression to each pack user is a member of
-                hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{query_points: query_points.clone(), context: pack.clone(), privacy: app_definitions::Privacy::Shared, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
+                hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes.clone(), context: pack.clone(), privacy: app_definitions::Privacy::Shared, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
             };        
         } else {
             if local_contexts.contains(&context){
@@ -135,31 +133,31 @@ pub fn build_hooks(contexts: Vec<Address>, address: &Address, query_points: &Vec
                     if *&context == &private_den {//private den match
                         hdk::debug("Creating index in private den")?;
                         //Link expression to private den
-                        hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{query_points: query_points.clone(), context: private_den.clone(), privacy: app_definitions::Privacy::Private, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
+                        hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes.clone(), context: private_den.clone(), privacy: app_definitions::Privacy::Private, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
                     } else if *&context == &shared_den { //shared den match
                     hdk::debug("Creating index in shared den")?;
                         //Link expression to shared den
-                        hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{query_points: query_points.clone(), context: shared_den.clone(), privacy: app_definitions::Privacy::Shared, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});     
+                        hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes.clone(), context: shared_den.clone(), privacy: app_definitions::Privacy::Shared, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});     
                     } else if *&context == &public_den { //public den match
                     hdk::debug("Creating index in public den")?;
                         //Link expression to public den
-                        hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{query_points: query_points.clone(), context: public_den.clone(), privacy: app_definitions::Privacy::Public, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
+                        hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes.clone(), context: public_den.clone(), privacy: app_definitions::Privacy::Public, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
                     } else if *&context == &user_pack { //pack match
                     hdk::debug("Creating index in users pack")?;
                         //Link expression to user pack
-                        hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{query_points: query_points.clone(), context: user_pack.clone(), privacy: app_definitions::Privacy::Shared, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});    
+                        hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes.clone(), context: user_pack.clone(), privacy: app_definitions::Privacy::Shared, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});    
                     } else { //only other possible match is in pack_member results
                     hdk::debug("Creating index in pack which member is a part of")?;
-                        hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{query_points: query_points.clone(), context: context.clone(), privacy: app_definitions::Privacy::Shared, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
+                        hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes.clone(), context: context.clone(), privacy: app_definitions::Privacy::Shared, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
                     };
                 };
             } else {
                 //Only other context possible is another group which is not a pack - check if current user is memeber - if so then insert to hook definitions
                 hdk::debug("Creating index in other group")?;
                 if group::is_group_member(context.clone(), user_name_address.clone())? == true {
-                    hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{query_points: query_points.clone(), context: context.clone(), privacy: app_definitions::Privacy::Shared, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});   
+                    hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes.clone(), context: context.clone(), privacy: app_definitions::Privacy::Shared, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});   
                 } else if group::is_group_owner(context.clone(), user_name_address.clone())? == true {
-                    hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{query_points: query_points.clone(), context: context.clone(), privacy: app_definitions::Privacy::Shared, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}}); 
+                    hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes.clone(), context: context.clone(), privacy: app_definitions::Privacy::Shared, expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}}); 
                 };
             };
         }
@@ -176,23 +174,24 @@ pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
     let user_name_address = user::get_user_username_by_agent_address()?.address;
     let user_pack = user::get_user_pack(user_name_address.clone())?.address;
 
-    let channels = utils::get_links_and_load_type::<app_definitions::Tag>(&expression, Some("tags".to_string()), None)?;
-    let times = utils::get_links_and_load_type::<app_definitions::Time>(&expression, Some("time".to_string()), None)?;
-    let exp_type = utils::get_links_and_load_type::<app_definitions::Tag>(&expression, Some("expression_type".to_string()), None)?;
+    let channels = utils::get_links_and_load_type::<app_definitions::Attribute>(&expression, Some("tags".to_string()), None)?;
+    let times = utils::get_links_and_load_type::<app_definitions::Attribute>(&expression, Some("created_at".to_string()), None)?;
+    let exp_type = utils::get_links_and_load_type::<app_definitions::Attribute>(&expression, Some("expression_type".to_string()), None)?;
     
-    let mut query_points: Vec<HashMap<String, String>> = channels.iter().map(|channel| hashmap!{"value".to_string() => channel.entry.value.clone(), "type".to_string() => "channel".to_string()}).collect();
+    let mut index: Vec<HashMap<String, String>> = channels.iter().map(|channel| hashmap!{"value".to_string() => channel.entry.value.clone(), "type".to_string() => "channel".to_string()}).collect();
     for time in times{
-        match time.entry.time_type{
-            app_definitions::TimeType::Year => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "time:Y".to_string()});},
-            app_definitions::TimeType::Month => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "time:M".to_string()});},
-            app_definitions::TimeType::Day => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "time:D".to_string()});},
-            app_definitions::TimeType::Hour => {query_points.push(hashmap!{"value".to_string() => time.entry.time.clone(), "type".to_string() => "time:H".to_string()});}
+        match time.entry.attribute_type{
+            app_definitions::AttributeType::Year => {index.push(hashmap!{"value".to_string() => time.entry.value.clone(), "type".to_string() => "time:y".to_string()});},
+            app_definitions::AttributeType::Month => {index.push(hashmap!{"value".to_string() => time.entry.value.clone(), "type".to_string() => "time:m".to_string()});},
+            app_definitions::AttributeType::Day => {index.push(hashmap!{"value".to_string() => time.entry.value.clone(), "type".to_string() => "time:d".to_string()});},
+            app_definitions::AttributeType::Hour => {index.push(hashmap!{"value".to_string() => time.entry.value.clone(), "type".to_string() => "time:h".to_string()});},
+            _ => {}
         };
     }
-    query_points.push(hashmap!{"value".to_string() => exp_type[0].entry.value.clone(), "type".to_string() => "type".to_string()});
-    let index_string = query_points.clone().iter().map(|qp| qp["value"].clone()).collect::<Vec<String>>().join("/");
+    index.push(hashmap!{"value".to_string() => exp_type[0].entry.value.clone(), "type".to_string() => "type".to_string()});
+    let index_string = index.clone().iter().map(|qp| qp["value"].clone()).collect::<Vec<String>>().join("/");
     //add link on expression to user who made the resonation?
-    let hook_definitions = vec![FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{query_points: query_points.clone(), context: user_pack.clone(), privacy: app_definitions::Privacy::Shared, expression: expression.clone(), index_string: index_string.clone(), link_type: "resonation".to_string()}},
+    let hook_definitions = vec![FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: index.clone(), context: user_pack.clone(), privacy: app_definitions::Privacy::Shared, expression: expression.clone(), index_string: index_string.clone(), link_type: "resonation".to_string()}},
                                 FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "resonation".to_string(), tag: "".to_string(), direction: "both".to_string(), parent_expression: user_pack, child_expression: expression}}];
     utils::handle_hooks(hook_definitions)?;
     Ok("Resonation Generated".to_string())

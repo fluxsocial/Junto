@@ -15,17 +15,13 @@ pub enum Privacy {
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone)]
-pub enum TagType {
-    Tag,
-    Type
-}
-
-#[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone)]
-pub enum TimeType {
+pub enum AttributeType {
     Year, 
     Month,
     Day,
-    Hour
+    Hour,
+    Channel,
+    Type
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone)]
@@ -99,14 +95,10 @@ pub struct Perspective {
     pub name: String
 }
 
-// Attribute - channel, time and type
-
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
-pub struct Tag {
-    //Attribute of an expressions post - topics & type
+pub struct Attribute{
     pub value: String,
-    pub privacy: Privacy, //Privacy enum 
-    pub tag_type: TagType
+    pub attribute_type: AttributeType 
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
@@ -122,9 +114,3 @@ pub struct Group {
     pub owner: Address,
     pub privacy: Privacy 
 }
-
-#[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
-pub struct Time {
-    pub time: String,
-    pub time_type: TimeType
-}  

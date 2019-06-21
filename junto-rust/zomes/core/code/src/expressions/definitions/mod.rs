@@ -1,12 +1,11 @@
 pub mod app_definitions;
 pub mod group_entry_definitions;
 pub mod post_entry_definitions;
-pub mod time_entry_definitions;
 pub mod user_entry_definitions;
 pub mod function_definitions;
 pub mod anchor_entry_definitions;
 pub mod bucket_entry_definitions;
 pub mod config_entry_definitions;
-pub mod tag_entry_definitions;
 pub mod collection_entry_definitions;
 pub mod perspective_entry_definitions;
+pub mod attribute_entry_definitions;

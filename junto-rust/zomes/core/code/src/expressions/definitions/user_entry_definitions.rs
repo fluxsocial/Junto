@@ -35,8 +35,8 @@ pub fn user_name_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "time",
-                link_type: "user", //Link user to time which they are created
+                "attribute",
+                link_type: "created_at", //Link user to time which they are created
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

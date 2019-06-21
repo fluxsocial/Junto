@@ -81,9 +81,9 @@ pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<HooksRe
             },
             &"create_post_index" => {
                 match &hook_descriptor.parameters{
-                    FunctionParameters::CreatePostIndex {query_points, context, privacy, expression, index_string, link_type} =>{
+                    FunctionParameters::CreatePostIndex {indexes, context, privacy, expression, index_string, link_type} =>{
                         hdk::debug("Running create_post_index")?;
-                        let query_point_result = indexing::create_post_index(query_points.to_vec(), context, privacy, expression, index_string.to_string(), link_type.to_string())?;
+                        let query_point_result = indexing::create_post_index(indexes.to_vec(), context, privacy, expression, index_string.to_string(), link_type.to_string())?;
                         hdk::debug("Ran create_post_index")?;
                         hook_result_outputs.push(HooksResultTypes::CreatePostIndex(query_point_result))
                     },

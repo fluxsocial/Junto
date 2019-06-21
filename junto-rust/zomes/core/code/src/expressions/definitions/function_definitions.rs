@@ -179,7 +179,7 @@ pub enum FunctionParameters{
         child_expression: Address
     },
     CreatePostIndex{
-        query_points: Vec<HashMap<String, String>>, 
+        indexes: Vec<HashMap<String, String>>, 
         context: Address, 
         privacy: app_definitions::Privacy,
         expression: Address,

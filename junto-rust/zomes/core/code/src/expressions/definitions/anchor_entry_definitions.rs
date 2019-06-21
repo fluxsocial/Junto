@@ -25,7 +25,7 @@ pub fn anchor_definition() -> ValidatingEntryType {
 
         links: [            
             to!(
-                "tag",
+                "attribute",
                 link_type: "tag",
 
                 validation_package: || {
@@ -37,7 +37,7 @@ pub fn anchor_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "tag",
+                "attribute",
                 link_type: "expression_type",
 
                 validation_package: || {
@@ -49,7 +49,7 @@ pub fn anchor_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "time",
+                "attribute",
                 link_type: "time",
 
                 validation_package: || {

@@ -36,8 +36,20 @@ pub fn collection_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "time",
+                "attribute",
                 link_type: "time", //Time attribute of collections creation 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ), 
+            to!(
+                "attribute",
+                link_type: "created_at", 
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -60,8 +72,8 @@ pub fn collection_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "tag",
-                link_type: "tag", 
+                "attribute",
+                link_type: "expression_type",
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -72,8 +84,8 @@ pub fn collection_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "tag",
-                link_type: "expression_type",
+                "attribute",
+                link_type: "channel",
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

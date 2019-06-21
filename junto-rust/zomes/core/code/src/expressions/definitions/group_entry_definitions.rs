@@ -35,8 +35,8 @@ pub fn group_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "time",
-                link_type: "group", //Link groups to time which they are created
+                "attribute",
+                link_type: "created_at", //Link groups to time which they are created
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -71,8 +71,8 @@ pub fn group_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "tag",
-                link_type: "tag", //Channel within group
+                "attribute",
+                link_type: "channel", //Channel within group
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -83,7 +83,7 @@ pub fn group_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "tag",
+                "attribute",
                 link_type: "expression_type", //Channel within group
 
                 validation_package: || {
@@ -95,7 +95,7 @@ pub fn group_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "time",
+                "attribute",
                 link_type: "time", //Time entry in group to be used to associate group actions to given time entries
 
                 validation_package: || {

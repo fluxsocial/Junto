@@ -23,8 +23,8 @@ pub fn post_definition() -> ValidatingEntryType {
 
         links: [
             to!(
-                "time",
-                link_type: "expression_post", 
+                "attribute",
+                link_type: "channels", 
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -35,19 +35,7 @@ pub fn post_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "tag",
-                link_type: "tags", 
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
-                "tag",
+                "attribute",
                 link_type: "expression_type", //type which expression is
 
                 validation_package: || {
@@ -59,8 +47,8 @@ pub fn post_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "time",
-                link_type: "time", //time entries which the expression is associated to
+                "attribute",
+                link_type: "created_at", //time entries which the expression is associated to
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

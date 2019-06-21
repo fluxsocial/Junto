@@ -15,56 +15,56 @@ use super::user;
 use super::collection;
 use super::perspective;
 
-pub fn create_post_attributes(query_points: &Vec<HashMap<String, String>>, expression: &Address) -> ZomeApiResult<String>{
-    //Creates links between expression and its global attributes (tags, types, times etc)
-    for query_param in query_points{
-        match query_param["type"].as_ref(){
-            "tag" => {
-                hdk::debug("Linking entry to tag entry")?;
-                let entry = Entry::App("tag".into(), app_definitions::Tag{value: query_param["value"].to_string(), 
-                                privacy: app_definitions::Privacy::Public, tag_type: app_definitions::TagType::Tag}.into()).into();
+pub fn create_post_attributes(indexes: &Vec<HashMap<String, String>>, expression: &Address) -> ZomeApiResult<String>{
+    //Creates links between expression and its global attributes (channels, types, times etc)
+    for index in indexes{
+        match index["type"].as_ref(){
+            "channel" => {
+                hdk::debug("Linking entry to channel entry")?;
+                let entry = Entry::App("attribute".into(), app_definitions::Attribute{value: index["value"].to_string(), 
+                                attribute_type: app_definitions::AttributeType::Channel}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(&expression, &address, "tags", &query_param["value"])?;
+                hdk::api::link_entries(&expression, &address, "channels", &index["value"])?;
             },
 
             "type" => {
                 hdk::debug("Linking type to expression")?;
-                let entry = Entry::App("tag".into(), app_definitions::Tag{value: query_param["value"].to_string(), 
-                                privacy: app_definitions::Privacy::Public, tag_type: app_definitions::TagType::Type}.into()).into();
+                let entry = Entry::App("attribute".into(), app_definitions::Attribute{value: index["value"].to_string(), 
+                                attribute_type: app_definitions::AttributeType::Type}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(&expression, &address, "expression_type", &query_param["value"])?;
+                hdk::api::link_entries(&expression, &address, "expression_type", &index["value"])?;
             },
 
             "time:y" => {
                 hdk::debug("Linking time:y to expression")?; 
-                let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
-                                        time_type: app_definitions::TimeType::Year}.into()).into();
+                let entry = Entry::App("attribute".into(), app_definitions::Attribute{value: index["value"].to_string(), 
+                                        attribute_type: app_definitions::AttributeType::Year}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(&expression, &address, "time", "year")?;
+                hdk::api::link_entries(&expression, &address, "created_at", "year")?;
             },
 
             "time:m" => {
                 hdk::debug("Linking time:m to expression")?; 
-                let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
-                                        time_type: app_definitions::TimeType::Month}.into()).into();
+                let entry = Entry::App("attribute".into(), app_definitions::Attribute{value: index["value"].to_string(), 
+                                        attribute_type: app_definitions::AttributeType::Month}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(&expression, &address, "time", "month")?;
+                hdk::api::link_entries(&expression, &address, "created_at", "month")?;
             },
 
             "time:d" => {
                 hdk::debug("Linking time:d to expression")?; 
-                let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
-                                        time_type: app_definitions::TimeType::Day}.into()).into();
+                let entry = Entry::App("attribute".into(), app_definitions::Attribute{value: index["value"].to_string(), 
+                                        attribute_type: app_definitions::AttributeType::Day}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(&expression, &address, "time", "day")?;
+                hdk::api::link_entries(&expression, &address, "created_at", "day")?;
             },
 
             "time:h" => {
                 hdk::debug("Linking time:h to expression")?; 
-                let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
-                                        time_type: app_definitions::TimeType::Hour}.into()).into();
+                let entry = Entry::App("attribute".into(), app_definitions::Attribute{value: index["value"].to_string(), 
+                                        attribute_type: app_definitions::AttributeType::Hour}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(&expression, &address, "time", "hour")?;
+                hdk::api::link_entries(&expression, &address, "created_at", "hour")?;
             },
 
             "user" => {
@@ -72,14 +72,14 @@ pub fn create_post_attributes(query_points: &Vec<HashMap<String, String>>, expre
             },
 
             _ => {
-                return Err(ZomeApiError::from("That query parameter type does not exist".to_string()))
+                return Err(ZomeApiError::from("That index parameter type does not exist".to_string()))
             }
         };
     };
     Ok("ok".to_string())
 }
 
-pub fn create_post_index(query_points: Vec<HashMap<String, String>>, context: &Address, privacy: &app_definitions::Privacy, 
+pub fn create_post_index(indexes: Vec<HashMap<String, String>>, context: &Address, privacy: &app_definitions::Privacy, 
                             expression: &Address, index_string: String, link_type: String) -> ZomeApiResult<String>{
     let current_user_hash = user::get_user_username_by_agent_address()?.address;
     //The auth here does not protect application - instead just for correct API calls
@@ -110,48 +110,48 @@ pub fn create_post_index(query_points: Vec<HashMap<String, String>>, context: &A
     //Code below is used to allow a given context to see which index points posts exist on in their context
     //TODO might make more sense just to link to global entry - why do we need more entries for the same thing? - we are no longer linking from these entries so there is no scaling considerations
     hdk::debug("Creating entries for each index in each context and linking expression")?;
-    for query_param in query_points{
-        match query_param["type"].as_ref(){
-            "tag" => {
-                let entry = Entry::App("tag".into(), app_definitions::Tag{value: query_param["value"].to_string(), 
-                                privacy: privacy.clone(), tag_type: app_definitions::TagType::Tag}.into()).into();
+    for index in indexes{
+        match index["type"].as_ref(){
+            "channel" => {
+                let entry = Entry::App("attribute".into(), app_definitions::Attribute{value: index["value"].to_string(), 
+                                attribute_type: app_definitions::AttributeType::Channel}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(&context, &address, "tag", &query_param["value"])?;
+                hdk::api::link_entries(&context, &address, "channel", &index["value"])?;
             },
 
             "type" => {
-                let entry = Entry::App("tag".into(), app_definitions::Tag{value: query_param["value"].to_string(), 
-                                privacy: privacy.clone(), tag_type: app_definitions::TagType::Type}.into()).into();
+                let entry = Entry::App("attribute".into(), app_definitions::Attribute{value: index["value"].to_string(), 
+                                attribute_type: app_definitions::AttributeType::Type}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(&context, &address, "expression_type", &query_param["value"])?;
+                hdk::api::link_entries(&context, &address, "expression_type", &index["value"])?;
             },
 
             "time:y" => {
-                let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
-                                        time_type: app_definitions::TimeType::Year}.into()).into();
+                let entry = Entry::App("attribute".into(), app_definitions::Attribute{value: index["value"].to_string(), 
+                                        attribute_type: app_definitions::AttributeType::Year}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(&context, &address, "time", &query_param["value"])?;
+                hdk::api::link_entries(&context, &address, "time", &index["value"])?;
             },
 
             "time:m" => {
-                let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
-                                        time_type: app_definitions::TimeType::Month}.into()).into();
+                let entry = Entry::App("attribute".into(), app_definitions::Attribute{value: index["value"].to_string(), 
+                                        attribute_type: app_definitions::AttributeType::Month}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(&context, &address, "time", &query_param["value"])?;
+                hdk::api::link_entries(&context, &address, "time", &index["value"])?;
             },
 
             "time:d" => {
-                let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
-                                        time_type: app_definitions::TimeType::Day}.into()).into();
+                let entry = Entry::App("attribute".into(), app_definitions::Attribute{value: index["value"].to_string(), 
+                                        attribute_type: app_definitions::AttributeType::Day}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(&context, &address, "time", &query_param["value"])?;
+                hdk::api::link_entries(&context, &address, "time", &index["value"])?;
             },
 
             "time:h" => {
-                let entry = Entry::App("time".into(), app_definitions::Time{time: query_param["value"].to_string(), 
-                                        time_type: app_definitions::TimeType::Hour}.into()).into();
+                let entry = Entry::App("attribute".into(), app_definitions::Attribute{value: index["value"].to_string(), 
+                                        attribute_type: app_definitions::AttributeType::Hour}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(&context, &address, "time", &query_param["value"])?;
+                hdk::api::link_entries(&context, &address, "time", &index["value"])?;
             },
 
             "user" => {
@@ -159,7 +159,7 @@ pub fn create_post_index(query_points: Vec<HashMap<String, String>>, context: &A
             },
 
             _ => {
-                return Err(ZomeApiError::from("That query parameter type does not exist".to_string()))
+                return Err(ZomeApiError::from("That index type does not exist".to_string()))
             }
         };
     };
