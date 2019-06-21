@@ -10,13 +10,9 @@ use hdk::{
 use std::collections::HashMap;
 
 use super::definitions::app_definitions;
-use super::group;
-use super::user;
-use super::collection;
-use super::perspective;
 
+///Creates links between expression and its attributes (channels, types, times etc)
 pub fn create_post_attributes(indexes: &Vec<HashMap<String, String>>, expression: &Address) -> ZomeApiResult<String>{
-    //Creates links between expression and its global attributes (channels, types, times etc)
     for index in indexes{
         match index["type"].as_ref(){
             "channel" => {
@@ -79,36 +75,12 @@ pub fn create_post_attributes(indexes: &Vec<HashMap<String, String>>, expression
     Ok("ok".to_string())
 }
 
-pub fn create_post_index(indexes: Vec<HashMap<String, String>>, context: &Address, privacy: &app_definitions::Privacy, 
+///Creates index between post and expression. Also adds attributes to context.
+pub fn create_post_index(indexes: Vec<HashMap<String, String>>, context: &Address, 
                             expression: &Address, index_string: String, link_type: String) -> ZomeApiResult<String>{
-    let current_user_hash = user::get_user_username_by_agent_address()?.address;
-    //The auth here does not protect application - instead just for correct API calls
-    //if someone wants to post expression somewhere they are not allowed the function should say that and not just silently fail in validation
-    match hdk::utils::get_as_type::<app_definitions::Collection>(context.clone()) {
-        Ok(context_entry) => {
-            hdk::debug("Context type collection, running auth")?;
-            //check that current user making post is owner of den they are trying to post into
-            if collection::is_collection_owner(context.clone(), current_user_hash.clone())? == false{
-                return Err(ZomeApiError::from("You are attempting to get results from a private collection which you do not own".to_string()))
-            };
-            //make link on collection context
-            hdk::api::link_entries(&context, expression, link_type, index_string)?;
-        },
-        Err(_err) => {
-            hdk::debug("Context type group, running auth")?;
-            let context_entry = hdk::utils::get_as_type::<app_definitions::Group>(context.clone()).map_err(|_err| ZomeApiError::from("Context address was not a collection, group or dna address (global context)".to_string()))?;
-            if context_entry.privacy != app_definitions::Privacy::Public {
-                if (group::is_group_owner(context.clone(), current_user_hash.clone())? == false) & (group::is_group_member(context.clone(), current_user_hash.clone())? == false){
-                    return Err(ZomeApiError::from("You are attempting to post an expression into a group you are not permitted to interact with".to_string()))
-                };
-            };
-            //make link on group context
-            hdk::api::link_entries(&context, expression, link_type, index_string)?;
-        }
-    };
+    hdk::api::link_entries(&context, expression, link_type, index_string)?;
     
-    //Code below is used to allow a given context to see which index points posts exist on in their context
-    //TODO might make more sense just to link to global entry - why do we need more entries for the same thing? - we are no longer linking from these entries so there is no scaling considerations
+    //Code below is used to enable a given context to see which index points exist on in their context - useful for searching within a context
     hdk::debug("Creating entries for each index in each context and linking expression")?;
     for index in indexes{
         match index["type"].as_ref(){

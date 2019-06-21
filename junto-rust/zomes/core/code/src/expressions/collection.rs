@@ -1,7 +1,6 @@
 //Module to handle all channel related operations
 use hdk::{
     error::ZomeApiResult,
-    error::ZomeApiError,
     holochain_core_types::{
         entry::Entry, 
         cas::content::Address
@@ -9,8 +8,6 @@ use hdk::{
 };
 
 use super::utils;
-// use super::group;
-use super::user;
 use super::definitions::{
     app_definitions,
     function_definitions::{
@@ -22,12 +19,13 @@ use super::definitions::{
 };
 
 //Commits den entry to DHT and runs necassary hooks
-pub fn commit_collection(collection: app_definitions::Collection, user: &Address) -> ZomeApiResult<Address> {
+pub fn commit_collection(collection: app_definitions::Collection, tag: String) -> ZomeApiResult<Address> {
+    let parent = collection.parent.clone();
     let entry = Entry::App("collection".into(), collection.into());
     let address = hdk::commit_entry(&entry)?;
     //Build vector describing hook functions which should run to correctly link this data
-    let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "collection".to_string(), tag: "den".to_string(), direction: "reverse".to_string(), parent_expression: address.clone(), child_expression: user.clone()}},
-                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "auth".to_string(), tag: "owner".to_string(), direction: "forward".to_string(), parent_expression: address.clone(), child_expression: user.clone()}}];
+    let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "collection".to_string(), tag: tag, direction: "reverse".to_string(), parent_expression: address.clone(), child_expression: parent.clone()}},
+                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "auth".to_string(), tag: "owner".to_string(), direction: "forward".to_string(), parent_expression: address.clone(), child_expression: parent.clone()}}];
 
     utils::handle_hooks(hook_definitions)?;
     Ok(address)
@@ -52,13 +50,18 @@ pub fn create_den(username_address: &Address, first_name: String) -> ZomeApiResu
         privacy: app_definitions::Privacy::Public,
     };
 
-    let private_den_address = commit_collection(private_den.clone(), &username_address)?;
-    let shared_den_address = commit_collection(shared_den.clone(), &username_address)?;
-    let public_den_address = commit_collection(public_den.clone(), &username_address)?;
+    let private_den_address = commit_collection(private_den.clone(), String::from("den"))?;
+    let shared_den_address = commit_collection(shared_den.clone(), String::from("den"))?;
+    let public_den_address = commit_collection(public_den.clone(), String::from("den"))?;
 
     Ok(UserDens{private_den: EntryAndAddress{address: private_den_address, entry: private_den}, 
                         shared_den: EntryAndAddress{address: shared_den_address, entry: shared_den}, 
                         public_den: EntryAndAddress{address: public_den_address, entry: public_den}})
+}
+
+pub fn create_collection(collection: app_definitions::Collection, collection_tag: String) -> ZomeApiResult<EntryAndAddress<app_definitions::Collection>>{
+    let collection_address = commit_collection(collection.clone(), collection_tag)?;
+    Ok(EntryAndAddress{address: collection_address, entry: collection})
 }
 
 pub fn is_collection_owner(collection: Address, user: Address) -> ZomeApiResult<bool>{

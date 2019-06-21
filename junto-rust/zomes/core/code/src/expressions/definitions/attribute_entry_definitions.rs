@@ -2,7 +2,6 @@ use hdk::{
     self,
     entry_definition::ValidatingEntryType,
     holochain_core_types::{
-        entry::Entry,
         dna::entry_types::Sharing
     }
 };

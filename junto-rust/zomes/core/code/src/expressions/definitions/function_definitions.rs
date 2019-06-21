@@ -181,7 +181,6 @@ pub enum FunctionParameters{
     CreatePostIndex{
         indexes: Vec<HashMap<String, String>>, 
         context: Address, 
-        privacy: app_definitions::Privacy,
         expression: Address,
         index_string: String,
         link_type: String

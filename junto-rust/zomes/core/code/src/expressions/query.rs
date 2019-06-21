@@ -28,7 +28,6 @@ use super::definitions::{
 use super::utils;
 use super::dos;
 use super::random;
-use super::collection;
 use super::perspective;
 
 ///Function to handle the getting of expression for a given perspective and query point(s)
