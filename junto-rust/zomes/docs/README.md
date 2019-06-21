@@ -3,7 +3,8 @@
 ## [User Documentation](./user.md)
 ## [Expression Documentation](./expression.md)
 ## [Group Documentation](./group.md)
-## [Channel Documentation](./channek.md)
+## [Collection Documentation](./collection.md)
+## [Perspective Documentation](./perspective.md)
 
 ## Errors
 

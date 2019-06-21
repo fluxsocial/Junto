@@ -6,7 +6,7 @@
 ###### Request: 
 ```
 Endpoint: /post_expression
-Arguments: { expression: {expression object data}, channels: [array of channels], context: [array of context(s) addresses] }
+Arguments: { expression: {expression object data}, attributes: [array of attributes (channels)], context: [array of context(s) addresses] }
 ```
 
 ###### Response: 
@@ -32,7 +32,7 @@ Error: {Err:  {Error Type: 'Error Message'} }
 ###### Request: 
 ```
 Endpoint: /get_expressions
-Arguments: { perspective: "string of perspective type", query_points: ["point-to-query-with", ...], query_options: QueryOptions, target_type: QueryTarget, query_type: QueryType, dos: dos-u32, seed: "string-to-randomize-searching" }
+Arguments: { perspective: "string of perspective type", attributes: ["attribute-to-query-with", ...], query_options: QueryOptions, target_type: QueryTarget, query_type: QueryType, dos: dos-u32, seed: "string-to-randomize-searching" }
 ```
 
 ###### Response:
@@ -46,7 +46,7 @@ The get_expressions function has a few arguments which might not be easily under
 
 **Perspective**: String which outlines which perspective to view posts from. This can be any of the following values: "dos", "random" or "address". Dos tells the function to make degree of seperation query. Random tells function to make a random query for posts. Otherwise it should be an address: this address should be for a user created perspective.
 
-**Query Points**: This is the parameter which defines how your query will be run in the function. The query parameter should be in the following format: ["query_value<query_type>", ...] (and so on for each parameter)". Each parameter will confine expression result(s) to only those objects. 
+**Attributes**: This is the parameter which defines how your query will be run in the function. The query parameter should be in the following format: ["query_value<query_type>", ...] (and so on for each parameter)". Each parameter will confine expression result(s) to only those objects. 
 
 **Query Options**: QueryOptions is a Rust Enum - the parameters for this enum are as follows: FilterPopular, FilterNew, FilterOld. Any of these enum value(s) should be passed as a string exactly as seen above. Other enum value in subsequent arguments should also be passed as strings exactly matching the enum variant.
 
