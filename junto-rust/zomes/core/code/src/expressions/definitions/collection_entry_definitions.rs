@@ -5,86 +5,87 @@ use hdk::{
     }
 };
 
+//Entry Definition(s)
 use super::app_definitions;
 
-pub fn time_definiton() -> ValidatingEntryType {
+pub fn collection_definition() -> ValidatingEntryType {
     entry!(
-        name: "time",
-        description: "Time Object Entry",
+        name: "collection",
+        description: "Collection Object Entry",
         sharing: Sharing::Public,
 
         validation_package: || {
             hdk::ValidationPackageDefinition::Entry
         },
 
-        validation: |_validation_data: hdk::EntryValidationData<app_definitions::Time>| {
+        validation: |_validation_data: hdk::EntryValidationData<app_definitions::Collection>| {
             Ok(())
         },
 
         links: [
-            from!(
-                "group",
-                link_type: "group_time", //Time entry in group to be used to associate group actions to given time entries
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            from!(
-                "channel",
-                link_type: "channel_time", //Link for channels which are being used as an anchor for users to store a collection of private/shared/public posts
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            from!(
-                "expression_post",
-                link_type: "time", //time entries which the expression is associated to
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
-                "expression_post",
-                link_type: "expression_post", //expression posts which are associated to this time
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
-                "group",
-                link_type: "group", //Link groups to time which they are created
-    
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }            
-            ),
             to!(
                 "username",
-                link_type: "user", //Link user to time which they are created
+                link_type: "auth", //link type which will handle all auth links e.g: owner, member etc
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "attribute",
+                link_type: "time", //Time attribute of collections creation 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ), 
+            to!(
+                "attribute",
+                link_type: "created_at", 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ), 
+            to!( 
+                "expression_post",
+                link_type: "expression_post", 
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "attribute",
+                link_type: "expression_type",
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "attribute",
+                link_type: "channel",
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

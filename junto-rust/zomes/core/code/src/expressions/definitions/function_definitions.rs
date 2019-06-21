@@ -39,7 +39,7 @@ pub struct CreateUserInformation{
     pub bio: String
 }
 
-//Basic struct to be used to describe a function and its parameters to the handle_hooks & handle_contextual_links functions
+//Basic struct to be used to describe a function and its parameters to the handle_hooks function
 pub struct FunctionDescriptor{  
     pub name: &'static str,
     pub parameters: FunctionParameters,
@@ -47,20 +47,20 @@ pub struct FunctionDescriptor{
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct UserDens{
-    pub private_den: EntryAndAddress<app_definitions::Channel>,
-    pub shared_den: EntryAndAddress<app_definitions::Channel>,
-    pub public_den: EntryAndAddress<app_definitions::Channel>,
+    pub private_den: EntryAndAddress<app_definitions::Collection>,
+    pub shared_den: EntryAndAddress<app_definitions::Collection>,
+    pub public_den: EntryAndAddress<app_definitions::Collection>,
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 pub struct JuntoUser{
-    pub private_den: EntryAndAddress<app_definitions::Channel>,
-    pub shared_den: EntryAndAddress<app_definitions::Channel>,
-    pub public_den: EntryAndAddress<app_definitions::Channel>,
+    pub private_den: EntryAndAddress<app_definitions::Collection>,
+    pub shared_den: EntryAndAddress<app_definitions::Collection>,
+    pub public_den: EntryAndAddress<app_definitions::Collection>,
     pub pack: EntryAndAddress<app_definitions::Group>,
     pub profile: EntryAndAddress<app_definitions::User>,
     pub username: EntryAndAddress<app_definitions::UserName>,
-    pub user_perspective: EntryAndAddress<app_definitions::Channel>,
+    pub user_perspective: EntryAndAddress<app_definitions::Perspective>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -161,8 +161,7 @@ pub enum FunctionParameters{
         link_type: String,
         tag: String, 
         direction: String, 
-        expression_address: Address,
-        context: Address,
+        expression_address: Address
     },
     CreatePack{
         username_address: Address,
@@ -180,7 +179,7 @@ pub enum FunctionParameters{
         child_expression: Address
     },
     CreatePostIndex{
-        query_points: Vec<HashMap<String, String>>, 
+        indexes: Vec<HashMap<String, String>>, 
         context: Address, 
         privacy: app_definitions::Privacy,
         expression: Address,

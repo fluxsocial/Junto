@@ -34,33 +34,9 @@ pub fn user_name_definition() -> ValidatingEntryType {
                     Ok(())
                 }
             ),
-            from!(
-                "time",
-                link_type: "user", //Link user to time which they are created
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            from!(
-                "group",
-                link_type: "auth", //link type which will handle all auth links e.g: owner, member etc
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            from!(
-                "expression_post",
-                link_type: "auth", //links types which will contain auth information of a given post: example: owner, co-writer etc
+            to!(
+                "attribute",
+                link_type: "created_at", //Link user to time which they are created
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -143,8 +119,8 @@ pub fn user_name_definition() -> ValidatingEntryType {
                 }
             ),
             to!( 
-                "channel",
-                link_type: "channel", //Link type to associate a channel with a user - tag can then define channel type; in our case/implementation: den
+                "collection",
+                link_type: "collection", //Link type to associate a collection with a user - tag can then define collection type; in our case/implementation: den
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -155,7 +131,7 @@ pub fn user_name_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "channel",
+                "perspective",
                 link_type: "perspective", //link to a users perspective
 
                 validation_package: || {
@@ -185,18 +161,6 @@ pub fn user_definition() -> ValidatingEntryType {
         },
 
         links: [
-            // from!(
-            //     "username",
-            //     link_type: "profile", //link type from username anchor to user profile
-
-            //     validation_package: || {
-            //         hdk::ValidationPackageDefinition::Entry
-            //     },
-
-            //     validation: |_validation_data: hdk::LinkValidationData| {
-            //         Ok(())
-            //     }
-            // ),
             from!(
                 "%agent_id",
                 link_type: "user",

@@ -11,7 +11,7 @@ use super::app_definitions;
 pub fn bucket_definition() -> ValidatingEntryType {
     entry!(
         name: "bucket",
-        description: "",
+        description: "Entry to be used as anchor for entries which need to be distributed across the hash space",
         sharing: Sharing::Public,
 
         validation_package: || {

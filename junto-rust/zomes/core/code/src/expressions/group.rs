@@ -27,20 +27,17 @@ use super::user;
 pub fn create_pack(username_address: &Address, first_name: String) -> ZomeApiResult<EntryAndAddress<app_definitions::Group>> {
     hdk::debug("Creating pack")?;
     let pack = app_definitions::Group{ //Create default pack data
-        parent: username_address.clone(),
         name: (first_name + "'s Pack").to_string(),
         owner: username_address.clone(),
         privacy: app_definitions::Privacy::Shared 
     };
     let entry = Entry::App("group".into(), pack.clone().into());
     let address = hdk::commit_entry(&entry)?;
-    //currently here we are using global time entries - this wont scale, lets work around this somehow
-    let tag_anchor = hdk::commit_entry(&Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: "time".to_string()}.into()))?;
-    let hook_definitions = vec![FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{link_type: "group".to_string(), tag: "pack".to_string(), direction: "forward".to_string(), expression_address: address.clone(), context: tag_anchor}},
+    let hook_definitions = vec![FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{link_type: "created_at".to_string(), tag: "pack".to_string(), direction: "reverse".to_string(), expression_address: address.clone()}},
                                 FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "group".to_string(), tag: "pack".to_string(), direction: "reverse".to_string(), parent_expression: address.clone(), child_expression: username_address.clone()}},
                                 FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "auth".to_string(), tag: "owner".to_string(), direction: "forward".to_string(), parent_expression: address.clone(), child_expression: username_address.clone()}}];
 
-    let _hook_result = utils::handle_hooks("Group".to_string(), hook_definitions)?;
+    let _hook_result = utils::handle_hooks(hook_definitions)?;
     //channel::create_collective_channel(&address)?;
     Ok(EntryAndAddress{entry: pack, address: address})
 }
