@@ -13,12 +13,7 @@ use super::utils;
 use super::user;
 use super::definitions::{
     app_definitions,
-    function_definitions::{
-        FunctionDescriptor,
-        FunctionParameters,
-        UserDens,
-        EntryAndAddress
-    }
+    function_definitions::EntryAndAddress
 };
 
 pub fn create_perspective(name: String) -> ZomeApiResult<EntryAndAddress<app_definitions::Perspective>>{

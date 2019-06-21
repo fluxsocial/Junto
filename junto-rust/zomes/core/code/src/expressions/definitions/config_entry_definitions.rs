@@ -22,7 +22,7 @@ pub fn config_definition() -> ValidatingEntryType {
 
         validation: |validation_data: hdk::EntryValidationData<app_definitions::Config>| {
             match validation_data{
-                EntryValidationData::Create{entry, validation_data} =>
+                EntryValidationData::Create{entry: _entry, validation_data: _validation_data} =>
                 {
                     // hdk::debug(format!("Sources: {:?}", validation_data.sources()))?;
                     // if validation_data.sources()[0] != "agent-hash"{
@@ -54,7 +54,7 @@ pub fn config_definition() -> ValidatingEntryType {
                 validation: |validation_data: hdk::LinkValidationData| {
                     let bit_prefix_base_anchor = hdk::entry_address(&Entry::App("anchor".into(), app_definitions::Anchor{anchor_type: "bit_prefix".to_string()}.into()))?;
                     match validation_data{
-                        hdk::LinkValidationData::LinkAdd{link, validation_data} => {
+                        hdk::LinkValidationData::LinkAdd{link, validation_data: _validation_data} => {
                             if *link.link.base() != bit_prefix_base_anchor{
                                 Err("Base of link is not equal to bit prefix anchor".to_string())
                             } else {
@@ -68,7 +68,7 @@ pub fn config_definition() -> ValidatingEntryType {
                                 Ok(())
                             }
                         },
-                        hdk::LinkValidationData::LinkRemove{link, validation_data} =>{
+                        hdk::LinkValidationData::LinkRemove{link, validation_data: _validation_data} =>{
                             if *link.link.base() != bit_prefix_base_anchor{
                                 Err("Base of link is not equal to bit prefix anchor".to_string())
                             } else {

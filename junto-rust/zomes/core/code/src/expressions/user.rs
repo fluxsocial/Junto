@@ -28,7 +28,6 @@ use super::definitions::{
         JuntoUser
     }
 };
-use super::collection;
 use super::perspective;
 
 /// This handler shows how you can access the globals that are always available
