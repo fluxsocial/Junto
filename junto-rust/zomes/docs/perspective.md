@@ -1,5 +1,5 @@
 # Zome API Documentation
-## Channel
+## Perspective
 
 **Create Perspective**
 ###### Request:

@@ -9,17 +9,17 @@ use hdk::{
 
 use super::app_definitions;
 
-pub fn tag_definition() -> ValidatingEntryType {
+pub fn attribute_definition() -> ValidatingEntryType {
     entry!(
-        name: "tag",
-        description: "Attribute of a expression post, can include expression type",
+        name: "attribute",
+        description: "Attribute of an expression, can include expression type, channel and time",
         sharing: Sharing::Public,
 
         validation_package: || {
             hdk::ValidationPackageDefinition::Entry
         },
 
-        validation: |_validation_data: hdk::EntryValidationData<app_definitions::Tag>| {
+        validation: |_validation_data: hdk::EntryValidationData<app_definitions::Attribute>| {
             Ok(())
         },
 

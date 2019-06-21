@@ -28,7 +28,8 @@ use super::definitions::{
         JuntoUser
     }
 };
-use super::channel;
+use super::collection;
+use super::perspective;
 
 /// This handler shows how you can access the globals that are always available
 /// inside a zome.  In this case it just creates an object with their values
@@ -59,14 +60,14 @@ pub fn handle_create_user(user_data: CreateUserInformation) -> ZomeApiResult<Jun
     hdk::link_entries(&AGENT_ADDRESS, &username_address, "username", "")?; 
     hdk::link_entries(&username_address, &address, "profile", "")?;
     //Build hook definitions to link user to timestamps and create pack/den
-    let hook_definitions = vec![FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{link_type: "user".to_string(), tag: "".to_string(), direction: "reverse".to_string(), expression_address: username_address.clone()}},
+    let hook_definitions = vec![FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{link_type: "created_at".to_string(), tag: "".to_string(), direction: "reverse".to_string(), expression_address: username_address.clone()}},
                                 FunctionDescriptor{name: "create_pack", parameters: FunctionParameters::CreatePack{username_address: username_address.clone(), first_name: user_data.first_name.clone()}},
                                 FunctionDescriptor{name: "create_den", parameters: FunctionParameters::CreateDen{username_address: username_address.clone(), first_name: user_data.first_name}}];
 
-    let hook_result = utils::handle_hooks("User".to_string(), hook_definitions)?;
+    let hook_result = utils::handle_hooks(hook_definitions)?;
     let pack = hook_result[1].clone().create_pack_result()?;
     let dens = hook_result[2].clone().create_den_result()?;
-    let user_perspective = channel::create_perspective("Default Perspective".to_string())?;
+    let user_perspective = perspective::create_perspective("Default Perspective".to_string())?;
     let junto_user = JuntoUser{profile: EntryAndAddress{entry: user_meta_data.into(), address: address}, username: EntryAndAddress{entry: username_struct.into(), address: username_address},
                                 private_den: dens.private_den, shared_den: dens.shared_den, public_den: dens.public_den, pack: pack, user_perspective: user_perspective};
     Ok(junto_user)
@@ -114,7 +115,7 @@ pub fn get_user_username_by_agent_address() -> ZomeApiResult<EntryAndAddress<app
 }
 
 pub fn get_user_dens(user: Address) -> ZomeApiResult<UserDens>{
-    let den_links = utils::get_links_and_load_type::<app_definitions::Channel>(&user, Some("channel".to_string()), Some("den".to_string()))?;
+    let den_links = utils::get_links_and_load_type::<app_definitions::Collection>(&user, Some("collection".to_string()), Some("den".to_string()))?;
     let mut private_den = None;
     let mut shared_den = None;
     let mut public_den = None;

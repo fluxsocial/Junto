@@ -41,10 +41,10 @@ pub fn time_to_expression(link_type: String, tag: String, direction: String, exp
 //Create timestamp functions should not use datatime but instead should use the timestamp in the entry header for the expression that will be linked to the timestamp
 //Create and link current timestamps (year, month, day) to given parent address - returns vector of timestamps
 pub fn create_timestamps(iso_timestamp: &String) -> ZomeApiResult<Vec<Address>> {
-    let timestamps = vec![Entry::App("time".into(), app_definitions::Time{time: iso_timestamp[0..5].to_string(), time_type: app_definitions::TimeType::Year}.into()),
-                        Entry::App("time".into(), app_definitions::Time{time: iso_timestamp[6..8].to_string(), time_type: app_definitions::TimeType::Month}.into()),
-                        Entry::App("time".into(), app_definitions::Time{time: iso_timestamp[9..11].to_string(), time_type: app_definitions::TimeType::Day}.into()),
-                        Entry::App("time".into(), app_definitions::Time{time: iso_timestamp[12..14].to_string(), time_type: app_definitions::TimeType::Hour}.into())];
+    let timestamps = vec![Entry::App("attribute".into(), app_definitions::Attribute{value: iso_timestamp[0..5].to_string(), attribute_type: app_definitions::AttributeType::Year}.into()),
+                        Entry::App("attribute".into(), app_definitions::Attribute{value: iso_timestamp[6..8].to_string(), attribute_type: app_definitions::AttributeType::Month}.into()),
+                        Entry::App("attribute".into(), app_definitions::Attribute{value: iso_timestamp[9..11].to_string(), attribute_type: app_definitions::AttributeType::Day}.into()),
+                        Entry::App("attribute".into(), app_definitions::Attribute{value: iso_timestamp[12..14].to_string(), attribute_type: app_definitions::AttributeType::Hour}.into())];
     let mut timestamp_address = vec![];
 
     for timestamp in timestamps{
@@ -61,8 +61,4 @@ pub fn create_timestamps(iso_timestamp: &String) -> ZomeApiResult<Vec<Address>> 
     };
 
     Ok(timestamp_address)
-}
-
-pub fn get_time_address(time: app_definitions::Time) -> ZomeApiResult<Address> {
-    Ok(hdk::api::entry_address(&Entry::App("time".into(), time.into()))?)
 }

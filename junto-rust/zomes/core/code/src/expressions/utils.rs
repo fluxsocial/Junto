@@ -15,7 +15,7 @@ use std::hash::Hash;
 
 //Our module(s) imports
 use super::group;
-use super::channel;
+use super::collection;
 use super::time;
 use super::indexing;
 use super::definitions::{
@@ -30,87 +30,71 @@ use super::definitions::{
 };
 
 //This is a helper function which allows us to easily and dynamically handle all functions calls that need to happen
-pub fn handle_hooks(expression_type: String, hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<HooksResultTypes>> {
+pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<HooksResultTypes>> {
     //First we get all hook functions which can be run on given expression types
-    let hook_functions: Vec<&'static str>;
-    match expression_type.as_ref(){
-        "User" => hook_functions = app_definitions::get_user_hook_definitions(),
-        "Channel" => hook_functions = app_definitions::get_channel_hook_definitions(),
-        "ExpressionPost" => hook_functions = app_definitions::get_post_expression_hook_definitions(),
-        "Group" => hook_functions = app_definitions::get_group_hook_definitions(),
-        "Time" => hook_functions = app_definitions::get_resonation_hook_definitions(),
-        "Resonation" => hook_functions = app_definitions::get_time_hook_definitions(),
-        _ => return Err(ZomeApiError::from("Expression type does not exist".to_string()))
-    };
     let mut hook_result_outputs = vec![];
-    if hook_functions.len() > 0{
-        for hook_descriptor in hooks{ //iterate over hook function names provided in function call
-            if hook_functions.contains(&hook_descriptor.name){ //Check that is allowed on expression type
-                match &hook_descriptor.name{ //Match function names
-                    &"time_to_expression" => {
-                        match &hook_descriptor.parameters{
-                            FunctionParameters::TimeToExpression {link_type, tag, direction, expression_address} => {
-                                hdk::debug("Running time_to_expression")?;
-                                let time_addresses = time::time_to_expression(link_type.to_string(), tag.to_string(), direction.to_string(), &expression_address)?;
-                                hdk::debug("Ran time_to_expression")?;
-                                hook_result_outputs.push(HooksResultTypes::TimeToExpression(time_addresses));
-                            },
-                            _ => return Err(ZomeApiError::from("time_to_expresssion expects the LocalTimeToExpression enum value to be present".to_string()))
-                        }
+    for hook_descriptor in hooks{ //iterate over hook function names provided in function call
+        match &hook_descriptor.name{ //Match function names
+            &"time_to_expression" => {
+                match &hook_descriptor.parameters{
+                    FunctionParameters::TimeToExpression {link_type, tag, direction, expression_address} => {
+                        hdk::debug("Running time_to_expression")?;
+                        let time_addresses = time::time_to_expression(link_type.to_string(), tag.to_string(), direction.to_string(), &expression_address)?;
+                        hdk::debug("Ran time_to_expression")?;
+                        hook_result_outputs.push(HooksResultTypes::TimeToExpression(time_addresses));
                     },
-                    &"create_pack" => {
-                        match &hook_descriptor.parameters{
-                            FunctionParameters::CreatePack {username_address, first_name} =>{
-                                hdk::debug("Running create_pack")?;
-                                let pack = group::create_pack(username_address, first_name.to_string())?;
-                                hdk::debug(format!("Ran create_pack, pack address is: {:?}", pack.clone()))?;
-                                hook_result_outputs.push(HooksResultTypes::CreatePack(pack))
-                            },
-                            _ => return Err(ZomeApiError::from("create_pack expectes the CreatePack enum value to be present".to_string()))
-                        }
-                    },
-                    &"create_den" => {
-                        match &hook_descriptor.parameters{
-                            FunctionParameters::CreateDen {username_address, first_name} =>{
-                                hdk::debug("Running create_den")?;
-                                let dens = channel::create_den(username_address, first_name.to_string())?;
-                                hdk::debug(format!("Ran create_den, dens: {:?}", dens.clone()))?;
-                                hook_result_outputs.push(HooksResultTypes::CreateDen(dens))
-                            },
-                            _ => return Err(ZomeApiError::from("create_den expectes the CreateDen enum value to be present".to_string()))
-                        }
-                    },
-                    &"link_expression" => {
-                        match &hook_descriptor.parameters{
-                            FunctionParameters::LinkExpression {link_type, tag, direction, parent_expression, child_expression} =>{
-                                hdk::debug("Running link_expression")?;
-                                let link_result = link_expression(link_type.to_string(), tag.to_string(), direction.to_string(), &parent_expression, &child_expression)?;
-                                hdk::debug("Ran link_expression")?;
-                                hook_result_outputs.push(HooksResultTypes::LinkExpression(link_result))
-                            },
-                            _ => return Err(ZomeApiError::from("link_expression expects the LinkExpression enum value to be present".to_string()))
-                        }
-                    },
-                    &"create_post_index" => {
-                        match &hook_descriptor.parameters{
-                            FunctionParameters::CreatePostIndex {query_points, context, privacy, expression, index_string, link_type} =>{
-                                hdk::debug("Running create_post_index")?;
-                                let query_point_result = indexing::create_post_index(query_points.to_vec(), context, privacy, expression, index_string.to_string(), link_type.to_string())?;
-                                hdk::debug("Ran create_post_index")?;
-                                hook_result_outputs.push(HooksResultTypes::CreatePostIndex(query_point_result))
-                            },
-                            _ => return Err(ZomeApiError::from("create_post_index expects the CreateQueryPoints enum value to be present".to_string()))
-                        }
-                    },
-                    &_ => {
-                        return Err(ZomeApiError::from("Specified function does not exist".to_string()))
-                    }
+                    _ => return Err(ZomeApiError::from("time_to_expresssion expects the LocalTimeToExpression enum value to be present".to_string()))
                 }
-            } else {
-                return Err(ZomeApiError::from("Specified hook function is not present in expression hook definitions".to_string()))
+            },
+            &"create_pack" => {
+                match &hook_descriptor.parameters{
+                    FunctionParameters::CreatePack {username_address, first_name} =>{
+                        hdk::debug("Running create_pack")?;
+                        let pack = group::create_pack(username_address, first_name.to_string())?;
+                        hdk::debug(format!("Ran create_pack, pack address is: {:?}", pack.clone()))?;
+                        hook_result_outputs.push(HooksResultTypes::CreatePack(pack))
+                    },
+                    _ => return Err(ZomeApiError::from("create_pack expectes the CreatePack enum value to be present".to_string()))
+                }
+            },
+            &"create_den" => {
+                match &hook_descriptor.parameters{
+                    FunctionParameters::CreateDen {username_address, first_name} =>{
+                        hdk::debug("Running create_den")?;
+                        let dens = collection::create_den(username_address, first_name.to_string())?;
+                        hdk::debug(format!("Ran create_den, dens: {:?}", dens.clone()))?;
+                        hook_result_outputs.push(HooksResultTypes::CreateDen(dens))
+                    },
+                    _ => return Err(ZomeApiError::from("create_den expectes the CreateDen enum value to be present".to_string()))
+                }
+            },
+            &"link_expression" => {
+                match &hook_descriptor.parameters{
+                    FunctionParameters::LinkExpression {link_type, tag, direction, parent_expression, child_expression} =>{
+                        hdk::debug("Running link_expression")?;
+                        let link_result = link_expression(link_type.to_string(), tag.to_string(), direction.to_string(), &parent_expression, &child_expression)?;
+                        hdk::debug("Ran link_expression")?;
+                        hook_result_outputs.push(HooksResultTypes::LinkExpression(link_result))
+                    },
+                    _ => return Err(ZomeApiError::from("link_expression expects the LinkExpression enum value to be present".to_string()))
+                }
+            },
+            &"create_post_index" => {
+                match &hook_descriptor.parameters{
+                    FunctionParameters::CreatePostIndex {indexes, context, privacy, expression, index_string, link_type} =>{
+                        hdk::debug("Running create_post_index")?;
+                        let query_point_result = indexing::create_post_index(indexes.to_vec(), context, privacy, expression, index_string.to_string(), link_type.to_string())?;
+                        hdk::debug("Ran create_post_index")?;
+                        hook_result_outputs.push(HooksResultTypes::CreatePostIndex(query_point_result))
+                    },
+                    _ => return Err(ZomeApiError::from("create_post_index expects the CreateQueryPoints enum value to be present".to_string()))
+                }
+            },
+            &_ => {
+                return Err(ZomeApiError::from("Specified function does not exist".to_string()))
             }
         };
-    }
+    };
     Ok(hook_result_outputs) //success
 }
 
@@ -179,16 +163,12 @@ pub fn get_links_and_load_type<R: TryFrom<AppEntryValue>>(base: &HashString, lin
 	.collect())
 }
 
-pub fn get_and_check_perspective(perspective: &Address) -> ZomeApiResult<app_definitions::Channel>{
+pub fn get_and_check_perspective(perspective: &Address) -> ZomeApiResult<app_definitions::Perspective>{
     let entry = hdk::api::get_entry(perspective)?;
     match entry {
         Some(Entry::App(_, entry_value)) => {
-            let perspective_entry = app_definitions::Channel::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Specified perspective address is not of type Channel".to_string()))?; //will return error here if cannot ser entry to group
-            if perspective_entry.channel_type != app_definitions::ChannelType::Perspective{
-                Err(ZomeApiError::from("Channel is not of type perspective".to_string()))
-            } else {
-                Ok(perspective_entry)
-            }
+            let perspective_entry = app_definitions::Perspective::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Specified perspective address is not of type Perspective".to_string()))?; //will return error here if cannot ser entry to group
+            Ok(perspective_entry)
         },
         Some(_) => Err(ZomeApiError::from("Context address was not an app entry".to_string())),
         None => Err(ZomeApiError::from("No perspective entry at specified address".to_string()))
