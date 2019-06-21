@@ -86,6 +86,11 @@ define_zome! {
             outputs: |result: ZomeApiResult<bool>|,
             handler: expressions::collection::is_collection_owner
         }
+        create_collection: {
+            inputs: |collection: app_definitions::Collection, collection_tag: String|,
+            outputs: |result: ZomeApiResult<function_definitions::EntryAndAddress<app_definitions::Collection>>|,
+            handler: expressions::collection::create_collection
+        }
         user_pack: {
             inputs: |username_address: HashString|,
             outputs: |result: ZomeApiResult<function_definitions::EntryAndAddress<app_definitions::Group>>|,
@@ -180,7 +185,8 @@ define_zome! {
             show_env,
             add_user_to_perspective,
             get_perspectives_users,
-            update_bit_prefix
+            update_bit_prefix,
+            create_collection
         ]
     }
 }
