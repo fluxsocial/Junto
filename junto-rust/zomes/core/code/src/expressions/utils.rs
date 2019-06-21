@@ -6,11 +6,17 @@ use hdk::{
         entry::Entry, 
         entry::AppEntryValue,
         hash::HashString
+    },
+    holochain_wasm_utils::api_serialization::{
+        get_entry::{
+            GetEntryOptions, GetEntryResultType
+        }
     }
 };
 
 use std::convert::TryFrom;
 use std::collections::HashSet;
+use std::collections::HashMap;
 use std::hash::Hash;
 
 //Our module(s) imports
@@ -81,13 +87,13 @@ pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<HooksRe
             },
             &"create_post_index" => {
                 match &hook_descriptor.parameters{
-                    FunctionParameters::CreatePostIndex {indexes, context, privacy, expression, index_string, link_type} =>{
+                    FunctionParameters::CreatePostIndex {indexes, context, expression, index_string, link_type} =>{
                         hdk::debug("Running create_post_index")?;
-                        let query_point_result = indexing::create_post_index(indexes.to_vec(), context, privacy, expression, index_string.to_string(), link_type.to_string())?;
+                        let query_point_result = indexing::create_post_index(indexes.to_vec(), context, expression, index_string.to_string(), link_type.to_string())?;
                         hdk::debug("Ran create_post_index")?;
                         hook_result_outputs.push(HooksResultTypes::CreatePostIndex(query_point_result))
                     },
-                    _ => return Err(ZomeApiError::from("create_post_index expects the CreateQueryPoints enum value to be present".to_string()))
+                    _ => return Err(ZomeApiError::from("create_post_index expects the CreatePostIndex enum value to be present".to_string()))
                 }
             },
             &_ => {
@@ -198,4 +204,48 @@ where
 {
     let mut uniq = HashSet::new();
     iter.into_iter().all(move |x| uniq.insert(x))
+}
+
+pub fn get_entries_timestamp(entry: &Address) -> ZomeApiResult<HashMap<String, String>>{
+    let mut out = HashMap::new();
+    match hdk::get_entry_result(entry, GetEntryOptions {headers: true, ..Default::default()},)?.result {
+        GetEntryResultType::Single(result) => {
+            let iso_timestamp = serde_json::to_string(&result.headers[0].timestamp()).map_err(|err| ZomeApiError::from(err.to_string()))?; //TODO: ensure this is the actual header we want to use
+            hdk::debug(format!("Got iso timestamp: {:?}", iso_timestamp))?;
+            out.insert(String::from("year"), iso_timestamp[1..5].to_string().to_lowercase());
+            out.insert(String::from("month"), iso_timestamp[6..8].to_string().to_lowercase());
+            out.insert(String::from("day"), iso_timestamp[9..11].to_string().to_lowercase());
+            out.insert(String::from("hour"), iso_timestamp[12..14].to_string().to_lowercase());
+        },  
+        GetEntryResultType::All(_entry_history) => {
+            return Err(ZomeApiError::from("EntryResultType not of enum variant Single".to_string()))
+        }
+    };
+    Ok(out)
+}
+
+///Checks if username_address can access context at given context address
+///Returns privacy of context or err if cannot access the given context
+pub fn run_context_auth(context: &Address, username_address: &Address) -> ZomeApiResult<app_definitions::Privacy>{
+    match hdk::utils::get_as_type::<app_definitions::Collection>(context.clone()) {
+        Ok(context_entry) => {
+            hdk::debug("Context type collection, running auth")?;
+            //check that current user making post is owner of den they are trying to post into
+            if collection::is_collection_owner(context.clone(), username_address.clone())? == false{
+                Err(ZomeApiError::from("You are attempting to access a collection which you do not own".to_string()))
+            } else {
+                Ok(context_entry.privacy)
+            }
+        },
+        Err(_err) => {
+            hdk::debug("Context type group, running auth")?;
+            let context_entry = hdk::utils::get_as_type::<app_definitions::Group>(context.clone()).map_err(|_err| ZomeApiError::from("Context address was not a collection, group or dna address (global context)".to_string()))?;
+            if context_entry.privacy != app_definitions::Privacy::Public {
+                if (group::is_group_owner(context.clone(), username_address.clone())? == false) & (group::is_group_member(context.clone(), username_address.clone())? == false){
+                    return Err(ZomeApiError::from("You are attempting to access a group you are not permitted to interact with".to_string()))
+                };
+            };
+            return Ok(context_entry.privacy)
+        }
+    }
 }
