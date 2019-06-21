@@ -24,7 +24,7 @@ scenario.runTape('Can post expression and do basic random query', async (t, {jos
     t.equal(JSON.stringify(update_bit_prefix_value), JSON.stringify({ Ok: 1}));
     console.log("Completed bit prefix config setting");
 
-    //Post expression to one context (global) with all four tags specified - all unique with one tag having an uppercase letter
+    //Post expression to one context (global) with all four channels specified - all unique with one channel having an uppercase letter
     const post_global_expression = await josh.callSync('core', 'post_expression', {
         expression: 
                 {
@@ -36,7 +36,7 @@ scenario.runTape('Can post expression and do basic random query', async (t, {jos
                     },
                     expression_type: "ShortForm"
                 }, 
-        tags: ["holochain", "Junto", "social", "holo"], 
+                attributes: ["holochain", "Junto", "social", "holo"], 
         context: [dna]
     });
     console.log("Post expression 1 result", post_global_expression);
@@ -49,12 +49,12 @@ scenario.runTape('Can post expression and do basic random query', async (t, {jos
     let day = d.getUTCDate();
     let hour = d.getUTCHours();    
     const random_query = await josh.callSync('core', 'get_expression', {perspective: "random", 
-                                                                        query_points: ["social<tag>", "junto<tag>", "holochain<tag>", "holo<tag>", "jdeepee<user>", "ShortForm<type>", year+"<time:y>", "0"+month+"<time:m>", day+"<time:d>", hour+"<time:h>"],
+                                                                        attributes: ["social<channel>", "junto<channel>", "holochain<channel>", "holo<channel>", "jdeepee<user>", "ShortForm<type>", year+"<time:y>", "0"+month+"<time:m>", day+"<time:d>", hour+"<time:h>"],
                                                                         query_options: "FilterNew",
                                                                         target_type: "ExpressionPost",
                                                                         query_type: "And",
                                                                         dos: 1,
-                                                                        seed: "otally random seed"});
+                                                                        seed: "otally random seed"}); //0
     console.log("Random query result: ", random_query)
     t.equal(JSON.stringify(random_query), JSON.stringify({"Ok":[{"address":"QmT9LnUxYb6dBUpwvwfDnLTsDcKTAmKYqj9LHcW3ZWyyQW","entry":{"expression_type":"ShortForm","expression":{"ShortForm":{"background":"","body":"This is the first test expression"}}}}]}));
 })

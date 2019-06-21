@@ -36,7 +36,7 @@ scenario.runTape('Can post expression and do basic DOS query', async (t, {josh, 
     t.equal(JSON.stringify(update_bit_prefix_value), JSON.stringify({ Ok: 2}));
     console.log("Completed bit prefix config setting")
 
-    //Post expression to one context (global) with all four tags specified - all unique with one tag having an uppercase letter
+    //Post expression to one context (global) with all four attributes specified - all unique with one tag having an uppercase letter
     const post_global_expression = await josh.callSync('core', 'post_expression', {
                                                                                     expression: 
                                                                                             {
@@ -48,7 +48,7 @@ scenario.runTape('Can post expression and do basic DOS query', async (t, {josh, 
                                                                                                 },
                                                                                                 expression_type: "ShortForm"
                                                                                             }, 
-                                                                                    tags: ["holochain", "Junto", "social", "holo"], 
+                                                                                    attributes: ["holochain", "Junto", "social", "holo"], 
                                                                                     context: [dna]
                                                                                 });
     console.log("Post expression 1 result", post_global_expression);
@@ -66,7 +66,7 @@ scenario.runTape('Can post expression and do basic DOS query', async (t, {josh, 
                     },
                     expression_type: "ShortForm"
                 }, 
-        tags: ["holochain", "Junto", "social", "holo"], 
+        attributes: ["holochain", "Junto", "social", "holo"], 
         context: ["QmRhbdLQupJsE4NZajLCR2oCpCZjncoP656bh5TwXBTyHi"]
     });
     console.log("Post expression 2 result", post_private_pack_expression);
@@ -79,7 +79,7 @@ scenario.runTape('Can post expression and do basic DOS query', async (t, {josh, 
     let day = d.getUTCDate();
     let hour = d.getUTCHours();    
     const make_1_dos_query = await eric.callSync('core', 'get_expression', {perspective: "dos", 
-                                                                            query_points: ["social<tag>", "junto<tag>", "holochain<tag>", "holo<tag>", "jdeepee<user>", "shortform<type>", year+"<time:y>", "0"+month+"<time:m>", day+"<time:d>", hour+"<time:h>"],
+                                                                            attributes: ["social<channel>", "junto<channel>", "holochain<channel>", "holo<channel>", "jdeepee<user>", "shortform<type>", year+"<time:y>", "0"+month+"<time:m>", day+"<time:d>", hour+"<time:h>"],
                                                                             query_options: "FilterNew",
                                                                             target_type: "ExpressionPost",
                                                                             query_type: "And",

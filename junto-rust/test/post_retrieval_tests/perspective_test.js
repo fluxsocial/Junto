@@ -45,7 +45,7 @@ scenario.runTape('Can add, get users from perspective and get posts from a persp
     t.equal(JSON.stringify(update_bit_prefix_value), JSON.stringify({ Ok: 2}));
     console.log("Completed bit prefix config setting")
 
-    //Post expression to one context (global) with all four tags specified - all unique with one tag having an uppercase letter
+    //Post expression to one context (global) with all four channels specified - all unique with one channel having an uppercase letter
     const post_global_expression = await eric.callSync('core', 'post_expression', {
         expression: 
                 {
@@ -57,7 +57,7 @@ scenario.runTape('Can add, get users from perspective and get posts from a persp
                     },
                     expression_type: "ShortForm"
                 }, 
-        tags: ["holochain", "Junto", "social", "holo"], 
+        attributes: ["holochain", "Junto", "social", "holo"], 
         context: [dna]
     });
     console.log("Post expression 1 result", post_global_expression);
@@ -71,7 +71,7 @@ scenario.runTape('Can add, get users from perspective and get posts from a persp
     let day = d.getUTCDate();
     let hour = d.getUTCHours();    
     const perspective_query = await josh.callSync('core', 'get_expression', {perspective: "QmaAhrUjfAKVSoZRs6VUjEk3WWuzEXCTqQozWRFS4Au4mz", 
-                                                                            query_points: ["social<tag>", "junto<tag>", "holochain<tag>", "holo<tag>", "sunyatax<user>", "shortform<type>", year+"<time:y>", "0"+month+"<time:m>", day+"<time:d>", hour+"<time:h>"],
+                                                                            attributes: ["social<channel>", "junto<channel>", "holochain<channel>", "holo<channel>", "sunyatax<user>", "shortform<type>", year+"<time:y>", "0"+month+"<time:m>", day+"<time:d>", hour+"<time:h>"],
                                                                             query_options: "FilterNew",
                                                                             target_type: "ExpressionPost",
                                                                             query_type: "And",
