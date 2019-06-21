@@ -88,7 +88,7 @@ pub fn create_post_index(indexes: Vec<HashMap<String, String>>, context: &Addres
         Ok(context_entry) => {
             hdk::debug("Context type collection, running auth")?;
             //check that current user making post is owner of den they are trying to post into
-            if collection::is_den_owner(context.clone(), current_user_hash.clone())? == false{
+            if collection::is_collection_owner(context.clone(), current_user_hash.clone())? == false{
                 return Err(ZomeApiError::from("You are attempting to get results from a private collection which you do not own".to_string()))
             };
             //make link on collection context

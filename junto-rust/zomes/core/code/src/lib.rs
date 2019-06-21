@@ -81,10 +81,10 @@ define_zome! {
             outputs: |result: ZomeApiResult<function_definitions::UserDens>|,
             handler: expressions::user::get_user_dens
         }
-        is_den_owner: {
+        is_collection_owner: {
             inputs: |den: Address, user: Address|,
             outputs: |result: ZomeApiResult<bool>|,
-            handler: expressions::collection::is_den_owner
+            handler: expressions::collection::is_collection_owner
         }
         user_pack: {
             inputs: |username_address: HashString|,
@@ -167,7 +167,7 @@ define_zome! {
             get_user_profile_by_agent_address,
             get_user_username_by_agent_address,
             user_dens,
-            is_den_owner,
+            is_collection_owner,
             user_pack,
             add_pack_member,
             add_member_to_group,

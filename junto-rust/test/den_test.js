@@ -23,15 +23,15 @@ scenario.runTape('Retrieve den(s) and make auth operations on den.', async (t, {
     console.log("Completed get den results\n");
 
     //check current user is den owner
-    const get_private_den_owner_status = await josh.callSync('core', 'is_den_owner', {den: 'QmRhbdLQupJsE4NZajLCR2oCpCZjncoP656bh5TwXBTyHi', user: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn'});
+    const get_private_den_owner_status = await josh.callSync('core', 'is_collection_owner', {den: 'QmRhbdLQupJsE4NZajLCR2oCpCZjncoP656bh5TwXBTyHi', user: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn'});
     console.log("Get den(s) result", get_private_den_owner_status);
     t.equal(JSON.stringify(get_private_den_owner_status), JSON.stringify({ Ok: true }));
 
-    const get_shared_den_owner_status = await josh.callSync('core', 'is_den_owner', {den: 'Qmb3U3NGDvzr9H74yiXq1LZEwx5V5qrCivVWuk5jJhr4Mf', user: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn'});
+    const get_shared_den_owner_status = await josh.callSync('core', 'is_collection_owner', {den: 'Qmb3U3NGDvzr9H74yiXq1LZEwx5V5qrCivVWuk5jJhr4Mf', user: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn'});
     console.log("Get den(s) result", get_shared_den_owner_status);
     t.equal(JSON.stringify(get_shared_den_owner_status), JSON.stringify({ Ok: true }));
     
-    const get_public_den_owner_status = await josh.callSync('core', 'is_den_owner', {den: 'Qmf4LcJ77idWGMPeGN1ngoqnmwot8tNmSHZ3mF1dZC8xsp', user: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn'});
+    const get_public_den_owner_status = await josh.callSync('core', 'is_collection_owner', {den: 'Qmf4LcJ77idWGMPeGN1ngoqnmwot8tNmSHZ3mF1dZC8xsp', user: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn'});
     console.log("Get den(s) result", get_public_den_owner_status);
     t.equal(JSON.stringify(get_public_den_owner_status), JSON.stringify({ Ok: true }));
     console.log("Completed get den owner status results\n");

@@ -22,7 +22,8 @@ use super::definitions::{
 };
 
 //Commits den entry to DHT and runs necassary hooks
-pub fn commit_den(entry: &Entry, user: &Address) -> ZomeApiResult<Address> {
+pub fn commit_collection(collection: app_definitions::Collection, user: &Address) -> ZomeApiResult<Address> {
+    let entry = Entry::App("collection".into(), collection.into());
     let address = hdk::commit_entry(&entry)?;
     //Build vector describing hook functions which should run to correctly link this data
     let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "collection".to_string(), tag: "den".to_string(), direction: "reverse".to_string(), parent_expression: address.clone(), child_expression: user.clone()}},
@@ -50,20 +51,17 @@ pub fn create_den(username_address: &Address, first_name: String) -> ZomeApiResu
         name: (first_name.clone()  + "'s Den").to_string(),
         privacy: app_definitions::Privacy::Public,
     };
-    let private_entry = Entry::App("collection".into(), private_den.clone().into());
-    let shared_entry = Entry::App("collection".into(), shared_den.clone().into());
-    let public_entry = Entry::App("collection".into(), public_den.clone().into());
 
-    let private_den_address = commit_den(&private_entry, &username_address)?;
-    let shared_den_address = commit_den(&shared_entry, &username_address)?;
-    let public_den_address = commit_den(&public_entry, &username_address)?;
+    let private_den_address = commit_collection(private_den.clone(), &username_address)?;
+    let shared_den_address = commit_collection(shared_den.clone(), &username_address)?;
+    let public_den_address = commit_collection(public_den.clone(), &username_address)?;
 
     Ok(UserDens{private_den: EntryAndAddress{address: private_den_address, entry: private_den}, 
                         shared_den: EntryAndAddress{address: shared_den_address, entry: shared_den}, 
                         public_den: EntryAndAddress{address: public_den_address, entry: public_den}})
 }
 
-pub fn is_den_owner(den: Address, user: Address) -> ZomeApiResult<bool>{
-    let den_owner_results = utils::get_links_and_load_type::<app_definitions::UserName>(&den, Some("auth".to_string()), Some("owner".to_string()))?;
+pub fn is_collection_owner(collection: Address, user: Address) -> ZomeApiResult<bool>{
+    let den_owner_results = utils::get_links_and_load_type::<app_definitions::UserName>(&collection, Some("auth".to_string()), Some("owner".to_string()))?;
     Ok(den_owner_results[0].address == user)
 }
