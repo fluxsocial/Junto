@@ -37,7 +37,34 @@ Arguments: { perspective: "string of perspective type", attributes: ["attribute-
 
 ###### Response:
 ```
-Success: {Ok: [{ "entry": { expression entry data }, "address": "address of expression }, ...]}
+Success: {"Ok":[
+            {
+                "expression": {
+                                "address":"expression-address",
+                                "entry":{
+                                    "expression_type":"expression-type",
+                                    "expression":{"expression-entry}
+                                }
+                },
+                "sub_expressions":[],
+                "author_username":{"address":"username-address","entry":{"username":"username"}},
+                "author_profile": {
+                                    "address":"Qmaao8yPQtLA7Muo8xxJFCvYFKf7m1HbNzrhtN9JUPHeiv",
+                                    "entry": {
+                                        "parent":"parent-address",
+                                        "first_name":"first-name",
+                                        "last_name":"last-name",
+                                        "bio":"bio",
+                                        "profile_picture":"pictureurl",
+                                        "verified":true
+                                    }
+                                },
+                "resonations":[],
+                "timestamp":"2019-06-22-19",
+                channels":[{"address": "channel-address","entry":{"value":"channel-value","attribute_type":"Channel"}}, ...]
+            }
+        ]
+    }
 Error: {Err: {Error Type: 'Error Message')}}
 ```
 
