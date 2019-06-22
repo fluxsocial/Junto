@@ -1,84 +1,39 @@
-const { Config, Container, Scenario } = require("@holochain/holochain-nodejs");
-//const n3h = require('n3h');
-Scenario.setTape(require('tape'));
+const {Diorama, tapeExecutor} = require('@holochain/diorama')
+const scenarios = require("./scenarios.js")
+const dnaPath = Diorama.dna('./dist/junto-rust.dna.json', 'junto')
 
-const dnaPath = "./dist/junto-rust.dna.json";
-
-const dna = Config.dna(dnaPath);
-const agentJosh = Config.agent("josh");
-const agentEric = Config.agent("eric");
-const agentDora = Config.agent("dora");
-const instanceJosh = Config.instance(agentJosh, dna);
-const instanceEric = Config.instance(agentEric, dna);
-const instanceDora = Config.instance(agentDora, dna);
-const scenario = new Scenario([instanceJosh, instanceEric, instanceDora]);
-
-scenario.runTape('Retrieve pack and make pack auth operations', async (t, {josh, eric, dora}) => {
-        const register_result = await josh.callSync('core', 'create_user', {user_data: {username: "jdeepee", first_name: "Josh", last_name: "Parkin", bio: "Junto Testing", profile_picture: "pictureurl"}});
-        console.log("Register user result", register_result);
-        t.equal(JSON.stringify(register_result), JSON.stringify({"Ok":{"private_den":{"address":"QmRhbdLQupJsE4NZajLCR2oCpCZjncoP656bh5TwXBTyHi","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"Josh\'s Den","privacy":"Private"}},"shared_den":{"address":"Qmb3U3NGDvzr9H74yiXq1LZEwx5V5qrCivVWuk5jJhr4Mf","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"Josh\'s Den","privacy":"Shared"}},"public_den":{"address":"Qmf4LcJ77idWGMPeGN1ngoqnmwot8tNmSHZ3mF1dZC8xsp","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"Josh\'s Den","privacy":"Public"}},"pack":{"address":"QmU6oLeoZrQjNeT8kmpXRYn8U58FmqZ8rC6f7jr7tfMWKC","entry":{"name":"Josh\'s Pack","owner":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","privacy":"Shared"}},"profile":{"address":"QmQ2UTpz5EGD3v5N5iZe6FwaGWgbFGazATTC2RQvB5SuR1","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","first_name":"Josh","last_name":"Parkin","bio":"Junto Testing","profile_picture":"pictureurl","verified":true}},"username":{"address":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","entry":{"username":"jdeepee"}},"user_perspective":{"address":"QmaAhrUjfAKVSoZRs6VUjEk3WWuzEXCTqQozWRFS4Au4mz","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"Default Perspective"}}}}));
-        console.log("Completed register profile\n\n\n");
-    
-        const register_result_eric = await eric.callSync('core', 'create_user', {user_data: {username: "sunyatax", first_name: "Eric", last_name: "Yang", bio: "Junto Testing", profile_picture: "pictureurl"}});
-        console.log("Register user eric result", register_result_eric);
-        t.equal(JSON.stringify(register_result_eric), JSON.stringify({"Ok":{"private_den":{"address":"QmS1MKMD9s2Uxcx26TstJczRULv2fjuy5x2aztD4VHStFD","entry":{"parent":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","name":"Eric\'s Den","privacy":"Private"}},"shared_den":{"address":"Qmcq52qEYRsTVeirfR4sEPFRi6UxraHY8G5BGfESh9PMDf","entry":{"parent":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","name":"Eric\'s Den","privacy":"Shared"}},"public_den":{"address":"QmRW661xqgbR2wC31dFVKf2y95YiEGfDKZNfi5SZAGRCMR","entry":{"parent":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","name":"Eric\'s Den","privacy":"Public"}},"pack":{"address":"QmdZyapF7huQvjsB8tUw7riBXU1hoDDVYdG94qCgbvKpw8","entry":{"name":"Eric\'s Pack","owner":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","privacy":"Shared"}},"profile":{"address":"QmXF2BASNKjFg76hth4b6PJ4Btj6oeJLmn7AuZerCLrZiM","entry":{"parent":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","first_name":"Eric","last_name":"Yang","bio":"Junto Testing","profile_picture":"pictureurl","verified":true}},"username":{"address":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","entry":{"username":"sunyatax"}},"user_perspective":{"address":"QmWR9cLyApeJvZWoMgFcnZkqu6tVJLVH8DwsnMMzJBnCVc","entry":{"parent":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","name":"Default Perspective"}}}}));
-        console.log("Completed register profile\n\n\n");
-
-        //create user dora
-        const register_result_dora = await dora.callSync('core', 'create_user', {user_data: {username: "doracat", first_name: "Dora", last_name: "Liliom Czovek", bio: "Junto Testing", profile_picture: "pictureurl"}});
-        console.log("Register user dora result", register_result_dora);
-        t.equal(JSON.stringify(register_result_dora), JSON.stringify({"Ok":{"private_den":{"address":"QmSSvafZNWTYYjANmLADiuo2HQQ3nGRyVnMDK1rmHK4TmT","entry":{"parent":"QmWAJausHsWxGvpJJrwtiu6nyQyXDMX426NdghjmHrVfSz","name":"Dora\'s Den","privacy":"Private"}},"shared_den":{"address":"QmccYMmpxwATx6DJ7YjgatHEnj2o3X5G1K2obfQ8rRdHRx","entry":{"parent":"QmWAJausHsWxGvpJJrwtiu6nyQyXDMX426NdghjmHrVfSz","name":"Dora\'s Den","privacy":"Shared"}},"public_den":{"address":"QmahUy19mXw2o35ea6EFYp9KrHCTNdJuEgZZtqquKEgcfQ","entry":{"parent":"QmWAJausHsWxGvpJJrwtiu6nyQyXDMX426NdghjmHrVfSz","name":"Dora\'s Den","privacy":"Public"}},"pack":{"address":"QmQNkoBNJBLvzkNK5xVGjEQrqgiBmB8UvcByRutvrWYU3B","entry":{"name":"Dora\'s Pack","owner":"QmWAJausHsWxGvpJJrwtiu6nyQyXDMX426NdghjmHrVfSz","privacy":"Shared"}},"profile":{"address":"QmXbgC8Z4YrSbBeirjrShhTTK9zPmUmRUNeav98mHuDa6n","entry":{"parent":"QmWAJausHsWxGvpJJrwtiu6nyQyXDMX426NdghjmHrVfSz","first_name":"Dora","last_name":"Liliom Czovek","bio":"Junto Testing","profile_picture":"pictureurl","verified":true}},"username":{"address":"QmWAJausHsWxGvpJJrwtiu6nyQyXDMX426NdghjmHrVfSz","entry":{"username":"doracat"}},"user_perspective":{"address":"QmSADEZQJKRgEMN9uY9NVBbVfUUJ6HBqd9FTgtQ6ZyXrVJ","entry":{"parent":"QmWAJausHsWxGvpJJrwtiu6nyQyXDMX426NdghjmHrVfSz","name":"Default Perspective"}}}}));
-        console.log("Completed register profile\n\n\n");
-
-        //get joshs pack
-        const get_josh_pack = await josh.callSync('core', 'user_pack', {username_address: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn'});
-        console.log("Get josh pack result", get_josh_pack);
-        t.equal(JSON.stringify(get_josh_pack), JSON.stringify({"Ok":{"address":"QmU6oLeoZrQjNeT8kmpXRYn8U58FmqZ8rC6f7jr7tfMWKC","entry":{"name":"Josh\'s Pack","owner":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","privacy":"Shared"}}}));
-        console.log("Completed get josh pack\n\n\n");
-
-        //get erics pack
-        const get_eric_pack = await eric.callSync('core', 'user_pack', {username_address: 'QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU'});
-        console.log("Get eric pack result", get_eric_pack);
-        t.equal(JSON.stringify(get_eric_pack), JSON.stringify({"Ok":{"address":"QmdZyapF7huQvjsB8tUw7riBXU1hoDDVYdG94qCgbvKpw8","entry":{"name":"Eric\'s Pack","owner":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","privacy":"Shared"}}}));
-        console.log("Completed get eric pack\n\n\n");
-
-        const add_group_member = await josh.callSync('core', 'add_pack_member', {username_address: 'QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU'}); //add eric to josh's group
-        t.equal(JSON.stringify(add_group_member), JSON.stringify({ Ok: { message: 'User added to group' } }));
-        console.log("add group member result", add_group_member);
-        console.log("Completed add group member to josh's group\n\n\n");
-
-        const get_group_members_by_owner = await josh.callSync('core', 'group_members', {group: 'QmU6oLeoZrQjNeT8kmpXRYn8U58FmqZ8rC6f7jr7tfMWKC'});
-        t.equal(JSON.stringify(get_group_members_by_owner), JSON.stringify({ Ok: '{"members":[{"address":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","entry":{"username":"sunyatax"}}]}' }));
-        console.log("get group member by owner", get_group_members_by_owner);
-        console.log("Completed get group members by owner\n\n\n");
-
-        const get_group_members_by_member = await eric.callSync('core', 'group_members', {group: 'QmU6oLeoZrQjNeT8kmpXRYn8U58FmqZ8rC6f7jr7tfMWKC'});
-        t.equal(JSON.stringify(get_group_members_by_member), JSON.stringify({ Ok: '{"members":[{"address":"QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU","entry":{"username":"sunyatax"}}]}' }));
-        console.log("get group member by owner", get_group_members_by_member);
-        console.log("Completed get group members by owner\n\n\n");
-
-        const get_user_member_non_member_or_owner = await dora.callSync('core', 'group_members', {group: 'QmU6oLeoZrQjNeT8kmpXRYn8U58FmqZ8rC6f7jr7tfMWKC'});
-        t.equal(JSON.stringify(get_user_member_non_member_or_owner), JSON.stringify({ Err: { Internal: 'You are not an owner or member of this group and thus are not allowed to view given information' } }));
-        console.log("get group member by non member or owner", get_user_member_non_member_or_owner);
-        console.log("Completed get group members by non member or owner\n\n\n");
-
-        const is_group_member = await dora.callSync('core', 'is_group_member', {group: 'QmU6oLeoZrQjNeT8kmpXRYn8U58FmqZ8rC6f7jr7tfMWKC', user: 'QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU'});
-        t.equal(JSON.stringify(is_group_member), JSON.stringify({Ok: true}));
-        console.log("is group member result", is_group_member);
-        console.log("Completed is group member\n\n\n");
-
-        const is_not_group_member = await dora.callSync('core', 'is_group_member', {group: 'QmU6oLeoZrQjNeT8kmpXRYn8U58FmqZ8rC6f7jr7tfMWKC', user: 'QmWAJausHsWxGvpJJrwtiu6nyQyXDMX426NdghjmHrVfSz'});
-        t.equal(JSON.stringify(is_not_group_member), JSON.stringify({Ok: false}));
-        console.log("is not group member result", is_not_group_member);
-        console.log("Completed is not group member\n\n\n");
-
-        const remove_group_member = await josh.callSync('core', 'remove_group_member', {username_address: 'QmYCk7czLzXxbvCucMA8HTxyVbHtKz95egfkYhBhznmZcU', group: 'QmU6oLeoZrQjNeT8kmpXRYn8U58FmqZ8rC6f7jr7tfMWKC'});
-        t.equal(JSON.stringify(remove_group_member), JSON.stringify({ Ok: { "message": "User removed from group" }}));
-        console.log("remove group member result", remove_group_member);
-        console.log("Completed remove group member\n\n\n")
-
-        const check_removed = await josh.callSync('core', 'group_members', {group: 'QmU6oLeoZrQjNeT8kmpXRYn8U58FmqZ8rC6f7jr7tfMWKC'});
-        t.equal(JSON.stringify(check_removed), JSON.stringify({ Ok: '{"members":[]}' }));
-        console.log("get group member by owner", check_removed);
-        console.log("Completed get group members by owner\n\n\n"); 
+const diorama = new Diorama({
+    instances: {
+      agent1: dnaPath,
+      agent2: dnaPath,
+      agent3: dnaPath
+    },
+    debugLog: false,
+    executor: tapeExecutor(require('tape'))
 });
+
+diorama.registerScenario('Retrieve pack and make pack auth operations', async (s, t, {agent1, agent2, agent3}) => {
+    const user1 = await scenarios.registerAgent(t, agent1, "jdeepee", "joshua", "parkin");
+    const user2 = await scenarios.registerAgent(t, agent2, "sunyatax", "eric", "yang");
+    const user3 = await scenarios.registerAgent(t, agent3, "doracat", "dora", "Liliom Czovek");
+    await s.consistent();
+
+    const agent1_pack = await scenarios.getUserPack(t, agent1, user1.Ok.username.address);
+    const agent2_pack = await scenarios.getUserPack(t, agent2, user2.Ok.username.address);
+
+    const add_pack_member = await scenarios.addPackMember(t, agent1, user2.Ok.username.address);
+    const get_group_members_by_owner = await scenarios.getGroupMembers(t, agent1, user1.Ok.pack.address, true);
+    const get_group_members_by_member = await scenarios.getGroupMembers(t, agent2, user1.Ok.pack.address, true);
+    const get_group_member_by_non_owner_or_member = await scenarios.getGroupMembers(t, agent3, user1.Ok.pack.address, false);
+
+    const is_group_member = await scenarios.isGroupMember(t, agent3, user1.Ok.pack.address, user2.Ok.username.address);
+    t.equal(JSON.stringify(is_group_member), JSON.stringify({Ok: true}));
+    const is_not_group_member = await scenarios.isGroupMember(t, agent3, user1.Ok.pack.address, user3.Ok.username.address);
+    t.equal(JSON.stringify(is_not_group_member), JSON.stringify({Ok: false}));
+
+    const remove_group_member = await scenarios.removeGroupMember(t, agent1, user2.Ok.username.address, user1.Ok.pack.address);
+    const check_removed = await scenarios.getGroupMembers(t, agent1, user1.Ok.pack.address, true);
+    t.equal(JSON.stringify(check_removed), JSON.stringify({ Ok: '{"members":[]}' }));
+});
+
+diorama.run();
