@@ -1,38 +1,29 @@
-const { Config, Container, Scenario } = require("@holochain/holochain-nodejs");
-//const n3h = require('n3h');
-Scenario.setTape(require('tape'));
+const {Diorama, tapeExecutor} = require('@holochain/diorama')
+const scenarios = require("./scenarios.js")
+const dnaPath = Diorama.dna('./dist/junto-rust.dna.json', 'junto')
 
-const dnaPath = "./dist/junto-rust.dna.json";
-
-const dna = Config.dna(dnaPath);
-const agentJosh = Config.agent("josh");
-const instanceJosh = Config.instance(agentJosh, dna);
-const scenario = new Scenario([instanceJosh], {debugLog: true});
-
-scenario.runTape('Retrieve den(s) and make auth operations on den.', async (t, {josh}) => {
-    //create user
-    const register_result = await josh.callSync('core', 'create_user', {user_data: {username: "jdeepee", first_name: "Josh", last_name: "Parkin", bio: "Junto Testing", profile_picture: "pictureurl"}});
-    console.log("Register user result", register_result);
-    t.equal(JSON.stringify(register_result), JSON.stringify({"Ok":{"private_den":{"address":"QmRhbdLQupJsE4NZajLCR2oCpCZjncoP656bh5TwXBTyHi","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"Josh\'s Den","privacy":"Private"}},"shared_den":{"address":"Qmb3U3NGDvzr9H74yiXq1LZEwx5V5qrCivVWuk5jJhr4Mf","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"Josh\'s Den","privacy":"Shared"}},"public_den":{"address":"Qmf4LcJ77idWGMPeGN1ngoqnmwot8tNmSHZ3mF1dZC8xsp","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"Josh\'s Den","privacy":"Public"}},"pack":{"address":"QmU6oLeoZrQjNeT8kmpXRYn8U58FmqZ8rC6f7jr7tfMWKC","entry":{"name":"Josh\'s Pack","owner":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","privacy":"Shared"}},"profile":{"address":"QmQ2UTpz5EGD3v5N5iZe6FwaGWgbFGazATTC2RQvB5SuR1","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","first_name":"Josh","last_name":"Parkin","bio":"Junto Testing","profile_picture":"pictureurl","verified":true}},"username":{"address":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","entry":{"username":"jdeepee"}},"user_perspective":{"address":"QmaAhrUjfAKVSoZRs6VUjEk3WWuzEXCTqQozWRFS4Au4mz","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"Default Perspective"}}}}));
-    console.log("Completed register profile\n\n\n");
-
-    //get den(s)
-    const get_den = await josh.callSync('core', 'user_dens', {username_address: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn'});
-    console.log("Get den(s) result", get_den);
-    t.equal(JSON.stringify(get_den), JSON.stringify({"Ok":{"private_den":{"address":"QmRhbdLQupJsE4NZajLCR2oCpCZjncoP656bh5TwXBTyHi","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"Josh\'s Den","privacy":"Private"}},"shared_den":{"address":"Qmb3U3NGDvzr9H74yiXq1LZEwx5V5qrCivVWuk5jJhr4Mf","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"Josh\'s Den","privacy":"Shared"}},"public_den":{"address":"Qmf4LcJ77idWGMPeGN1ngoqnmwot8tNmSHZ3mF1dZC8xsp","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"Josh\'s Den","privacy":"Public"}}}}));
-    console.log("Completed get den results\n");
-
-    //check current user is den owner
-    const get_private_den_owner_status = await josh.callSync('core', 'is_collection_owner', {den: 'QmRhbdLQupJsE4NZajLCR2oCpCZjncoP656bh5TwXBTyHi', user: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn'});
-    console.log("Get den(s) result", get_private_den_owner_status);
-    t.equal(JSON.stringify(get_private_den_owner_status), JSON.stringify({ Ok: true }));
-
-    const get_shared_den_owner_status = await josh.callSync('core', 'is_collection_owner', {den: 'Qmb3U3NGDvzr9H74yiXq1LZEwx5V5qrCivVWuk5jJhr4Mf', user: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn'});
-    console.log("Get den(s) result", get_shared_den_owner_status);
-    t.equal(JSON.stringify(get_shared_den_owner_status), JSON.stringify({ Ok: true }));
-    
-    const get_public_den_owner_status = await josh.callSync('core', 'is_collection_owner', {den: 'Qmf4LcJ77idWGMPeGN1ngoqnmwot8tNmSHZ3mF1dZC8xsp', user: 'QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn'});
-    console.log("Get den(s) result", get_public_den_owner_status);
-    t.equal(JSON.stringify(get_public_den_owner_status), JSON.stringify({ Ok: true }));
-    console.log("Completed get den owner status results\n");
+const diorama = new Diorama({
+    instances: {
+      agent1: dnaPath
+    },
+    debugLog: false,
+    executor: tapeExecutor(require('tape'))
 });
+
+diorama.registerScenario('Retrieve den(s) and make auth operations on den', async (s, t, {agent1}) => {
+    const user1 = await scenarios.registerAgent(t, agent1, "jdeepee", "joshua", "parkin");
+    await s.consistent();
+    const get_dens = await scenarios.getDens(t, agent1, user1.Ok.username.address);
+    t.equal(JSON.stringify(get_dens), JSON.stringify({"Ok":{"private_den":{"address":"QmNM4SrnDweAjAwNUrBoSkbpEW8G4YUHg5jihoY5VYbsoG","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"joshua\'s Den","privacy":"Private"}},"shared_den":{"address":"QmdmsxPHxWKBDn3hiaAU1mNCr58SX8r3p5PVAcrkJJwQgJ","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"joshua\'s Den","privacy":"Shared"}},"public_den":{"address":"QmfYPrDCa53A7bJBQvAFF84S3755g8fuhy1rmQVnBFWghi","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"joshua\'s Den","privacy":"Public"}}}}));
+
+    const private_den_owner = await scenarios.isCollectionOwner(t, agent1, get_dens.Ok.private_den.address, user1.Ok.username.address);
+    t.equal(JSON.stringify(private_den_owner), JSON.stringify({ Ok: true }));
+
+    const shared_den_owner = await scenarios.isCollectionOwner(t, agent1, get_dens.Ok.shared_den.address, user1.Ok.username.address);
+    t.equal(JSON.stringify(shared_den_owner), JSON.stringify({ Ok: true }));
+
+    const public_den_owner = await scenarios.isCollectionOwner(t, agent1, get_dens.Ok.public_den.address, user1.Ok.username.address);
+    t.equal(JSON.stringify(private_den_owner), JSON.stringify({ Ok: true }));
+});
+
+diorama.run();

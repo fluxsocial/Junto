@@ -31,7 +31,8 @@ use super::definitions::{
         FunctionParameters,
         EntryAndAddressResult,
         EntryAndAddress,
-        HooksResultTypes
+        HooksResultTypes,
+        ExpressionData
     }
 };
 
@@ -248,4 +249,16 @@ pub fn run_context_auth(context: &Address, username_address: &Address) -> ZomeAp
             return Ok(context_entry.privacy)
         }
     }
+}
+
+pub fn get_expression_attributes(expression_data: EntryAndAddress<app_definitions::ExpressionPost>) -> ZomeApiResult<ExpressionData> {
+    let user = get_links_and_load_type::<app_definitions::UserName>(&expression_data.address, Some(String::from("auth")), Some(String::from("owner")))?;
+    let profile = get_links_and_load_type::<app_definitions::User>(&user[0].address, Some(String::from("profile")), None)?;
+    let timestamp = get_entries_timestamp(&expression_data.address)?;
+    let channels = get_links_and_load_type::<app_definitions::Attribute>(&expression_data.address, Some(String::from("channels")), None)?;
+    let sub_expressions = vec![];
+    let resonations = vec![];
+    Ok(ExpressionData{expression: expression_data, sub_expressions: sub_expressions, author_username: user[0].clone(), author_profile: profile[0].clone(), 
+                        resonations: resonations, timestamp: format!("{}-{}-{}-{}", timestamp["year"], timestamp["month"], timestamp["day"], timestamp["hour"]),
+                        channels: channels})
 }
