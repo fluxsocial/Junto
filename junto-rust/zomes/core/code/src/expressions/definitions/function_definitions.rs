@@ -68,6 +68,17 @@ pub struct GroupMembers{
     pub members: Vec<EntryAndAddress<app_definitions::UserName>>
 }
 
+#[derive(Serialize, Deserialize, Debug, DefaultJson)]
+pub struct ExpressionData{
+    pub expression: EntryAndAddress<app_definitions::ExpressionPost>,
+    pub sub_expressions: Vec<ExpressionData>,
+    pub author_username: EntryAndAddress<app_definitions::UserName>,
+    pub author_profile: EntryAndAddress<app_definitions::User>,
+    pub resonations: Vec<EntryAndAddress<app_definitions::User>>,
+    pub timestamp: String,
+    pub channels: Vec<EntryAndAddress<app_definitions::Attribute>>
+}
+
 #[derive(Clone)]
 pub enum HooksResultTypes{
     TimeToExpression(Vec<Address>),

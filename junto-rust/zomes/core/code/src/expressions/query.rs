@@ -56,7 +56,8 @@ pub fn get_expression(perspective: String, attributes: Vec<String>, query_option
                         match hdk::get_entry(&result)?{
                             Some(Entry::App(_, entry_value)) => {
                                 let entry = app_definitions::ExpressionPost::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Links retreived from random query were not of type expression post".to_string()))?;
-                                out.push(EntryAndAddress{entry: entry, address: result})
+                                let expression_data = utils::get_expression_attributes(EntryAndAddress{entry: entry, address: result})?;
+                                out.push(expression_data);
                             },
                             Some(_) => {},
                             None => {}
@@ -85,7 +86,8 @@ pub fn get_expression(perspective: String, attributes: Vec<String>, query_option
                         match hdk::get_entry(&expression)?{
                             Some(Entry::App(_, entry_value)) => {
                                 let entry = app_definitions::ExpressionPost::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Links retreived from DOS query were not of type expression post".to_string()))?;
-                                out.push(EntryAndAddress{entry: entry, address: expression});
+                                let expression_data = utils::get_expression_attributes(EntryAndAddress{entry: entry, address: expression})?;
+                                out.push(expression_data);
                             },
                             Some(_) => return Err(ZomeApiError::from("Group address was not an app entry".to_string())),
                             None => return Err(ZomeApiError::from("No group entry at specified address".to_string()))
@@ -114,6 +116,7 @@ pub fn get_expression(perspective: String, attributes: Vec<String>, query_option
                 for index_string in &index_strings{
                     expressions.append(&mut utils::get_links_and_load_type::<app_definitions::ExpressionPost>(&user.address, Some("expression_post".to_string()), Some(index_string.clone()))?);
                 };
+                let mut expressions = expressions.into_iter().map(|expression| utils::get_expression_attributes(expression)).collect::<Result<Vec<_>,_>>()?;
                 out.append(&mut expressions);
             };
             Ok(JsonString::from(out))
