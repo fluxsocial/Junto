@@ -107,6 +107,12 @@ pub enum QueryType {
     Or
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub enum ContextAuthResult {
+    Collection(app_definitions::Collection),
+    Group(app_definitions::Group)
+}
+
 pub type EntryAndAddressResult<T> = Vec<EntryAndAddress<T>>;
 
 #[derive(Serialize, Deserialize, Debug, Clone, Eq, Hash)]
