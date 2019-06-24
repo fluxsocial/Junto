@@ -40,7 +40,7 @@ diorama.registerScenario('Can post expression and do basic random query', async 
     );
     await s.consistent();
     const current_date = scenarios.getCurrentTimestamps();
-    const random_query = await scenarios.getExpression(t, agent1, "random",
+    const random_query = await scenarios.getExpression(t, agent1, user1.Ok.private_den.address,
                                                                     ["social<channel>", "junto<channel>", "holochain<channel>", "holo<channel>", "jdeepee<user>", "shortform<type>", current_date.year+"<time:y>", "0"+current_date.month+"<time:m>", current_date.day+"<time:d>", current_date.hour+"<time:h>"],
                                                                     "FilterNew",
                                                                     "ExpressionPost",

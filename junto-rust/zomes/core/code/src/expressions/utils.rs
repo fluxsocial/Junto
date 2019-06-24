@@ -32,7 +32,8 @@ use super::definitions::{
         EntryAndAddressResult,
         EntryAndAddress,
         HooksResultTypes,
-        ExpressionData
+        ExpressionData,
+        ContextAuthResult
     }
 };
 
@@ -227,7 +228,7 @@ pub fn get_entries_timestamp(entry: &Address) -> ZomeApiResult<HashMap<String, S
 
 ///Checks if username_address can access context at given context address
 ///Returns privacy of context or err if cannot access the given context
-pub fn run_context_auth(context: &Address, username_address: &Address) -> ZomeApiResult<app_definitions::Privacy>{
+pub fn run_context_auth(context: &Address, username_address: &Address) -> ZomeApiResult<Option<ContextAuthResult>>{
     match hdk::utils::get_as_type::<app_definitions::Collection>(context.clone()) {
         Ok(context_entry) => {
             hdk::debug("Context type collection, running auth")?;
@@ -235,18 +236,23 @@ pub fn run_context_auth(context: &Address, username_address: &Address) -> ZomeAp
             if collection::is_collection_owner(context.clone(), username_address.clone())? == false{
                 Err(ZomeApiError::from("You are attempting to access a collection which you do not own".to_string()))
             } else {
-                Ok(context_entry.privacy)
+                Ok(Some(ContextAuthResult::Collection(context_entry)))
             }
         },
         Err(_err) => {
             hdk::debug("Context type group, running auth")?;
-            let context_entry = hdk::utils::get_as_type::<app_definitions::Group>(context.clone()).map_err(|_err| ZomeApiError::from("Context address was not a collection, group or dna address (global context)".to_string()))?;
-            if context_entry.privacy != app_definitions::Privacy::Public {
-                if (group::is_group_owner(context.clone(), username_address.clone())? == false) & (group::is_group_member(context.clone(), username_address.clone())? == false){
-                    return Err(ZomeApiError::from("You are attempting to access a group you are not permitted to interact with".to_string()))
-                };
-            };
-            return Ok(context_entry.privacy)
+            let context_entry = hdk::utils::get_as_type::<app_definitions::Group>(context.clone()).ok();
+            match context_entry{
+                Some(context_entry) => {
+                    if context_entry.privacy != app_definitions::Privacy::Public {
+                        if (group::is_group_owner(context.clone(), username_address.clone())? == false) & (group::is_group_member(context.clone(), username_address.clone())? == false){
+                            return Err(ZomeApiError::from("You are attempting to access a group you are not permitted to interact with".to_string()))
+                        };
+                    };
+                    Ok(Some(ContextAuthResult::Group(context_entry)))
+                },
+                None => Ok(None)
+            }
         }
     }
 }

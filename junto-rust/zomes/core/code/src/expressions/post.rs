@@ -113,7 +113,8 @@ pub fn build_hooks(contexts: Vec<Address>, address: &Address, indexes: &Vec<Hash
             }; 
         } else {
             if local_contexts.contains(&context) == true && collective_count == 1 {return Err(ZomeApiError::from("You have submitted a default Junto context and global context, you can only submit one or the other".to_string()))}
-            let _privacy_auth_result = utils::run_context_auth(context, &user_name_address)?;
+            let _privacy_auth_result = utils::run_context_auth(context, &user_name_address)?
+                .ok_or(ZomeApiError::from("Context address was not a collection, group or dna address (global context)".to_string()))?;
             hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes.clone(), context: context.clone(), expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
         }
     };
@@ -146,7 +147,7 @@ pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
     index.push(hashmap!{"value".to_string() => exp_type[0].entry.value.clone(), "type".to_string() => "type".to_string()});
     let index_string = index.clone().iter().map(|qp| qp["value"].clone()).collect::<Vec<String>>().join("/");
     //add link on expression to user who made the resonation?
-    let hook_definitions = vec![FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: index.clone(), context: user_pack.clone(), expression: expression.clone(), index_string: index_string.clone(), link_type: "resonation".to_string()}},
+    let hook_definitions = vec![FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: index.clone(), context: user_pack.clone(), expression: expression.clone(), link_type: "resonation".to_string(), index_string: index_string.clone()}},
                                 FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "resonation".to_string(), tag: "".to_string(), direction: "both".to_string(), parent_expression: user_pack, child_expression: expression}}];
     utils::handle_hooks(hook_definitions)?;
     Ok("Resonation Generated".to_string())

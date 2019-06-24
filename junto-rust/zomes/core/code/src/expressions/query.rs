@@ -18,6 +18,7 @@ use multihash::Hash;
 use super::definitions::{
     app_definitions,
     function_definitions::{
+        self,
         QueryTarget,
         QueryOptions,
         EntryAndAddress,
@@ -29,6 +30,7 @@ use super::utils;
 use super::dos;
 use super::random;
 use super::perspective;
+use super::user;
 
 ///Function to handle the getting of expression for a given perspective and query point(s)
 ///for example: perspective: dos & query_points: [2018<timestamp>, holochain<channel>, dht<channel>, eric<channel>]
@@ -45,81 +47,88 @@ pub fn get_expression(perspective: String, attributes: Vec<String>, query_option
             let bit_prefix_bucket_id = random::hash_prefix(Address::from(seed), current_bit_prefix); //get and id for bucket to make query from using seed passed into function
             hdk::debug(format!("Making random query with bit prefix: {}", bit_prefix_bucket_id))?;
             let bit_prefix_bucket = hdk::entry_address(&Entry::App("bucket".into(), app_definitions::Bucket{id: bit_prefix_bucket_id}.into()))?;
-            let mut results = vec![];
-            for index_string in &index_strings{
-                results.append(&mut hdk::get_links(&bit_prefix_bucket, Some(String::from("expression_post")), Some(index_string.clone()))?.addresses());
-            };
-            match target_type{
-                QueryTarget::ExpressionPost => {
-                    let mut out = vec![];
-                    for result in results{
-                        match hdk::get_entry(&result)?{
-                            Some(Entry::App(_, entry_value)) => {
-                                let entry = app_definitions::ExpressionPost::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Links retreived from random query were not of type expression post".to_string()))?;
-                                let expression_data = utils::get_expression_attributes(EntryAndAddress{entry: entry, address: result})?;
-                                out.push(expression_data);
-                            },
-                            Some(_) => {},
-                            None => {}
-                        };
-                    };
-                    Ok(JsonString::from(out))
-                },
-                QueryTarget::User => {
-                    let mut out = vec![];
-                    for result in results{
-                        out.push(utils::get_links_and_load_type::<app_definitions::UserName>(&result, Some(String::from("auth")), Some(String::from("owner")))?[0].clone());
-                    };
-                    Ok(JsonString::from(out.into_iter().unique().collect::<Vec<_>>()))
-                }
-            }
+            query_from_address(Some(&bit_prefix_bucket), Some(index_strings), target_type, None, false)
         },
 
         "dos" => {
             if dos < 1 || dos > 6{return Err(ZomeApiError::from("DOS not within bounds 1 -> 6".to_string()))};
             let mut expressions = dos::dos_query(index_strings, query_options, query_type, dos, seed)?;
             expressions = expressions.into_iter().unique().collect::<Vec<_>>(); //ensure all posts returned are unique
-            match target_type{
-                QueryTarget::ExpressionPost => {
-                    let mut out = vec![];
-                    for expression in expressions{
-                        match hdk::get_entry(&expression)?{
-                            Some(Entry::App(_, entry_value)) => {
-                                let entry = app_definitions::ExpressionPost::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Links retreived from DOS query were not of type expression post".to_string()))?;
-                                let expression_data = utils::get_expression_attributes(EntryAndAddress{entry: entry, address: expression})?;
-                                out.push(expression_data);
-                            },
-                            Some(_) => return Err(ZomeApiError::from("Group address was not an app entry".to_string())),
-                            None => return Err(ZomeApiError::from("No group entry at specified address".to_string()))
-                        };
-                    };
-                    Ok(JsonString::from(out))
-                },
-                QueryTarget::User => {
-                    let mut out = vec![];
-                    for expression in expressions{
-                        out.push(utils::get_links_and_load_type::<app_definitions::UserName>(&expression, Some(String::from("auth")), Some(String::from("owner")))?[0].clone());
-                    };
-                    Ok(JsonString::from(out.into_iter().unique().collect::<Vec<_>>()))
-                }
-            }
+            query_from_address(None, None, target_type, Some(expressions), false)
         },
 
         _ => { //TODO: Add maximum post retrieval here - perhaps dont return over 50 posts - and posts should either be selected randomly or by a pagination query?
-            hdk::debug("Attempting a perspective query")?;
-            let perspective_address = Address::from(perspective);
-            let perspective_users = perspective::get_perspectives_users(perspective_address)?;
+            hdk::debug("Making either a group, perspective or collection query")?;
+            let current_username_address = user::get_user_username_by_agent_address()?.address;
+            let context_address = Address::from(perspective);
+
+            match utils::run_context_auth(&context_address, &current_username_address){
+                Ok(Some(function_definitions::ContextAuthResult::Collection(_context_entry))) => {
+                    hdk::debug("Making a collection query")?;
+                    query_from_address(Some(&context_address), Some(index_strings), target_type, None, false)
+                },
+                Ok(Some(function_definitions::ContextAuthResult::Group(_context_entry))) => {
+                    hdk::debug("Making a group query")?;
+                    query_from_address(Some(&context_address), Some(index_strings), target_type, None, true)
+                },
+                Ok(None) => { 
+                    hdk::debug("Making a perspective query")?;
+                    let perspective_users = perspective::get_perspectives_users(context_address)?;
+                    let mut out = vec![];
+                
+                    for user in perspective_users{
+                        let mut expressions = vec![];
+                        for index_string in &index_strings{
+                            expressions.append(&mut utils::get_links_and_load_type::<app_definitions::ExpressionPost>(&user.address, Some("expression_post".to_string()), Some(index_string.clone()))?);
+                        };
+                        let mut expressions = expressions.into_iter().map(|expression| utils::get_expression_attributes(expression)).collect::<Result<Vec<_>,_>>()?;
+                        out.append(&mut expressions);
+                    };
+                    Ok(JsonString::from(out))
+                }
+                Err(err) => {
+                    hdk::debug("Error invalid auth on perspective")?;
+                    Err(err)
+                }
+            }
+        }
+    }
+}
+
+pub fn query_from_address(anchor: Option<&Address>, index_strings: Option<Vec<String>>, target_type: QueryTarget, 
+                            results: Option<Vec<Address>>, include_resonations: bool) -> ZomeApiResult<JsonString> {
+    let results = results.unwrap_or_else(|| {
+        let mut expressions = vec![];
+        for index_string in &index_strings.unwrap(){
+            expressions.append(&mut hdk::get_links(anchor.unwrap(), Some(String::from("expression_post")), Some(index_string.clone())).unwrap().addresses());
+            if include_resonations == true{
+                expressions.append(&mut hdk::get_links(anchor.unwrap(), Some(String::from("resonation")), Some(index_string.clone())).unwrap().addresses());
+            };
+        };
+        expressions.into_iter().unique().collect::<Vec<_>>() 
+    });
+
+    match target_type{
+        QueryTarget::ExpressionPost => {
             let mut out = vec![];
-        
-            for user in perspective_users{
-                let mut expressions = vec![];
-                for index_string in &index_strings{
-                    expressions.append(&mut utils::get_links_and_load_type::<app_definitions::ExpressionPost>(&user.address, Some("expression_post".to_string()), Some(index_string.clone()))?);
+            for result in results{
+                match hdk::get_entry(&result)?{
+                    Some(Entry::App(_, entry_value)) => {
+                        let entry = app_definitions::ExpressionPost::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Links retreived from query were not of type expression post".to_string()))?;
+                        out.push(utils::get_expression_attributes(EntryAndAddress{entry: entry, address: result})?);
+                    },
+                    Some(_) => {},
+                    None => {}
                 };
-                let mut expressions = expressions.into_iter().map(|expression| utils::get_expression_attributes(expression)).collect::<Result<Vec<_>,_>>()?;
-                out.append(&mut expressions);
             };
             Ok(JsonString::from(out))
+        },
+        QueryTarget::User => {
+            let mut out = vec![];
+            for result in results{
+                out.push(utils::get_links_and_load_type::<app_definitions::UserName>(&result, Some(String::from("auth")), Some(String::from("owner")))?[0].clone());
+            };
+            Ok(JsonString::from(out.into_iter().unique().collect::<Vec<_>>()))
         }
     }
 }
