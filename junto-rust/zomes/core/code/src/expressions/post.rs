@@ -10,6 +10,7 @@ use hdk::{
 };
 
 use std::collections::HashMap;
+use std::string::ToString;
 
 //Our modules for holochain actins
 use super::definitions::{
@@ -73,6 +74,10 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut a
     utils::handle_hooks(hook_definitions)?;
     Ok(address)
 }
+
+// pub fn comment_expression(expression: app_definitions::ExpressionPost) -> ZomeApiResult<Address> {
+
+// }
 
 pub fn build_hooks(contexts: Vec<Address>, address: &Address, indexes: &Vec<HashMap<String, String>>, index_string: String) -> ZomeApiResult<Vec<FunctionDescriptor>> {
     let mut hook_definitions = vec![];

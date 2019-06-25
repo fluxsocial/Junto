@@ -43,7 +43,7 @@ diorama.registerScenario('Simple perspective query test', async (s, t, {agent1, 
     );
     await s.consistent();
     const current_date = scenarios.getCurrentTimestamps();
-    const perspective_query = await scenarios.getExpression(t, agent1, user1.Ok.user_perspective.address,
+    const perspective_query = await scenarios.queryExpressions(t, agent1, user1.Ok.user_perspective.address,
                                                                         ["social<channel>", "junto<channel>", "holochain<channel>", "holo<channel>", "sunyatax<user>", "shortform<type>", current_date.year+"<time:y>", "0"+current_date.month+"<time:m>", current_date.day+"<time:d>", current_date.hour+"<time:h>"],
                                                                         "FilterNew",
                                                                         "ExpressionPost",

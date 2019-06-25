@@ -31,7 +31,7 @@ Error: {Err:  {Error Type: 'Error Message'} }
 **Get Expression**
 ###### Request: 
 ```
-Endpoint: /get_expressions
+Endpoint: /query_expressions
 Arguments: { perspective: "string of perspective type", attributes: ["attribute-to-query-with", ...], query_options: QueryOptions, target_type: QueryTarget, query_type: QueryType, dos: dos-u32, seed: "string-to-randomize-searching" }
 ```
 

@@ -57,7 +57,7 @@ diorama.registerScenario('Simple DOS query tes', async (s, t, {agent1, agent2}) 
                                                                     );
     await s.consistent();                                                                    
     const current_date = scenarios.getCurrentTimestamps();
-    const make_1_dos_query = await scenarios.getExpression(t, agent2, "dos", 
+    const make_1_dos_query = await scenarios.queryExpressions(t, agent2, "dos", 
                                                                         ["social<channel>", "junto<channel>", "holochain<channel>", "holo<channel>", "jdeepee<user>", "shortform<type>", current_date.year+"<time:y>", "0"+current_date.month+"<time:m>", current_date.day+"<time:d>", current_date.hour+"<time:h>"],
                                                                         "FilterNew",
                                                                         "ExpressionPost",

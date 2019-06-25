@@ -24,8 +24,8 @@ async function updateBitPrefix(t, agent, bit_prefix) {
     return update_bit_prefix_value
 }
 
-async function getExpression(t, agent, perspective, attributes, query_options, target_type, query_type, dos, seed) {  
-    const query = await agent.call('core', 'get_expression', {perspective: perspective, 
+async function queryExpressions(t, agent, perspective, attributes, query_options, target_type, query_type, dos, seed) {  
+    const query = await agent.call('core', 'query_expressions', {perspective: perspective, 
                                                                     attributes: attributes,
                                                                     query_options: query_options,
                                                                     target_type: target_type,
@@ -36,6 +36,14 @@ async function getExpression(t, agent, perspective, attributes, query_options, t
     t.deepEqual(query.hasOwnProperty("Ok"), true);
     console.log("Completed query\n\n\n\n");
     return query
+}
+
+async function getExpression(t, agent, address) {
+    const get = await agent.call('core', 'get_expression', {expression: address});
+    console.log("Get expression result", get);
+    t.deepEqual(get.hasOwnProperty("Ok"), true);
+    console.log("Completed get expression\n\n\n\n");
+    return get
 }
 
 function getCurrentTimestamps() {
@@ -137,6 +145,7 @@ module.exports = {
     registerAgent: registerAgent,
     postExpression: postExpression,
     updateBitPrefix: updateBitPrefix,
+    queryExpressions: queryExpressions,
     getExpression: getExpression,
     getCurrentTimestamps: getCurrentTimestamps,
     addUserToPerspective: addUserToPerspective,
