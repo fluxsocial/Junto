@@ -15,6 +15,19 @@ Success: {Ok: "address of post"}
 Error: {Err:  {Error Type: 'Error Message'} }
 ```
 
+**Post Comment Expression**
+###### Request: 
+```
+Endpoint: /post_comment_expression
+Arguments: { expression: {expression object data}, parent_expression: Address-of-parent }
+```
+
+###### Response: 
+```
+Success: {Ok: "address of post"}
+Error: {Err:  {Error Type: 'Error Message'} }
+```
+
 **Make Resonation**
 ###### Request: 
 ```
@@ -46,7 +59,34 @@ Success: {"Ok":[
                                     "expression":{"expression-entry}
                                 }
                 },
-                "sub_expressions":[],
+                "sub_expressions":[
+                                {
+                                    "expression": {
+                                                    "address":"expression-address",
+                                                    "entry":{
+                                                        "expression_type":"expression-type",
+                                                        "expression":{"expression-entry}
+                                                    }
+                                    },
+                                    "sub_expressions":[],
+                                    "author_username":{"address":"username-address","entry":{"username":"username"}},
+                                    "author_profile": {
+                                                        "address":"Qmaao8yPQtLA7Muo8xxJFCvYFKf7m1HbNzrhtN9JUPHeiv",
+                                                        "entry": {
+                                                            "parent":"parent-address",
+                                                            "first_name":"first-name",
+                                                            "last_name":"last-name",
+                                                            "bio":"bio",
+                                                            "profile_picture":"pictureurl",
+                                                            "verified":true
+                                                        }
+                                                    },
+                                    "resonations":[],
+                                    "timestamp":"timestamp",
+                                    channels":[{"address": "channel-address","entry":{"value":"channel-value","attribute_type":"Channel"}}, ...]
+                                },
+                                ...
+                ],
                 "author_username":{"address":"username-address","entry":{"username":"username"}},
                 "author_profile": {
                                     "address":"Qmaao8yPQtLA7Muo8xxJFCvYFKf7m1HbNzrhtN9JUPHeiv",
@@ -60,7 +100,7 @@ Success: {"Ok":[
                                     }
                                 },
                 "resonations":[],
-                "timestamp":"2019-06-22-19",
+                "timestamp":"timestamp",
                 channels":[{"address": "channel-address","entry":{"value":"channel-value","attribute_type":"Channel"}}, ...]
             }
         ]

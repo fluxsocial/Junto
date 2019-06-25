@@ -13,7 +13,14 @@ async function postExpression(t, agent, expression, attributes, context) {
     t.deepEqual(post_expression.hasOwnProperty("Ok"), true);
     console.log("Completed posting expression\n\n\n\n");
     return post_expression
+}
 
+async function postComment(t, agent, expression, parent_expression) {
+    const comment_expression = await agent.call('core', 'post_comment_expression', {expression: expression, parent_expression: parent_expression});
+    console.log("Comment expression result", comment_expression);
+    t.deepEqual(comment_expression.hasOwnProperty("Ok"), true);
+    console.log("Completed comment expression\n\n\n\n");
+    return comment_expression
 }
 
 async function updateBitPrefix(t, agent, bit_prefix) {
@@ -144,6 +151,7 @@ async function getPerspectivesUsers(t, agent, perspective) {
 module.exports = {
     registerAgent: registerAgent,
     postExpression: postExpression,
+    postComment: postComment,
     updateBitPrefix: updateBitPrefix,
     queryExpressions: queryExpressions,
     getExpression: getExpression,
