@@ -141,6 +141,18 @@ pub fn user_name_definition() -> ValidatingEntryType {
                 validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 } 
+            ),
+            to!(
+                "expression_post",
+                link_type: "sub_expression", //Sub expression made by user
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
             )
         ]
     )

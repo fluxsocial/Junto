@@ -138,6 +138,11 @@ define_zome! {
             outputs: |result: ZomeApiResult<Address>|,
             handler: expressions::post::handle_post_expression
         }
+        post_comment_expression: {
+            inputs: |expression: app_definitions::ExpressionPost, parent_expression: Address|,
+            outputs: |result: ZomeApiResult<Address>|,
+            handler: expressions::post::post_comment_expression
+        }
         resonation: {
             inputs: |expression: Address|,
             outputs: |result: ZomeApiResult<String>|,
@@ -188,6 +193,7 @@ define_zome! {
             query_expressions,
             get_expression,
             post_expression,
+            post_comment_expression,
             resonation,
             show_env,
             add_user_to_perspective,
