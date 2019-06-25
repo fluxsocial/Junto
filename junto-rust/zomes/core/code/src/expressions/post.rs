@@ -35,7 +35,7 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut a
     } else if attributes.len() < 4{
         attributes.sort_by(|a, b| b.cmp(&a)); //Order tags vector in reverse alphabetical order
         for _ in attributes.len()..4{
-            attributes.push("*Null*".to_string());
+            attributes.push("*null*".to_string());
         };
     } else {
         attributes.sort_by(|a, b| b.cmp(&a)); //Order attributes vector in reverse alphabetical order
@@ -64,7 +64,8 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut a
     let mut index_string = indexes.clone().iter().map(|qp| qp["value"].clone() + "<" + &qp["type"].clone() + ">" ).collect::<Vec<String>>().join("/");
     index_string = format!("{}{}{}", "/", index_string, "/");
     hdk::debug(format!("Index string: {}", index_string))?;
-    hdk::debug("Created post attributes")?;
+    indexes = indexes.into_iter().filter(|index| index["value"] != "*null*".to_string()).collect();
+
     let hook_definitions = build_hooks(context, &address, &indexes, index_string)?; //build function hooks that need to be ran on expression based on which contexts are being used
     indexing::create_post_attributes(&indexes, &address)?;
     hdk::debug("Hook defnitions generated")?;
