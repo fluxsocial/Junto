@@ -5,7 +5,8 @@ use hdk::{
         cas::content::Address, 
         entry::Entry, 
         entry::AppEntryValue,
-        hash::HashString
+        hash::HashString,
+        link::LinkMatch
     },
     holochain_wasm_utils::api_serialization::{
         get_entry::{
@@ -122,8 +123,8 @@ pub fn link_expression(link_type: String, tag: String, direction: String, parent
 
 pub fn get_links_and_load(
     base: &HashString,
-    link_type: Option<String>,
-    tag: Option<String>
+    link_type: LinkMatch<&str>,
+    tag: LinkMatch<&str>
 ) -> ZomeApiResult<EntryAndAddressResult<Entry>>  {
 	let get_links_result = hdk::get_links(base, link_type, tag)?;
 
@@ -143,7 +144,7 @@ pub fn get_links_and_load(
 }
 
 //This function has now been implemented in the HDK - but its still useful as it can return the address as well as the entry
-pub fn get_links_and_load_type<R: TryFrom<AppEntryValue>>(base: &HashString, link_type: Option<String>, tag: Option<String>) -> ZomeApiResult<EntryAndAddressResult<R>> {
+pub fn get_links_and_load_type<R: TryFrom<AppEntryValue>>(base: &HashString, link_type: LinkMatch<&str>, tag: LinkMatch<&str>) -> ZomeApiResult<EntryAndAddressResult<R>> {
 	let link_load_results = get_links_and_load(base, link_type, tag)?;
 
 	Ok(link_load_results
@@ -184,16 +185,16 @@ pub fn get_and_check_perspective(perspective: &Address) -> ZomeApiResult<app_def
 }
 
 ///Sorts vector of times into ordered vector from year -> hour
-pub fn sort_time_vector(times: Vec<String>) -> Vec<String> {
-    let search_times = vec!["time:y>".to_string(), "time:m>".to_string(), "time:d>".to_string(), "time:h>".to_string()];
+pub fn sort_time_vector(times: Vec<&str>) -> Vec<&str> {
+    let search_times = vec!["time:y>", "time:m>", "time:d>", "time:h>"];
     let mut times_out = vec![];
-    let time_types = times.clone().into_iter().map(|time| time.split("<").collect::<Vec<_>>()[1].to_string()).collect::<Vec<_>>();
+    let time_types = times.clone().into_iter().map(|time| time.split("<").collect::<Vec<_>>()[1]).collect::<Vec<_>>();
     for search_time in &search_times{
         match time_types.iter().position(|time_type| time_type == search_time){
             Some(index) => {
                 times_out.push(times[index].clone())
             },
-            None => times_out.push("*".to_string())
+            None => times_out.push("*")
         }; 
     };
     times_out
@@ -258,10 +259,10 @@ pub fn run_context_auth(context: &Address, username_address: &Address) -> ZomeAp
 }
 
 pub fn get_expression_attributes(expression_data: EntryAndAddress<app_definitions::ExpressionPost>) -> ZomeApiResult<ExpressionData> {
-    let user = get_links_and_load_type::<app_definitions::UserName>(&expression_data.address, Some(String::from("auth")), Some(String::from("owner")))?;
-    let profile = get_links_and_load_type::<app_definitions::User>(&user[0].address, Some(String::from("profile")), None)?;
+    let user = get_links_and_load_type::<app_definitions::UserName>(&expression_data.address, LinkMatch::Exactly("auth"), LinkMatch::Exactly("owner"))?;
+    let profile = get_links_and_load_type::<app_definitions::User>(&user[0].address, LinkMatch::Exactly("profile"), LinkMatch::Any)?;
     let timestamp = get_entries_timestamp(&expression_data.address)?;
-    let channels = get_links_and_load_type::<app_definitions::Attribute>(&expression_data.address, Some(String::from("channels")), None)?;
+    let channels = get_links_and_load_type::<app_definitions::Attribute>(&expression_data.address, LinkMatch::Exactly("channels"), LinkMatch::Any)?;
     let sub_expressions = vec![];
     let resonations = vec![];
     Ok(ExpressionData{expression: expression_data, sub_expressions: sub_expressions, author_username: user[0].clone(), author_profile: profile[0].clone(), 

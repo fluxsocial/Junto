@@ -5,7 +5,8 @@ use hdk::{
         cas::content::Address,
         entry::Entry, 
         json::JsonString,
-        hash::HashString
+        hash::HashString,
+        link::LinkMatch
     }
 };
 
@@ -31,7 +32,7 @@ use super::dos;
 use super::random;
 use super::perspective;
 use super::user;
-
+// /.+?/tag1<tag>/time1<time>/.+?/
 ///Function to handle the getting of expression for a given perspective and query point(s)
 ///for example: perspective: dos & query_points: [2018<timestamp>, holochain<channel>, dht<channel>, eric<channel>]
 //TODO: Switch to normal Entry (JsonString as returned from get_entry & get_links) for EntryAndAddress across the whole application
@@ -79,7 +80,7 @@ pub fn get_expression(perspective: String, attributes: Vec<String>, query_option
                     for user in perspective_users{
                         let mut expressions = vec![];
                         for index_string in &index_strings{
-                            expressions.append(&mut utils::get_links_and_load_type::<app_definitions::ExpressionPost>(&user.address, Some("expression_post".to_string()), Some(index_string.clone()))?);
+                            expressions.append(&mut utils::get_links_and_load_type::<app_definitions::ExpressionPost>(&user.address, LinkMatch::Exactly("expression_post"), LinkMatch::Regex(index_string))?);
                         };
                         let mut expressions = expressions.into_iter().map(|expression| utils::get_expression_attributes(expression)).collect::<Result<Vec<_>,_>>()?;
                         out.append(&mut expressions);
@@ -99,10 +100,10 @@ pub fn query_from_address(anchor: Option<&Address>, index_strings: Option<Vec<St
                             results: Option<Vec<Address>>, include_resonations: bool) -> ZomeApiResult<JsonString> {
     let results = results.unwrap_or_else(|| {
         let mut expressions = vec![];
-        for index_string in &index_strings.unwrap(){
-            expressions.append(&mut hdk::get_links(anchor.unwrap(), Some(String::from("expression_post")), Some(index_string.clone())).unwrap().addresses());
+        for index_string in index_strings.unwrap(){
+            expressions.append(&mut hdk::get_links(anchor.unwrap(), LinkMatch::Exactly("expression_post"), LinkMatch::Regex(index_string.as_str())).unwrap().addresses());
             if include_resonations == true{
-                expressions.append(&mut hdk::get_links(anchor.unwrap(), Some(String::from("resonation")), Some(index_string.clone())).unwrap().addresses());
+                expressions.append(&mut hdk::get_links(anchor.unwrap(), LinkMatch::Exactly("resonation"), LinkMatch::Regex(index_string.as_str())).unwrap().addresses());
             };
         };
         expressions.into_iter().unique().collect::<Vec<_>>() 
@@ -126,7 +127,7 @@ pub fn query_from_address(anchor: Option<&Address>, index_strings: Option<Vec<St
         QueryTarget::User => {
             let mut out = vec![];
             for result in results{
-                out.push(utils::get_links_and_load_type::<app_definitions::UserName>(&result, Some(String::from("auth")), Some(String::from("owner")))?[0].clone());
+                out.push(utils::get_links_and_load_type::<app_definitions::UserName>(&result, LinkMatch::Exactly("auth"), LinkMatch::Exactly("owner"))?[0].clone());
             };
             Ok(JsonString::from(out.into_iter().unique().collect::<Vec<_>>()))
         }
@@ -151,64 +152,66 @@ pub fn attributes_to_index_string(attributes: Vec<String>) -> ZomeApiResult<Vec<
         if re.is_match(&attribute) == false { //check that attribute has type and value and of correct format
             return Err(ZomeApiError::from(format!("Invalid format for attribute: {}", attribute)))
         };
-        attribute.to_lowercase();
         if re_channel.is_match(&attribute){
-            channels.push(attribute.clone())
+            channels.push(attribute.clone());
         };
         if re_user.is_match(&attribute){
-            user.push(attribute.clone())
+            user.push(attribute.clone());
         };
         if re_type.is_match(&attribute){
-            r#type.push(attribute.clone())
+            r#type.push(attribute.clone());
         };
         if re_time.is_match(&attribute){
-            times.push(attribute.clone())
+            times.push(attribute.clone());
         };
     };
-    channels.sort_by(|a, b| b.cmp(&a));
-    if channels.len() == 0 {for _ in 1..5{channels.push("*".to_string())};};
-    if user.len() == 0 {user.push("*".to_string())};
-    if r#type.len() == 0 {r#type.push("*".to_string())};
-    if times.len() > 4 {return Err(ZomeApiError::from("Invalid query string".to_string()))};
-    if (user.len() > 1) | (r#type.len() > 1) {return Err(ZomeApiError::from(String::from("Invalid query string")))};
-    let channels = get_channel_combinations(channels.clone())?;
+    channels.sort_by(|a, b| b.cmp(&a));;
+    if user.len() == 0 {user.push(".+?".to_string())}; //push "any" regex matcher to string
+    if r#type.len() == 0 {r#type.push(".+?".to_string())};
+    if (user.len() > 1) | (r#type.len() > 1) | (times.len() > 4) {return Err(ZomeApiError::from(String::from("Invalid query string")))};
+
+    let channels = channels.iter().map(|channel| channel.as_str()).collect::<Vec<&str>>();
+    let channels = get_channel_combinations(channels)?;
+    let mut times = times.iter().map(|time| time.as_str()).collect::<Vec<&str>>();
     times = utils::sort_time_vector(times);
 
-    let out = channels.into_iter().map(|channel_combination| format!("{}/{}/{}/{}", channel_combination.join("/"), user[0], r#type[0], times.join("/"))).collect::<Vec<String>>();
+    let out = channels.into_iter().map(|channel_combination| format!("/{}/{}/{}/{}/", channel_combination.join("/"), user[0], r#type[0], times.join("/"))).collect::<Vec<String>>();
     Ok(out)
 }
 
-pub fn get_channel_combinations(mut channels: Vec<String>) -> ZomeApiResult<Vec<Vec<String>>> {
+//Get possible combinations of channels within the four channel slots. 
+//If all slots are not filled it will return combinations of channels with empty slots filled with "any" regex matcher
+pub fn get_channel_combinations(mut channels: Vec<&str>) -> ZomeApiResult<Vec<Vec<&str>>> {
     let mut out = vec![];
 
     match channels.len(){
         4 => out.push(channels.clone()),
         3 => {
-            let mut current_tag_combination = vec!["*".to_string()];
+            let mut current_tag_combination = vec![".+?"];
             current_tag_combination.append(&mut channels.clone());
             out.push(current_tag_combination);
-            channels.append(&mut vec!["*".to_string()]);
+            channels.append(&mut vec![".+?"]);
             out.push(channels.clone());
         },
         2 => {
-            let mut current_tag_combination = vec!["*".to_string()];
+            let mut current_tag_combination = vec![".+?"];
             current_tag_combination.append(&mut channels.clone());
-            current_tag_combination.append(&mut vec!["*".to_string()]);
+            current_tag_combination.append(&mut vec![".+?"]);
             out.push(current_tag_combination);
-            current_tag_combination = vec!["*".to_string(), "*".to_string()];
+            current_tag_combination = vec![".+?", ".+?"];
             current_tag_combination.append(&mut channels.clone());
             out.push(current_tag_combination);
-            channels.append(&mut vec!["*".to_string(), "*".to_string()]);
+            channels.append(&mut vec![".+?", ".+?"]);
             out.push(channels.clone());
         },
         1 => {
-            out.push(vec![channels[0].clone(), "*".to_string(), "*".to_string(), "*".to_string()]);
-            out.push(vec!["*".to_string(), channels[0].clone(), "*".to_string(), "*".to_string()]);
-            out.push(vec!["*".to_string(), "*".to_string(), channels[0].clone(), "*".to_string()]);
-            out.push(vec!["*".to_string(), "*".to_string(), "*".to_string(), channels[0].clone()]);
+            out.push(vec![channels[0].clone(), ".+?", ".+?", ".+?"]);
+            out.push(vec![".+?", channels[0].clone(), ".+?", ".+?"]);
+            out.push(vec![".+?", ".+?", channels[0].clone(), ".+?"]);
+            out.push(vec![".+?", ".+?", ".+?", channels[0].clone()]);
         },
         0 => {
-            out.push(vec!["*".to_string(), "*".to_string(), "*".to_string(), "*".to_string()]);
+            out.push(vec![".+?", ".+?", ".+?", ".+?"]);
         },
         _ => {
             return Err(ZomeApiError::from("Invalid attribute string".to_string()))
