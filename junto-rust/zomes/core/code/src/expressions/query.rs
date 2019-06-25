@@ -166,11 +166,9 @@ pub fn attributes_to_index_string(attributes: Vec<String>) -> ZomeApiResult<Vec<
         };
     };
     channels.sort_by(|a, b| b.cmp(&a));;
-    if channels.len() == 0 {for _ in 1..5{channels.push("*".to_string())};};
-    if user.len() == 0 {user.push("*".to_string())};
-    if r#type.len() == 0 {r#type.push("*".to_string())};
-    if times.len() > 4 {return Err(ZomeApiError::from("Invalid query string".to_string()))};
-    if (user.len() > 1) | (r#type.len() > 1) {return Err(ZomeApiError::from(String::from("Invalid query string")))};
+    if user.len() == 0 {user.push(".+?".to_string())}; //push "any" regex matcher to string
+    if r#type.len() == 0 {r#type.push(".+?".to_string())};
+    if (user.len() > 1) | (r#type.len() > 1) | (times.len() > 4) {return Err(ZomeApiError::from(String::from("Invalid query string")))};
 
     let channels = channels.iter().map(|channel| channel.as_str()).collect::<Vec<&str>>();
     let channels = get_channel_combinations(channels)?;
@@ -181,37 +179,39 @@ pub fn attributes_to_index_string(attributes: Vec<String>) -> ZomeApiResult<Vec<
     Ok(out)
 }
 
+//Get possible combinations of channels within the four channel slots. 
+//If all slots are not filled it will return combinations of channels with empty slots filled with "any" regex matcher
 pub fn get_channel_combinations(mut channels: Vec<&str>) -> ZomeApiResult<Vec<Vec<&str>>> {
     let mut out = vec![];
 
     match channels.len(){
         4 => out.push(channels.clone()),
         3 => {
-            let mut current_tag_combination = vec!["*"];
+            let mut current_tag_combination = vec![".+?"];
             current_tag_combination.append(&mut channels.clone());
             out.push(current_tag_combination);
-            channels.append(&mut vec!["*"]);
+            channels.append(&mut vec![".+?"]);
             out.push(channels.clone());
         },
         2 => {
-            let mut current_tag_combination = vec!["*"];
+            let mut current_tag_combination = vec![".+?"];
             current_tag_combination.append(&mut channels.clone());
-            current_tag_combination.append(&mut vec!["*"]);
+            current_tag_combination.append(&mut vec![".+?"]);
             out.push(current_tag_combination);
-            current_tag_combination = vec!["*", "*"];
+            current_tag_combination = vec![".+?", ".+?"];
             current_tag_combination.append(&mut channels.clone());
             out.push(current_tag_combination);
-            channels.append(&mut vec!["*", "*"]);
+            channels.append(&mut vec![".+?", ".+?"]);
             out.push(channels.clone());
         },
         1 => {
-            out.push(vec![channels[0].clone(), "*", "*", "*"]);
-            out.push(vec!["*", channels[0].clone(), "*", "*"]);
-            out.push(vec!["*", "*", channels[0].clone(), "*"]);
-            out.push(vec!["*", "*", "*", channels[0].clone()]);
+            out.push(vec![channels[0].clone(), ".+?", ".+?", ".+?"]);
+            out.push(vec![".+?", channels[0].clone(), ".+?", ".+?"]);
+            out.push(vec![".+?", ".+?", channels[0].clone(), ".+?"]);
+            out.push(vec![".+?", ".+?", ".+?", channels[0].clone()]);
         },
         0 => {
-            out.push(vec!["*", "*", "*", "*"]);
+            out.push(vec![".+?", ".+?", ".+?", ".+?"]);
         },
         _ => {
             return Err(ZomeApiError::from("Invalid attribute string".to_string()))
