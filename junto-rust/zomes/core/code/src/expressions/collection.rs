@@ -3,7 +3,8 @@ use hdk::{
     error::ZomeApiResult,
     holochain_core_types::{
         entry::Entry, 
-        cas::content::Address
+        cas::content::Address,
+        link::LinkMatch
     }
 };
 
@@ -65,6 +66,6 @@ pub fn create_collection(collection: app_definitions::Collection, collection_tag
 }
 
 pub fn is_collection_owner(collection: Address, user: Address) -> ZomeApiResult<bool>{
-    let den_owner_results = utils::get_links_and_load_type::<app_definitions::UserName>(&collection, Some("auth".to_string()), Some("owner".to_string()))?;
+    let den_owner_results = utils::get_links_and_load_type::<app_definitions::UserName>(&collection, LinkMatch::Exactly("auth"), LinkMatch::Exactly("owner"))?;
     Ok(den_owner_results[0].address == user)
 }

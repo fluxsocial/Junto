@@ -2,7 +2,8 @@ use hdk::{
     error::ZomeApiResult,
     error::ZomeApiError,
     holochain_core_types::{
-        cas::content::Address
+        cas::content::Address,
+        link::LinkMatch
     }
 };
 
@@ -54,7 +55,7 @@ pub fn get_packs_posts(pack_members: &Vec<Address>, index_strings: &Vec<String>,
     for pack_member in pack_members{
         let mut posts = vec![];
         for index_string in index_strings{
-            posts.append(&mut hdk::api::get_links(pack_member, Some(String::from("expression_post")), Some(index_string.clone()))?.addresses());//regex get_links query string here when supported 
+            posts.append(&mut hdk::api::get_links(pack_member, LinkMatch::Exactly("expression_post"), LinkMatch::Regex(index_string.as_str()))?.addresses());//regex get_links query string here when supported 
         };
         posts.retain(|post| post_addresses.contains(&post) == false);
         for ps in 1..USER_POST_SELECTION_COUNT{
@@ -84,7 +85,7 @@ pub fn dos_query(index_strings: Vec<String>, _query_options: QueryOptions, _quer
     let mut has_new_path: bool;
     let user_username = user::get_user_username_by_agent_address()?;
     let users_pack = user::get_user_pack(user_username.address)?;
-    let mut pack_members = hdk::get_links(&users_pack.address, Some(String::from("auth")), Some(String::from("member")))?.addresses();
+    let mut pack_members = hdk::get_links(&users_pack.address, LinkMatch::Exactly("auth"), LinkMatch::Exactly("member"))?.addresses();
     
     if pack_members.len() == 0 {return Err(ZomeApiError::from("You have no pack members and thus cannot make degree of seperation query".to_string()))};
     let mut pack_recursions = vec![];
@@ -104,7 +105,7 @@ pub fn dos_query(index_strings: Vec<String>, _query_options: QueryOptions, _quer
                     hdk::debug(format!("Pack member choosen at depth: {}", depth))?;
                     avoid_addresses.push(pack_member.clone());
                     let recursions_pack = user::get_user_pack(pack_member)?;
-                    pack_members = hdk::get_links(&recursions_pack.address, Some(String::from("auth")), Some(String::from("member")))?.addresses();
+                    pack_members = hdk::get_links(&recursions_pack.address, LinkMatch::Exactly("auth"), LinkMatch::Exactly("member"))?.addresses();
                     packs_traversed_count += 1;
                     depth += 1;
                     pack_recursions[depth as usize].append(&mut pack_members);

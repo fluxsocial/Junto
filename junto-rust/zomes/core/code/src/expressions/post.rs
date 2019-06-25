@@ -3,7 +3,8 @@ use hdk::{
     error::ZomeApiError,
     holochain_core_types::{
         cas::content::Address,
-        entry::Entry
+        entry::Entry,
+        link::LinkMatch
     },
     api::DNA_ADDRESS
 };
@@ -60,7 +61,8 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut a
 
     //query params are saved in following order: tag1<channel>/tag2<channel>/tag3<channel>/tag4<channel>/user<user>/type<type>/time:y<time>/time:m<time>/time:d<time>/time:h<time> 
     //thus tag for each expression link will also be in this order and if there is not four channels present placeholder value will be used
-    let index_string = indexes.clone().iter().map(|qp| qp["value"].clone() + "<" + &qp["type"].clone() + ">" ).collect::<Vec<String>>().join("/");
+    let mut index_string = indexes.clone().iter().map(|qp| qp["value"].clone() + "<" + &qp["type"].clone() + ">" ).collect::<Vec<String>>().join("/");
+    index_string = format!("{}{}{}", "/", index_string, "/");
     hdk::debug(format!("Index string: {}", index_string))?;
     hdk::debug("Created post attributes")?;
     let hook_definitions = build_hooks(context, &address, &indexes, index_string)?; //build function hooks that need to be ran on expression based on which contexts are being used
@@ -130,9 +132,9 @@ pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
     let user_name_address = user::get_user_username_by_agent_address()?.address;
     let user_pack = user::get_user_pack(user_name_address.clone())?.address;
 
-    let channels = utils::get_links_and_load_type::<app_definitions::Attribute>(&expression, Some("tags".to_string()), None)?;
-    let times = utils::get_links_and_load_type::<app_definitions::Attribute>(&expression, Some("created_at".to_string()), None)?;
-    let exp_type = utils::get_links_and_load_type::<app_definitions::Attribute>(&expression, Some("expression_type".to_string()), None)?;
+    let channels = utils::get_links_and_load_type::<app_definitions::Attribute>(&expression, LinkMatch::Exactly("channels"), LinkMatch::Any)?;
+    let times = utils::get_links_and_load_type::<app_definitions::Attribute>(&expression, LinkMatch::Exactly("created_at"), LinkMatch::Any)?;
+    let exp_type = utils::get_links_and_load_type::<app_definitions::Attribute>(&expression, LinkMatch::Exactly("expression_type"), LinkMatch::Any)?;
     
     let mut index: Vec<HashMap<String, String>> = channels.iter().map(|channel| hashmap!{"value".to_string() => channel.entry.value.clone(), "type".to_string() => "channel".to_string()}).collect();
     for time in times{
