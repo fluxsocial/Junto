@@ -258,12 +258,17 @@ pub fn run_context_auth(context: &Address, username_address: &Address) -> ZomeAp
     }
 }
 
-pub fn get_expression_attributes(expression_data: EntryAndAddress<app_definitions::ExpressionPost>) -> ZomeApiResult<ExpressionData> {
+pub fn get_expression_attributes(expression_data: EntryAndAddress<app_definitions::ExpressionPost>, fetch_sub_expressions: bool) -> ZomeApiResult<ExpressionData> {
     let user = get_links_and_load_type::<app_definitions::UserName>(&expression_data.address, LinkMatch::Exactly("auth"), LinkMatch::Exactly("owner"))?;
     let profile = get_links_and_load_type::<app_definitions::User>(&user[0].address, LinkMatch::Exactly("profile"), LinkMatch::Any)?;
     let timestamp = get_entries_timestamp(&expression_data.address)?;
     let channels = get_links_and_load_type::<app_definitions::Attribute>(&expression_data.address, LinkMatch::Exactly("channels"), LinkMatch::Any)?;
-    let sub_expressions = vec![];
+    let mut sub_expressions = vec![];
+    if fetch_sub_expressions == true {
+        hdk::debug("Getting sub expressions")?;
+        sub_expressions = get_links_and_load_type::<app_definitions::ExpressionPost>(&expression_data.address, LinkMatch::Exactly("sub_expression"), LinkMatch::Any)?
+                                .into_iter().map(|sub_expression| get_expression_attributes(sub_expression, false)).collect::<Result<Vec<_>,_>>()?;
+    }
     let resonations = vec![];
     Ok(ExpressionData{expression: expression_data, sub_expressions: sub_expressions, author_username: user[0].clone(), author_profile: profile[0].clone(), 
                         resonations: resonations, timestamp: format!("{}-{}-{}-{}", timestamp["year"], timestamp["month"], timestamp["day"], timestamp["hour"]),

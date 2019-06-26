@@ -32,11 +32,11 @@ use super::dos;
 use super::random;
 use super::perspective;
 use super::user;
-// /.+?/tag1<tag>/time1<time>/.+?/
+
 ///Function to handle the getting of expression for a given perspective and query point(s)
 ///for example: perspective: dos & query_points: [2018<timestamp>, holochain<channel>, dht<channel>, eric<channel>]
 //TODO: Switch to normal Entry (JsonString as returned from get_entry & get_links) for EntryAndAddress across the whole application
-pub fn get_expression(perspective: String, attributes: Vec<String>, query_options: QueryOptions, target_type: QueryTarget, 
+pub fn query_expressions(perspective: String, attributes: Vec<String>, query_options: QueryOptions, target_type: QueryTarget, 
                         query_type: QueryType, dos: u32, seed: String) -> ZomeApiResult<JsonString> {
     let index_strings = attributes_to_index_string(attributes)?;
     hdk::debug(format!("Getting expressions with generated query string(s): {:?}", index_strings))?;
@@ -52,7 +52,7 @@ pub fn get_expression(perspective: String, attributes: Vec<String>, query_option
         },
 
         "dos" => {
-            if dos < 1 || dos > 6{return Err(ZomeApiError::from("DOS not within bounds 1 -> 6".to_string()))};
+            if dos < 1 || dos > 6 {return Err(ZomeApiError::from("DOS not within bounds 1 -> 6".to_string()))};
             let mut expressions = dos::dos_query(index_strings, query_options, query_type, dos, seed)?;
             expressions = expressions.into_iter().unique().collect::<Vec<_>>(); //ensure all posts returned are unique
             query_from_address(None, None, target_type, Some(expressions), false)
@@ -82,7 +82,7 @@ pub fn get_expression(perspective: String, attributes: Vec<String>, query_option
                         for index_string in &index_strings{
                             expressions.append(&mut utils::get_links_and_load_type::<app_definitions::ExpressionPost>(&user.address, LinkMatch::Exactly("expression_post"), LinkMatch::Regex(index_string))?);
                         };
-                        let mut expressions = expressions.into_iter().map(|expression| utils::get_expression_attributes(expression)).collect::<Result<Vec<_>,_>>()?;
+                        let mut expressions = expressions.into_iter().map(|expression| utils::get_expression_attributes(expression, true)).collect::<Result<Vec<_>,_>>()?;
                         out.append(&mut expressions);
                     };
                     Ok(JsonString::from(out))
@@ -93,6 +93,17 @@ pub fn get_expression(perspective: String, attributes: Vec<String>, query_option
                 }
             }
         }
+    }
+}
+
+pub fn get_expression(expression: Address) -> ZomeApiResult<function_definitions::ExpressionData>{
+    match hdk::get_entry(&expression)? {
+        Some(Entry::App(_, entry_value)) => {
+            let entry = app_definitions::ExpressionPost::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Links retreived from query were not of type expression post".to_string()))?;
+            Ok(utils::get_expression_attributes(EntryAndAddress{entry: entry, address: expression}, true)?)
+        },
+        Some(_) => Err(ZomeApiError::from("Expression address was not an app entry".to_string())),
+        None => Err(ZomeApiError::from("No perspective entry at specified address".to_string()))
     }
 }
 
@@ -116,7 +127,7 @@ pub fn query_from_address(anchor: Option<&Address>, index_strings: Option<Vec<St
                 match hdk::get_entry(&result)?{
                     Some(Entry::App(_, entry_value)) => {
                         let entry = app_definitions::ExpressionPost::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Links retreived from query were not of type expression post".to_string()))?;
-                        out.push(utils::get_expression_attributes(EntryAndAddress{entry: entry, address: result})?);
+                        out.push(utils::get_expression_attributes(EntryAndAddress{entry: entry, address: result}, true)?);
                     },
                     Some(_) => {},
                     None => {}

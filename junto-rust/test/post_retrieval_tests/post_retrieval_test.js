@@ -68,41 +68,43 @@ diorama.registerScenario('Can post expression and do basic random query', async 
     );
     await s.consistent();
     const current_date = scenarios.getCurrentTimestamps();
-    const can_get_1 = await scenarios.getExpression(t, agent1, "random",
+    const can_query_1 = await scenarios.queryExpressions(t, agent1, "random",
                                                                     ["holochain<channel>", "Junto<channel>", current_date.year+"<time:y>", "0"+current_date.month+"<time:m>", current_date.day+"<time:d>", current_date.hour+"<time:h>"],
                                                                     "FilterNew",
                                                                     "ExpressionPost",
                                                                     "And",
                                                                     1,
                                                                     "otally random seed"); //0
-    t.equal(can_get_1.Ok.length, 1);
+    t.equal(can_query_1.Ok.length, 1);
 
-    const can_get_1_and_2 = await scenarios.getExpression(t, agent1, "random",
+    const can_query_1_and_2 = await scenarios.queryExpressions(t, agent1, "random",
                                                                     ["social<channel>", current_date.year+"<time:y>", "0"+current_date.month+"<time:m>", current_date.day+"<time:d>", current_date.hour+"<time:h>"],
                                                                     "FilterNew",
                                                                     "ExpressionPost",
                                                                     "And",
                                                                     1,
                                                                     "otally random seed"); //0
-    t.equal(can_get_1_and_2.Ok.length, 2);
+    t.equal(can_query_1_and_2.Ok.length, 2);
 
-    can_get_3 = await scenarios.getExpression(t, agent1, "random",
+    can_query_3 = await scenarios.queryExpressions(t, agent1, "random",
                                                             ["other<channel>", current_date.year+"<time:y>", "0"+current_date.month+"<time:m>", current_date.day+"<time:d>", current_date.hour+"<time:h>"],
                                                             "FilterNew",
                                                             "ExpressionPost",
                                                             "And",
                                                             1,
                                                             "otally random seed"); //0
-    t.equal(can_get_3.Ok.length, 1);
+    t.equal(can_query_3.Ok.length, 1);
 
-    can_get_all = await scenarios.getExpression(t, agent1, "random",
+    can_query_all = await scenarios.queryExpressions(t, agent1, "random",
                                                             [current_date.year+"<time:y>", "0"+current_date.month+"<time:m>", current_date.day+"<time:d>", current_date.hour+"<time:h>"],
                                                             "FilterNew",
                                                             "ExpressionPost",
                                                             "And",
                                                             1,
                                                             "otally random seed"); //0
-    t.equal(can_get_all.Ok.length, 3);
+    t.equal(can_query_all.Ok.length, 3);
+
+    can_get_1 = await scenarios.getExpression(t, agent1, post_1_expression.Ok);
 });
 
 diorama.run();
