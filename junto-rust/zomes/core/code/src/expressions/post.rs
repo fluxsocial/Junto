@@ -77,6 +77,7 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut a
 
 pub fn post_comment_expression(expression: app_definitions::ExpressionPost, parent_expression: Address) -> ZomeApiResult<Address> {
     hdk::debug("Making a comment")?;
+    let _parent_entry = hdk::utils::get_as_type::<app_definitions::ExpressionPost>(parent_expression.clone()).map_err(|_err| ZomeApiError::from(String::from("Parent expression was not of type ExpressionPost")))?;
     let expression_type = expression.expression_type.clone();
     let entry = Entry::App("expression_post".into(), expression.into());
     let address = hdk::commit_entry(&entry)?;
