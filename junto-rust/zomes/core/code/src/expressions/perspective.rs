@@ -4,7 +4,8 @@ use hdk::{
     error::ZomeApiError,
     holochain_core_types::{
         entry::Entry, 
-        cas::content::Address
+        cas::content::Address,
+        link::LinkMatch
     }
 };
 
@@ -38,7 +39,7 @@ pub fn get_perspectives_users(perspective: Address) -> ZomeApiResult<Vec<EntryAn
     let perspective_entry = utils::get_and_check_perspective(&perspective)?;
     let current_user = user::get_user_username_by_agent_address()?;
     if perspective_entry.parent == current_user.address{
-        let perspective_users = utils::get_links_and_load_type::<app_definitions::UserName>(&perspective, Some("user_perspective".to_string()), None)?;
+        let perspective_users = utils::get_links_and_load_type::<app_definitions::UserName>(&perspective, LinkMatch::Exactly("user_perspective"), LinkMatch::Any)?;
         Ok(perspective_users)
     } else {
         Err(ZomeApiError::from("That is not your perspective".to_string()))

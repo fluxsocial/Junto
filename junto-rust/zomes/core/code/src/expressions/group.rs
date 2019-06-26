@@ -5,7 +5,8 @@ use hdk::{
     holochain_core_types::{
         entry::Entry, 
         cas::content::Address,
-        json::JsonString
+        json::JsonString,
+        link::LinkMatch
     }
 };
 
@@ -85,7 +86,7 @@ pub fn is_group_member(group: Address, user: Address) -> ZomeApiResult<bool>{
     match group_entry {
         Some(Entry::App(_, entry_value)) => {
             let _entry = app_definitions::Group::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Specified group address is not of type Group".to_string()))?; //will return error here if cannot ser entry to group
-            let member_vec = utils::get_links_and_load_type::<app_definitions::UserName>(&group, Some("auth".to_string()), Some("member".to_string()))?;
+            let member_vec = utils::get_links_and_load_type::<app_definitions::UserName>(&group, LinkMatch::Exactly("auth"), LinkMatch::Exactly("member"))?;
             for member in member_vec {
                 if member.address == user{
                     return Ok(true)
@@ -108,7 +109,7 @@ pub fn get_group_members(group: Address) -> ZomeApiResult<GroupMembers> {
             if is_group_owner(group.clone(), current_user_username.clone())? == false && is_group_member(group.clone(), current_user_username.clone())? == false {
                 return Err(ZomeApiError::from("You are not an owner or member of this group and thus are not allowed to view given information".to_string()))
             };
-            let member_vec = utils::get_links_and_load_type::<app_definitions::UserName>(&group, Some("auth".to_string()), Some("member".to_string()))?;
+            let member_vec = utils::get_links_and_load_type::<app_definitions::UserName>(&group, LinkMatch::Exactly("auth"), LinkMatch::Exactly("member"))?;
             Ok(GroupMembers{members: member_vec})
         },
         Some(_) => Err(ZomeApiError::from("Context address was not an app entry".to_string())),

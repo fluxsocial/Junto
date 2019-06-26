@@ -27,7 +27,7 @@ pub struct Env {
     pub dna_address: String,
     pub agent_id: String,
     pub agent_address: String,
-    pub cap_request: CapabilityRequest,
+    pub cap_request: Option<CapabilityRequest>
 }
 
 #[derive(Serialize, Deserialize, Debug, PartialEq, Clone, DefaultJson)]

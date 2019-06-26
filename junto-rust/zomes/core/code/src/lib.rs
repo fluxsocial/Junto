@@ -10,6 +10,7 @@ extern crate serde_derive;
 extern crate serde_json;
 #[macro_use]
 extern crate holochain_core_types_derive;
+extern crate strum_macros;
 extern crate regex;
 extern crate multihash;
 extern crate rust_base58;
@@ -121,16 +122,26 @@ define_zome! {
             outputs: |result: ZomeApiResult<bool>|,
             handler: expressions::group::is_group_member
         }
-        get_expression: {
+        query_expressions: {
             inputs: |perspective: String, attributes: Vec<String>, query_options: function_definitions::QueryOptions, 
                     target_type: function_definitions::QueryTarget, query_type: function_definitions::QueryType, dos: u32, seed: String|,
             outputs: |result: ZomeApiResult<JsonString>|,
+            handler: expressions::query::query_expressions
+        }
+        get_expression: {
+            inputs: |expression: Address|,
+            outputs: |result: ZomeApiResult<function_definitions::ExpressionData>|,
             handler: expressions::query::get_expression
         }
         post_expression: {
             inputs: |expression: app_definitions::ExpressionPost, attributes: Vec<String>, context: Vec<Address>|,
             outputs: |result: ZomeApiResult<Address>|,
             handler: expressions::post::handle_post_expression
+        }
+        post_comment_expression: {
+            inputs: |expression: app_definitions::ExpressionPost, parent_expression: Address|,
+            outputs: |result: ZomeApiResult<Address>|,
+            handler: expressions::post::post_comment_expression
         }
         resonation: {
             inputs: |expression: Address|,
@@ -179,8 +190,10 @@ define_zome! {
             remove_group_member,
             group_members,
             is_group_member,
+            query_expressions,
             get_expression,
             post_expression,
+            post_comment_expression,
             resonation,
             show_env,
             add_user_to_perspective,

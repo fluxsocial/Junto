@@ -5,7 +5,8 @@ use hdk::{
         cas::content::Address,
         entry::Entry, 
         json::JsonString,
-        hash::HashString
+        hash::HashString,
+        link::LinkMatch
     },
     api::{
         AGENT_ADDRESS, AGENT_ID_STR, CAPABILITY_REQ, DNA_ADDRESS, DNA_NAME
@@ -90,7 +91,7 @@ pub fn get_username_from_address(username_address: Address) -> JsonString {
 }
 
 pub fn get_user_profile_from_address(username_address: Address) -> ZomeApiResult<EntryAndAddress<app_definitions::User>> {
-    let user_links = utils::get_links_and_load_type::<app_definitions::User>(&username_address, Some("profile".to_string()), None)?;
+    let user_links = utils::get_links_and_load_type::<app_definitions::User>(&username_address, LinkMatch::Exactly("profile"), LinkMatch::Exactly(""))?;
     if user_links.len() == 0{
         return Err(ZomeApiError::from("User address does not have any profile links".to_string()))
     };
@@ -98,7 +99,7 @@ pub fn get_user_profile_from_address(username_address: Address) -> ZomeApiResult
 }
 
 pub fn get_user_profile_by_agent_address() -> ZomeApiResult<EntryAndAddress<app_definitions::User>>{
-    let user_links = utils::get_links_and_load_type::<app_definitions::User>(&AGENT_ADDRESS, Some("user".to_string()), None)?;
+    let user_links = utils::get_links_and_load_type::<app_definitions::User>(&AGENT_ADDRESS, LinkMatch::Exactly("user"), LinkMatch::Exactly(""))?;
     if user_links.len() == 0{
         return Err(ZomeApiError::from("agent does not have any profile links".to_string()))
     };
@@ -106,7 +107,7 @@ pub fn get_user_profile_by_agent_address() -> ZomeApiResult<EntryAndAddress<app_
 }
 
 pub fn get_user_username_by_agent_address() -> ZomeApiResult<EntryAndAddress<app_definitions::UserName>>{
-    let user_name_links = utils::get_links_and_load_type::<app_definitions::UserName>(&AGENT_ADDRESS, Some("username".to_string()), None)?;
+    let user_name_links = utils::get_links_and_load_type::<app_definitions::UserName>(&AGENT_ADDRESS, LinkMatch::Exactly("username"), LinkMatch::Exactly(""))?;
     if user_name_links.len() == 0{
         return Err(ZomeApiError::from("agent does not have any profile links".to_string()))
     };
@@ -114,7 +115,7 @@ pub fn get_user_username_by_agent_address() -> ZomeApiResult<EntryAndAddress<app
 }
 
 pub fn get_user_dens(user: Address) -> ZomeApiResult<UserDens>{
-    let den_links = utils::get_links_and_load_type::<app_definitions::Collection>(&user, Some("collection".to_string()), Some("den".to_string()))?;
+    let den_links = utils::get_links_and_load_type::<app_definitions::Collection>(&user, LinkMatch::Exactly("collection"), LinkMatch::Exactly("den"))?;
     let mut private_den = None;
     let mut shared_den = None;
     let mut public_den = None;
@@ -140,7 +141,7 @@ pub fn get_user_dens(user: Address) -> ZomeApiResult<UserDens>{
 }
 
 pub fn get_user_pack(username_address: HashString) -> ZomeApiResult<EntryAndAddress<app_definitions::Group>>{
-    let pack_links = utils::get_links_and_load_type::<app_definitions::Group>(&username_address, Some("group".to_string()), Some("pack".to_string()))?;
+    let pack_links = utils::get_links_and_load_type::<app_definitions::Group>(&username_address, LinkMatch::Exactly("group"), LinkMatch::Exactly("pack"))?;
     hdk::debug(format!("Pack links on username: {}", pack_links.len().to_string()))?;
     if pack_links.len() > 1{
         return Err(ZomeApiError::from("Pack links on user greater than 1".to_string()))
@@ -151,7 +152,7 @@ pub fn get_user_pack(username_address: HashString) -> ZomeApiResult<EntryAndAddr
 }
 
 pub fn get_user_member_packs(username_address: HashString) -> ZomeApiResult<Vec<EntryAndAddress<app_definitions::Group>>>{
-    let pack_links = utils::get_links_and_load_type::<app_definitions::Group>(&username_address, Some("auth".to_string()), Some("member".to_string()))?;
+    let pack_links = utils::get_links_and_load_type::<app_definitions::Group>(&username_address, LinkMatch::Exactly("auth"), LinkMatch::Exactly("member"))?;
     let mut packs: Vec<EntryAndAddress<app_definitions::Group>> = vec![];
     for pack in pack_links{
         packs.push(pack.clone());

@@ -6,6 +6,7 @@ use hdk::{
         hash::HashString
     }
 };
+use strum_macros::{Display};
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone)]
 pub enum Privacy {
@@ -48,6 +49,15 @@ pub enum Expression {
         title: String,
         bullets: Vec<String>
     }
+}
+
+#[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone, Display)]
+pub enum ExpressionTypes {
+    LongForm,
+    ShortForm,
+    PhotoForm,
+    EventForm,
+    BulletForm
 }
 
 //This anchor will serve as a global index entry to link users, types, times and tags from
@@ -103,8 +113,7 @@ pub struct Attribute{
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct ExpressionPost { 
-    //pub parent: HashString,
-    pub expression_type: String,
+    pub expression_type: ExpressionTypes,
     pub expression: Expression
 }
 
