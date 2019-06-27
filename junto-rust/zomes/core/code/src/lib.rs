@@ -20,7 +20,6 @@ use hdk::{
     holochain_core_types::{
         json::JsonString, 
         cas::content::Address,
-        hash::HashString,
         error::HolochainError
     }
 };
@@ -93,7 +92,7 @@ define_zome! {
             handler: expressions::collection::create_collection
         }
         user_pack: {
-            inputs: |username_address: HashString|,
+            inputs: |username_address: Address|,
             outputs: |result: ZomeApiResult<function_definitions::EntryAndAddress<app_definitions::Group>>|,
             handler: expressions::user::get_user_pack
         }
@@ -145,7 +144,7 @@ define_zome! {
         }
         resonation: {
             inputs: |expression: Address|,
-            outputs: |result: ZomeApiResult<String>|,
+            outputs: |result: ZomeApiResult<&'static str>|,
             handler: expressions::post::handle_resonation
         }
         show_env: {

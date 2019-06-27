@@ -42,9 +42,9 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut a
         attributes.sort_by(|a, b| b.cmp(&a)); //Order attributes vector in reverse alphabetical order
     };
     hdk::debug(format!("Sorted attributes vector: {:?}", attributes))?;
-    let mut indexes: Vec<HashMap<String, String>> = attributes.iter().map(|attribute| hashmap!{"type".to_string() => "channel".to_string(), "value".to_string() => attribute.to_string().to_lowercase()}).collect();
+    let mut indexes: Vec<HashMap<&'static str, String>> = attributes.iter().map(|attribute| hashmap!{"type" => "channel".to_string(), "value" => attribute.to_string()}).collect();
 
-    let expression_type = expression.expression_type.clone();
+    let expression_type = expression.expression_type.clone().to_string();
     let entry = Entry::App("expression_post".into(), expression.into());
     let address = hdk::commit_entry(&entry)?;
     let username_entry_address = user::get_user_username_by_agent_address()?;
@@ -53,21 +53,21 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut a
     hdk::debug("Link user to expression as owner")?;
     hdk::api::link_entries(&address, &username_entry_address.address, "auth".to_string(), "owner".to_string())?;
 
-    indexes.push(hashmap!{"type".to_string() => "user".to_string(), "value".to_string() => username_entry_address.entry.username.to_string().to_lowercase()});
-    indexes.push(hashmap!{"type".to_string() => "type".to_string(), "value".to_string() => expression_type.to_string().to_lowercase()});
-    indexes.push(hashmap!{"type".to_string() => "time:y".to_string(), "value".to_string() => timestamps["year"].clone()}); //add year slice to query params
-    indexes.push(hashmap!{"type".to_string() => "time:m".to_string(), "value".to_string() => timestamps["month"].clone()}); //add month slice to query params
-    indexes.push(hashmap!{"type".to_string() => "time:d".to_string(), "value".to_string() => timestamps["day"].clone()}); //add day slice to query params
-    indexes.push(hashmap!{"type".to_string() => "time:h".to_string(), "value".to_string() => timestamps["hour"].clone()}); //add hour slice to query params
+    indexes.push(hashmap!{"type" => "user".to_string(), "value" => username_entry_address.entry.username.to_lowercase()});
+    indexes.push(hashmap!{"type" => "type".to_string(), "value" => expression_type.to_lowercase()});
+    indexes.push(hashmap!{"type" => "time:y".to_string(), "value" => timestamps["year"].to_string()}); //add year slice to query params
+    indexes.push(hashmap!{"type" => "time:m".to_string(), "value" => timestamps["month"].to_string()}); //add month slice to query params
+    indexes.push(hashmap!{"type" => "time:d".to_string(), "value" => timestamps["day"].to_string()}); //add day slice to query params
+    indexes.push(hashmap!{"type" => "time:h".to_string(), "value" => timestamps["hour"].to_string()}); //add hour slice to query params
 
     //query params are saved in following order: tag1<channel>/tag2<channel>/tag3<channel>/tag4<channel>/user<user>/type<type>/time:y<time>/time:m<time>/time:d<time>/time:h<time> 
     //thus tag for each expression link will also be in this order and if there is not four channels present placeholder value will be used
-    let mut index_string = indexes.clone().iter().map(|qp| qp["value"].clone() + "<" + qp["type"].as_str() + ">" ).collect::<Vec<String>>().join("/");
+    let mut index_string = indexes.clone().iter().map(|qp| format!("{}<{}>", qp["value"], qp["type"])).collect::<Vec<String>>().join("/");
     index_string = format!("{}{}{}", "/", index_string, "/");
     hdk::debug(format!("Index string: {}", index_string))?;
     indexes = indexes.into_iter().filter(|index| index["value"] != "*null*".to_string()).collect();
 
-    let hook_definitions = build_hooks(context, &address, &indexes, index_string)?; //build function hooks that need to be ran on expression based on which contexts are being used
+    let hook_definitions = build_hooks(context, &address, &indexes, index_string.as_str())?; //build function hooks that need to be ran on expression based on which contexts are being used
     indexing::create_post_attributes(&indexes, &address)?;
     hdk::debug("Hook definitions generated")?;
 
@@ -77,37 +77,39 @@ pub fn handle_post_expression(expression: app_definitions::ExpressionPost, mut a
 
 pub fn post_comment_expression(expression: app_definitions::ExpressionPost, parent_expression: Address) -> ZomeApiResult<Address> {
     hdk::debug("Making a comment")?;
-    let _parent_entry = hdk::utils::get_as_type::<app_definitions::ExpressionPost>(parent_expression.clone()).map_err(|_err| ZomeApiError::from(String::from("Parent expression was not of type ExpressionPost")))?;
-    let expression_type = expression.expression_type.clone();
+    let _parent_entry = hdk::utils::get_as_type::<app_definitions::ExpressionPost>(parent_expression.clone())
+        .map_err(|_err| ZomeApiError::from(String::from("Parent expression was not of type ExpressionPost")))?;
+    let expression_type = expression.expression_type.clone().to_string();
     let entry = Entry::App("expression_post".into(), expression.into());
     let address = hdk::commit_entry(&entry)?;
     let username_entry_address = user::get_user_username_by_agent_address()?;
     let timestamps = utils::get_entries_timestamp(&address)?;
     
-    let indexes = vec![hashmap!{"type".to_string() => "channel".to_string(), "value".to_string() => String::from("*null*")},
-                            hashmap!{"type".to_string() => "channel".to_string(), "value".to_string() => String::from("*null*")},
-                            hashmap!{"type".to_string() => "channel".to_string(), "value".to_string() => String::from("*null*")},
-                            hashmap!{"type".to_string() => "channel".to_string(), "value".to_string() => String::from("*null*")},
-                            hashmap!{"type".to_string() => "user".to_string(), "value".to_string() => username_entry_address.entry.username.to_string().to_lowercase()},
-                            hashmap!{"type".to_string() => "type".to_string(), "value".to_string() => expression_type.to_string().to_lowercase()},
-                            hashmap!{"type".to_string() => "time:y".to_string(), "value".to_string() => timestamps["year"].clone()},
-                            hashmap!{"type".to_string() => "time:m".to_string(), "value".to_string() => timestamps["month"].clone()},
-                            hashmap!{"type".to_string() => "time:d".to_string(), "value".to_string() => timestamps["day"].clone()},
-                            hashmap!{"type".to_string() => "time:h".to_string(), "value".to_string() => timestamps["hour"].clone()}];
+    let indexes = vec![hashmap!{"type" => "channel".to_string(), "value" => "*null*".to_string()},
+                            hashmap!{"type" => "channel".to_string(), "value" => "*null*".to_string()},
+                            hashmap!{"type" => "channel".to_string(), "value" => "*null*".to_string()},
+                            hashmap!{"type" => "channel".to_string(), "value" => "*null*".to_string()},
+                            hashmap!{"type" => "user".to_string(), "value" => username_entry_address.entry.username.to_lowercase()},
+                            hashmap!{"type" => "type".to_string(), "value" => expression_type.to_lowercase()},
+                            hashmap!{"type" => "time:y".to_string(), "value" => timestamps["year"].to_string()},
+                            hashmap!{"type" => "time:m".to_string(), "value" => timestamps["month"].to_string()},
+                            hashmap!{"type" => "time:d".to_string(), "value" => timestamps["day"].to_string()},
+                            hashmap!{"type" => "time:h".to_string(), "value" => timestamps["hour"].to_string()}];
 
-    let mut index_string = indexes.clone().iter().map(|qp| qp["value"].clone() + "<" + qp["type"].as_str() + ">" ).collect::<Vec<String>>().join("/");
+    let mut index_string = indexes.clone().iter().map(|qp| format!("{}<{}>", qp["value"], qp["type"])).collect::<Vec<String>>().join("/");
     index_string = format!("{}{}{}", "/", index_string, "/");
     hdk::debug(format!("Index string: {}", index_string))?;
     indexing::create_post_attributes(&indexes, &address)?;
     hdk::api::link_entries(&address, &username_entry_address.address, "auth".to_string(), "owner".to_string())?;
-    let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "sub_expression".to_string(), tag: index_string.clone(), direction: "forward".to_string(), parent_expression: username_entry_address.address, child_expression: address.clone()}},
-                                    FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "sub_expression".to_string(), tag: index_string.clone(), direction: "forward".to_string(), parent_expression: parent_expression.clone(), child_expression: address.clone()}},
-                                    FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "parent_expression".to_string(), tag: "".to_string(), direction: "forward".to_string(), parent_expression: address.clone(), child_expression: parent_expression}}];
+    let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "sub_expression", tag: index_string.as_str(), direction: "forward", parent_expression: username_entry_address.address, child_expression: address.clone()}},
+                                    FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "sub_expression", tag: index_string.as_str(), direction: "forward", parent_expression: parent_expression.clone(), child_expression: address.clone()}},
+                                    FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "parent_expression", tag: "", direction: "forward", parent_expression: address.clone(), child_expression: parent_expression}}];
     utils::handle_hooks(hook_definitions)?;
     Ok(address)
 }
 
-pub fn build_hooks(contexts: Vec<Address>, address: &Address, indexes: &Vec<HashMap<String, String>>, index_string: String) -> ZomeApiResult<Vec<FunctionDescriptor>> {
+pub fn build_hooks<'a>(contexts: Vec<Address>, address: &Address, indexes: &'a Vec<HashMap<&'static str, String>>, index_string: &'a str) 
+                        -> ZomeApiResult<Vec<FunctionDescriptor<'a>>> {
     let mut hook_definitions = vec![];
     let dna_hash_string = Address::from(DNA_ADDRESS.to_string());
     if utils::has_unique_elements(contexts.clone()) == false {return Err(ZomeApiError::from("Contexts must be unique".to_string()))};
@@ -133,32 +135,32 @@ pub fn build_hooks(contexts: Vec<Address>, address: &Address, indexes: &Vec<Hash
         if context == &dna_hash_string{
             hdk::debug("Context is a global context")?;
             //Link expression to user
-            hook_definitions.push(FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "expression_post".to_string(), tag: index_string.clone(), direction: "forward".to_string(), parent_expression: user_name_address.clone(), child_expression: address.clone()}});
+            hook_definitions.push(FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "expression_post", tag: index_string, direction: "forward", parent_expression: user_name_address.clone(), child_expression: address.clone()}});
             //Link between random bit bucket and expression so random post querying can happen on this post
-            hook_definitions.push(FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "expression_post".to_string(), tag: index_string.clone(), direction: "forward".to_string(), parent_expression: bit_bucket.clone(), child_expression: address.clone()}});
+            hook_definitions.push(FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "expression_post", tag: index_string, direction: "forward", parent_expression: bit_bucket.clone(), child_expression: address.clone()}});
             //Link expression to private den
-            hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes.clone(), context: private_den.clone(),  expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
+            hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes, context: private_den.clone(),  expression: address.clone(), index_string: index_string, link_type: "expression_post"}});
             //Link expression to shared den
-            hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes.clone(), context: shared_den.clone(), expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
+            hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes, context: shared_den.clone(), expression: address.clone(), index_string: index_string, link_type: "expression_post"}});
             //Link expression to public den
-            hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes.clone(), context: public_den.clone(), expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
+            hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes, context: public_den.clone(), expression: address.clone(), index_string: index_string, link_type: "expression_post"}});
             //Link expression to user pack
-            hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes.clone(), context: user_pack.clone(), expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
+            hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes, context: user_pack.clone(), expression: address.clone(), index_string: index_string, link_type: "expression_post"}});
             for pack in &member_results{ //Link expression to each pack user is a member of
-                hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes.clone(), context: pack.clone(), expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
+                hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes, context: pack.clone(), expression: address.clone(), index_string: index_string, link_type: "expression_post"}});
             }; 
         } else {
             if local_contexts.contains(&context) == true && collective_count == 1 {return Err(ZomeApiError::from("You have submitted a default Junto context and global context, you can only submit one or the other".to_string()))}
             let _privacy_auth_result = utils::run_context_auth(context, &user_name_address)?
                 .ok_or(ZomeApiError::from("Context address was not a collection, group or dna address (global context)".to_string()))?;
-            hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes.clone(), context: context.clone(), expression: address.clone(), index_string: index_string.clone(), link_type: "expression_post".to_string()}});
+            hook_definitions.push(FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: indexes, context: context.clone(), expression: address.clone(), index_string: index_string, link_type: "expression_post"}});
         }
     };
     Ok(hook_definitions)
 }
 
 //Function to handle the resonation of an expression post - will put the post into packs which the post should be resonated into
-pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
+pub fn handle_resonation(expression: Address) -> ZomeApiResult<&'static str>{
     match hdk::api::get_entry(&expression)?{
         None => {return Err(ZomeApiError::from("No expression at given address".to_string()))},
         _ => {}
@@ -167,24 +169,21 @@ pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
     let user_pack = user::get_user_pack(user_name_address.clone())?.address;
 
     let channels = utils::get_links_and_load_type::<app_definitions::Attribute>(&expression, LinkMatch::Exactly("channels"), LinkMatch::Any)?;
-    let times = utils::get_links_and_load_type::<app_definitions::Attribute>(&expression, LinkMatch::Exactly("created_at"), LinkMatch::Any)?;
+    let timestamps = utils::get_entries_timestamp(&expression)?;
     let exp_type = utils::get_links_and_load_type::<app_definitions::Attribute>(&expression, LinkMatch::Exactly("expression_type"), LinkMatch::Any)?;
     
-    let mut index: Vec<HashMap<String, String>> = channels.iter().map(|channel| hashmap!{"value".to_string() => channel.entry.value.clone(), "type".to_string() => "channel".to_string()}).collect();
-    for time in times{
-        match time.entry.attribute_type{
-            app_definitions::AttributeType::Year => {index.push(hashmap!{"value".to_string() => time.entry.value.clone(), "type".to_string() => "time:y".to_string()});},
-            app_definitions::AttributeType::Month => {index.push(hashmap!{"value".to_string() => time.entry.value.clone(), "type".to_string() => "time:m".to_string()});},
-            app_definitions::AttributeType::Day => {index.push(hashmap!{"value".to_string() => time.entry.value.clone(), "type".to_string() => "time:d".to_string()});},
-            app_definitions::AttributeType::Hour => {index.push(hashmap!{"value".to_string() => time.entry.value.clone(), "type".to_string() => "time:h".to_string()});},
-            _ => {}
-        };
-    }
-    index.push(hashmap!{"value".to_string() => exp_type[0].entry.value.clone(), "type".to_string() => "type".to_string()});
-    let index_string = index.clone().iter().map(|qp| qp["value"].clone()).collect::<Vec<String>>().join("/");
+    let mut index: Vec<HashMap<&'static str, String>> = channels.iter().map(|channel| hashmap!{"type" => "channel".to_string(), "value" => channel.entry.value.clone()}).collect();
+    index.push(hashmap!{"type" => "time:y".to_string(), "value" => timestamps["year"].to_string()}); //add year slice to query params
+    index.push(hashmap!{"type" => "time:m".to_string(), "value" => timestamps["month"].to_string()}); //add month slice to query params
+    index.push(hashmap!{"type" => "time:d".to_string(), "value" => timestamps["day"].to_string()}); //add day slice to query params
+    index.push(hashmap!{"type" => "time:h".to_string(), "value" => timestamps["hour"].to_string()}); //add hour slice to query params
+    index.push(hashmap!{"type" => "type".to_string(), "value" => exp_type[0].entry.value.to_string()});
+    let mut index_string = index.clone().iter().map(|qp| format!("{}<{}>", qp["value"], qp["type"])).collect::<Vec<String>>().join("/");
+    index_string = format!("{}{}{}", "/", index_string, "/");
+
     //add link on expression to user who made the resonation?
-    let hook_definitions = vec![FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: index.clone(), context: user_pack.clone(), expression: expression.clone(), link_type: "resonation".to_string(), index_string: index_string.clone()}},
-                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "resonation".to_string(), tag: "".to_string(), direction: "both".to_string(), parent_expression: user_pack, child_expression: expression}}];
+    let hook_definitions = vec![FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: &index, context: user_pack.clone(), expression: expression.clone(), link_type: "resonation", index_string: index_string.as_str()}},
+                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "resonation", tag: "", direction: "both", parent_expression: user_pack, child_expression: expression}}];
     utils::handle_hooks(hook_definitions)?;
-    Ok("Resonation Generated".to_string())
+    Ok("Resonation Generated")
 }

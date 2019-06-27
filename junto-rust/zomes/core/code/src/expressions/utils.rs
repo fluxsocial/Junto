@@ -43,19 +43,19 @@ pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<HooksRe
     //First we get all hook functions which can be run on given expression types
     let mut hook_result_outputs = vec![];
     for hook_descriptor in hooks{ //iterate over hook function names provided in function call
-        match &hook_descriptor.name{ //Match function names
-            &"time_to_expression" => {
+        match hook_descriptor.name{ //Match function names
+            "time_to_expression" => {
                 match &hook_descriptor.parameters{
                     FunctionParameters::TimeToExpression {link_type, tag, direction, expression_address} => {
                         hdk::debug("Running time_to_expression")?;
-                        let time_addresses = time::time_to_expression(link_type.to_string(), tag.to_string(), direction.to_string(), &expression_address)?;
+                        let time_addresses = time::time_to_expression(link_type, tag, direction, &expression_address)?;
                         hdk::debug("Ran time_to_expression")?;
                         hook_result_outputs.push(HooksResultTypes::TimeToExpression(time_addresses));
                     },
                     _ => return Err(ZomeApiError::from("time_to_expresssion expects the LocalTimeToExpression enum value to be present".to_string()))
                 }
             },
-            &"create_pack" => {
+            "create_pack" => {
                 match &hook_descriptor.parameters{
                     FunctionParameters::CreatePack {username_address, first_name} =>{
                         hdk::debug("Running create_pack")?;
@@ -66,7 +66,7 @@ pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<HooksRe
                     _ => return Err(ZomeApiError::from("create_pack expectes the CreatePack enum value to be present".to_string()))
                 }
             },
-            &"create_den" => {
+            "create_den" => {
                 match &hook_descriptor.parameters{
                     FunctionParameters::CreateDen {username_address, first_name} =>{
                         hdk::debug("Running create_den")?;
@@ -77,22 +77,22 @@ pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<HooksRe
                     _ => return Err(ZomeApiError::from("create_den expectes the CreateDen enum value to be present".to_string()))
                 }
             },
-            &"link_expression" => {
+            "link_expression" => {
                 match &hook_descriptor.parameters{
                     FunctionParameters::LinkExpression {link_type, tag, direction, parent_expression, child_expression} =>{
                         hdk::debug("Running link_expression")?;
-                        let link_result = link_expression(link_type.to_string(), tag.to_string(), direction.to_string(), &parent_expression, &child_expression)?;
+                        let link_result = link_expression(link_type, tag, direction, &parent_expression, &child_expression)?;
                         hdk::debug("Ran link_expression")?;
                         hook_result_outputs.push(HooksResultTypes::LinkExpression(link_result))
                     },
                     _ => return Err(ZomeApiError::from("link_expression expects the LinkExpression enum value to be present".to_string()))
                 }
             },
-            &"create_post_index" => {
+            "create_post_index" => {
                 match &hook_descriptor.parameters{
                     FunctionParameters::CreatePostIndex {indexes, context, expression, index_string, link_type} =>{
                         hdk::debug("Running create_post_index")?;
-                        let query_point_result = indexing::create_post_index(indexes.to_vec(), context, expression, index_string.to_string(), link_type.to_string())?;
+                        let query_point_result = indexing::create_post_index(indexes, context, expression, index_string, link_type)?;
                         hdk::debug("Ran create_post_index")?;
                         hook_result_outputs.push(HooksResultTypes::CreatePostIndex(query_point_result))
                     },
@@ -108,17 +108,17 @@ pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<HooksRe
 }
 
 //Link two expression objects together in a given direction
-pub fn link_expression(link_type: String, tag: String, direction: String, parent_expression: &Address, child_expression: &Address) -> ZomeApiResult<String>{
+pub fn link_expression(link_type: &str, tag: &str, direction: &str, parent_expression: &Address, child_expression: &Address) -> ZomeApiResult<&'static str>{
     hdk::debug("Linking expressions")?;
     if (direction == "reverse") | (direction == "both"){
-        hdk::debug(format!("Linking expression: {} (child) to: {} (parent) with tag: {} and link_type: {}", child_expression.to_string(), parent_expression.to_string(), tag, link_type))?;
-        hdk::link_entries(&child_expression, &parent_expression, link_type.clone(), tag.clone())?;
+        hdk::debug(format!("Linking expression: {} (child) to: {} (parent) with tag: {} and link_type: {}", child_expression, parent_expression, tag, link_type))?;
+        hdk::link_entries(child_expression, parent_expression, link_type, tag)?;
     }
     if (direction == "forward") | (direction == "both"){
-        hdk::debug(format!("Linking expression: {} (parent) to: {} (child) with tag: {} and link_type: {}", parent_expression.to_string(), child_expression.to_string(), tag, link_type))?;
-        hdk::link_entries(&parent_expression, &child_expression, link_type, tag)?;
+        hdk::debug(format!("Linking expression: {} (parent) to: {} (child) with tag: {} and link_type: {}", parent_expression, child_expression, tag, link_type))?;
+        hdk::link_entries(parent_expression, child_expression, link_type, tag)?;
     }
-    Ok("Links between expressions made with specified tag".to_string())
+    Ok("Links between expressions made with specified tag")
 }
 
 pub fn get_links_and_load(
@@ -209,16 +209,16 @@ where
     iter.into_iter().all(move |x| uniq.insert(x))
 }
 
-pub fn get_entries_timestamp(entry: &Address) -> ZomeApiResult<HashMap<String, String>>{
+pub fn get_entries_timestamp(entry: &Address) -> ZomeApiResult<HashMap<&'static str, String>>{
     let mut out = HashMap::new();
     match hdk::get_entry_result(entry, GetEntryOptions {headers: true, ..Default::default()},)?.result {
         GetEntryResultType::Single(result) => {
             let iso_timestamp = serde_json::to_string(&result.headers[0].timestamp()).map_err(|err| ZomeApiError::from(err.to_string()))?; //TODO: ensure this is the actual header we want to use
             hdk::debug(format!("Got iso timestamp: {:?}", iso_timestamp))?;
-            out.insert(String::from("year"), iso_timestamp[1..5].to_string().to_lowercase());
-            out.insert(String::from("month"), iso_timestamp[6..8].to_string().to_lowercase());
-            out.insert(String::from("day"), iso_timestamp[9..11].to_string().to_lowercase());
-            out.insert(String::from("hour"), iso_timestamp[12..14].to_string().to_lowercase());
+            out.insert("year", iso_timestamp[1..5].to_lowercase());
+            out.insert("month", iso_timestamp[6..8].to_lowercase());
+            out.insert("day", iso_timestamp[9..11].to_lowercase());
+            out.insert("hour", iso_timestamp[12..14].to_lowercase());
         },  
         GetEntryResultType::All(_entry_history) => {
             return Err(ZomeApiError::from("EntryResultType not of enum variant Single".to_string()))
