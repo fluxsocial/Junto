@@ -30,45 +30,9 @@ pub fn create_post_attributes(indexes: &Vec<HashMap<&str, String>>, expression: 
                 let address = hdk::commit_entry(&entry)?;
                 hdk::api::link_entries(expression, &address, "expression_type", &index["value"])?;
             },
-
-            "time:y" => {
-                hdk::debug("Linking time:y to expression")?; 
-                let entry = Entry::App("attribute".into(), app_definitions::Attribute{value: index["value"].clone(), 
-                                        attribute_type: app_definitions::AttributeType::Year}.into()).into();
-                let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(expression, &address, "created_at", "year")?;
-            },
-
-            "time:m" => {
-                hdk::debug("Linking time:m to expression")?; 
-                let entry = Entry::App("attribute".into(), app_definitions::Attribute{value: index["value"].clone(), 
-                                        attribute_type: app_definitions::AttributeType::Month}.into()).into();
-                let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(expression, &address, "created_at", "month")?;
-            },
-
-            "time:d" => {
-                hdk::debug("Linking time:d to expression")?; 
-                let entry = Entry::App("attribute".into(), app_definitions::Attribute{value: index["value"].clone(), 
-                                        attribute_type: app_definitions::AttributeType::Day}.into()).into();
-                let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(expression, &address, "created_at", "day")?;
-            },
-
-            "time:h" => {
-                hdk::debug("Linking time:h to expression")?; 
-                let entry = Entry::App("attribute".into(), app_definitions::Attribute{value: index["value"].clone(), 
-                                        attribute_type: app_definitions::AttributeType::Hour}.into()).into();
-                let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(expression, &address, "created_at", "hour")?;
-            },
-
-            "user" => {
-                //nothing currently needs to be done for user - expression -> owner link has already been done in handle_post_expression
-            },
-
+            
             _ => {
-                return Err(ZomeApiError::from("That index parameter type does not exist".to_string()))
+
             }
         };
     };

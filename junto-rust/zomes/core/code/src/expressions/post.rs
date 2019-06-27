@@ -169,8 +169,8 @@ pub fn handle_resonation(expression: Address) -> ZomeApiResult<&'static str>{
     let user_pack = user::get_user_pack(user_name_address.clone())?.address;
 
     let channels = utils::get_links_and_load_type::<app_definitions::Attribute>(&expression, LinkMatch::Exactly("channels"), LinkMatch::Any)?;
-    let timestamps = utils::get_entries_timestamp(&expression)?;
     let exp_type = utils::get_links_and_load_type::<app_definitions::Attribute>(&expression, LinkMatch::Exactly("expression_type"), LinkMatch::Any)?;
+    let timestamps = utils::get_entries_timestamp(&expression)?;
     
     let mut index: Vec<HashMap<&'static str, String>> = channels.iter().map(|channel| hashmap!{"type" => "channel".to_string(), "value" => channel.entry.value.clone()}).collect();
     index.push(hashmap!{"type" => "time:y".to_string(), "value" => timestamps["year"].to_string()}); //add year slice to query params
