@@ -25,8 +25,8 @@ pub fn commit_collection(collection: app_definitions::Collection, tag: String) -
     let entry = Entry::App("collection".into(), collection.into());
     let address = hdk::commit_entry(&entry)?;
     //Build vector describing hook functions which should run to correctly link this data
-    let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "collection".to_string(), tag: tag, direction: "reverse".to_string(), parent_expression: address.clone(), child_expression: parent.clone()}},
-                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "auth".to_string(), tag: "owner".to_string(), direction: "forward".to_string(), parent_expression: address.clone(), child_expression: parent.clone()}}];
+    let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "collection", tag: tag.as_str(), direction: "reverse", parent_expression: address.clone(), child_expression: parent.clone()}},
+                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "auth", tag: "owner", direction: "forward", parent_expression: address.clone(), child_expression: parent}}];
 
     utils::handle_hooks(hook_definitions)?;
     Ok(address)

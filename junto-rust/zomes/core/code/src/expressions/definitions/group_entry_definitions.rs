@@ -105,6 +105,18 @@ pub fn group_definition() -> ValidatingEntryType {
                 validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
+            ),
+            to!(
+                "expression_post",
+                link_type: "resonation",
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
             )
         ]
     )

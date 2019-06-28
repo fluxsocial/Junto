@@ -46,7 +46,8 @@ diorama.registerScenario('Can post expression and do basic random query', async 
                                                                     "ExpressionPost",
                                                                     "And",
                                                                     1,
-                                                                    "otally random seed"); //0
+                                                                    "otally random seed",
+                                                                    false);
     t.equal(JSON.stringify(random_query), JSON.stringify({"Ok":[{"expression":{"address":"QmT9LnUxYb6dBUpwvwfDnLTsDcKTAmKYqj9LHcW3ZWyyQW","entry":{"expression_type":"ShortForm","expression":{"ShortForm":{"background":"","body":"This is the first test expression"}}}},"sub_expressions":[],"author_username":{"address":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","entry":{"username":"jdeepee"}},"author_profile":{"address":"QmVEh39ZzEYG3B1T6FJ1zpMCwRV5WsKjg1ek5zocvD9Tnt","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","first_name":"joshua","last_name":"parkin","bio":"Junto Testing","profile_picture":"pictureurl","verified":true}},"resonations":[],"timestamp":"{0}-0{1}-{2}-{3}".format(current_date.year, current_date.month, current_date.day, current_date.hour),"channels":[{"address":"QmdPBmDreYonmoAvTqbYxJxaT3ieb82cEmZw6WQdhUUgPe","entry":{"value":"social","attribute_type":"Channel"}},{"address":"QmcwZceeJ5nTzetNG9CKA493fPEnnrs3A8JUpGvt5B7CfG","entry":{"value":"junto","attribute_type":"Channel"}},{"address":"QmWkARhLBLzCgr1vgf8fh9597kr23QsgJSP3tMNTX2DyRm","entry":{"value":"holochain","attribute_type":"Channel"}},{"address":"QmU5oKkpaqEZK1J6Fc9Fjrk3tT8929JfJKB65eFe65HeDf","entry":{"value":"holo","attribute_type":"Channel"}}]}]}));
 });
 

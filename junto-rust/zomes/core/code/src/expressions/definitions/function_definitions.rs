@@ -40,9 +40,9 @@ pub struct CreateUserInformation{
 }
 
 //Basic struct to be used to describe a function and its parameters to the handle_hooks function
-pub struct FunctionDescriptor{  
+pub struct FunctionDescriptor<'a>{  
     pub name: &'static str,
-    pub parameters: FunctionParameters,
+    pub parameters: FunctionParameters<'a>,
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
@@ -74,7 +74,7 @@ pub struct ExpressionData{
     pub sub_expressions: Vec<ExpressionData>,
     pub author_username: EntryAndAddress<app_definitions::UserName>,
     pub author_profile: EntryAndAddress<app_definitions::User>,
-    pub resonations: Vec<EntryAndAddress<app_definitions::User>>,
+    pub resonations: Vec<EntryAndAddress<app_definitions::UserName>>,
     pub timestamp: String,
     pub channels: Vec<EntryAndAddress<app_definitions::Attribute>>
 }
@@ -84,8 +84,8 @@ pub enum HooksResultTypes{
     TimeToExpression(Vec<Address>),
     CreatePack(EntryAndAddress<app_definitions::Group>),
     CreateDen(UserDens),
-    LinkExpression(String),
-    CreatePostIndex(String)
+    LinkExpression(&'static str),
+    CreatePostIndex(&'static str)
 }
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -173,11 +173,11 @@ impl<T: Into<JsonString>> From<EntryAndAddress<T>> for JsonString  where T: Seri
 }
 
 //Parameters for each function in holochain application
-pub enum FunctionParameters{
+pub enum FunctionParameters<'a>{
     TimeToExpression{
-        link_type: String,
-        tag: String, 
-        direction: String, 
+        link_type: &'a str,
+        tag: &'a str, 
+        direction: &'a str, 
         expression_address: Address
     },
     CreatePack{
@@ -189,17 +189,17 @@ pub enum FunctionParameters{
         first_name: String
     },
     LinkExpression{
-        link_type: String,
-        tag: String, 
-        direction: String, 
+        link_type: &'a str,
+        tag: &'a str, 
+        direction: &'a str, 
         parent_expression: Address, 
         child_expression: Address
     },
     CreatePostIndex{
-        indexes: Vec<HashMap<String, String>>, 
+        indexes: &'a Vec<HashMap<&'static str, String>>, 
         context: Address, 
         expression: Address,
-        index_string: String,
-        link_type: String
+        index_string: &'a str,
+        link_type: &'a str
     }
 }

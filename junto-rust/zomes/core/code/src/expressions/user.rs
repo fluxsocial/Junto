@@ -5,7 +5,6 @@ use hdk::{
         cas::content::Address,
         entry::Entry, 
         json::JsonString,
-        hash::HashString,
         link::LinkMatch
     },
     api::{
@@ -60,7 +59,7 @@ pub fn handle_create_user(user_data: CreateUserInformation) -> ZomeApiResult<Jun
     hdk::link_entries(&AGENT_ADDRESS, &username_address, "username", "")?; 
     hdk::link_entries(&username_address, &address, "profile", "")?;
     //Build hook definitions to link user to timestamps and create pack/den
-    let hook_definitions = vec![FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{link_type: "created_at".to_string(), tag: "".to_string(), direction: "reverse".to_string(), expression_address: username_address.clone()}},
+    let hook_definitions = vec![FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{link_type: "created_at", tag: "", direction: "reverse", expression_address: username_address.clone()}},
                                 FunctionDescriptor{name: "create_pack", parameters: FunctionParameters::CreatePack{username_address: username_address.clone(), first_name: user_data.first_name.clone()}},
                                 FunctionDescriptor{name: "create_den", parameters: FunctionParameters::CreateDen{username_address: username_address.clone(), first_name: user_data.first_name}}];
 
@@ -140,7 +139,7 @@ pub fn get_user_dens(user: Address) -> ZomeApiResult<UserDens>{
     Ok(UserDens{private_den: private_den.unwrap(), shared_den: shared_den.unwrap(), public_den: public_den.unwrap()})
 }
 
-pub fn get_user_pack(username_address: HashString) -> ZomeApiResult<EntryAndAddress<app_definitions::Group>>{
+pub fn get_user_pack(username_address: Address) -> ZomeApiResult<EntryAndAddress<app_definitions::Group>>{
     let pack_links = utils::get_links_and_load_type::<app_definitions::Group>(&username_address, LinkMatch::Exactly("group"), LinkMatch::Exactly("pack"))?;
     hdk::debug(format!("Pack links on username: {}", pack_links.len().to_string()))?;
     if pack_links.len() > 1{
@@ -151,7 +150,7 @@ pub fn get_user_pack(username_address: HashString) -> ZomeApiResult<EntryAndAddr
     Ok(pack_links[0].clone())
 }
 
-pub fn get_user_member_packs(username_address: HashString) -> ZomeApiResult<Vec<EntryAndAddress<app_definitions::Group>>>{
+pub fn get_user_member_packs(username_address: Address) -> ZomeApiResult<Vec<EntryAndAddress<app_definitions::Group>>>{
     let pack_links = utils::get_links_and_load_type::<app_definitions::Group>(&username_address, LinkMatch::Exactly("auth"), LinkMatch::Exactly("member"))?;
     let mut packs: Vec<EntryAndAddress<app_definitions::Group>> = vec![];
     for pack in pack_links{

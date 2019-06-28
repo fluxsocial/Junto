@@ -50,12 +50,16 @@ pub fn choose_pack_member(mut pack_members: Vec<Address>, depth: u32, avoid_addr
     }
 }
 
-pub fn get_packs_posts(pack_members: &Vec<Address>, index_strings: &Vec<String>, post_addresses: &Vec<Address>, seed: &String) -> ZomeApiResult<Vec<Address>>{
+pub fn get_packs_posts(pack_members: &Vec<Address>, index_strings: &Vec<String>, post_addresses: &Vec<Address>, seed: &String, resonations: bool) -> ZomeApiResult<Vec<Address>>{
     let mut out_posts = vec![];
     for pack_member in pack_members{
         let mut posts = vec![];
         for index_string in index_strings{
-            posts.append(&mut hdk::api::get_links(pack_member, LinkMatch::Exactly("expression_post"), LinkMatch::Regex(index_string.as_str()))?.addresses());//regex get_links query string here when supported 
+            if resonations == true{
+                posts.append(&mut hdk::api::get_links(pack_member, LinkMatch::Exactly("resonation"), LinkMatch::Regex(index_string.as_str()))?.addresses());
+            } else {
+                posts.append(&mut hdk::api::get_links(pack_member, LinkMatch::Exactly("expression_post"), LinkMatch::Regex(index_string.as_str()))?.addresses());
+            };
         };
         posts.retain(|post| post_addresses.contains(&post) == false);
         for ps in 1..USER_POST_SELECTION_COUNT{
@@ -76,7 +80,7 @@ pub fn get_packs_posts(pack_members: &Vec<Address>, index_strings: &Vec<String>,
 
 //TODO build dos post query and user query into seperate functions which are handled and called by dos_query
 //Currently this algorithm will iterate until either all searches are exhasted from each pack recursion tree or 50 posts are found or user/pack recursions have reached their max - then the loop will break and return whatever posts it has
-pub fn dos_query(index_strings: Vec<String>, _query_options: QueryOptions, _query_type: QueryType, dos: u32, seed: String) -> ZomeApiResult<Vec<Address>>{
+pub fn dos_query(index_strings: Vec<String>, _query_options: QueryOptions, _query_type: QueryType, dos: u32, seed: String, resonations: bool) -> ZomeApiResult<Vec<Address>>{
     let mut avoid_addresses = vec![];
     let mut post_addresses = vec![];
     let mut users_checked_count = 0;
@@ -131,7 +135,7 @@ pub fn dos_query(index_strings: Vec<String>, _query_options: QueryOptions, _quer
         } else {
             hdk::debug(format!("Desired depth of: {} met, getting posts randomly from pack members in pack at current depth and recursion", depth))?;
             //get posts from all members in pack - then comapre amount retrieved and see if we need to do another recursion from first pack
-            let mut posts = get_packs_posts(&pack_members, &index_strings, &post_addresses, &seed)?;
+            let mut posts = get_packs_posts(&pack_members, &index_strings, &post_addresses, &seed, resonations)?;
             users_checked_count += pack_members.len() as i32;
             post_addresses.append(&mut posts);
             hdk::debug(format!("Number of users checked: {}, number of total users checked: {}", pack_members.len(), users_checked_count))?;

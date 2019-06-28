@@ -37,7 +37,7 @@ use super::user;
 ///for example: perspective: dos & query_points: [2018<timestamp>, holochain<channel>, dht<channel>, eric<channel>]
 //TODO: Switch to normal Entry (JsonString as returned from get_entry & get_links) for EntryAndAddress across the whole application
 pub fn query_expressions(perspective: String, attributes: Vec<String>, query_options: QueryOptions, target_type: QueryTarget, 
-                        query_type: QueryType, dos: u32, seed: String) -> ZomeApiResult<JsonString> {
+                        query_type: QueryType, dos: u32, seed: String, resonations: bool) -> ZomeApiResult<JsonString> {
     let index_strings = attributes_to_index_string(attributes)?;
     hdk::debug(format!("Getting expressions with generated query string(s): {:?}", index_strings))?;
     match perspective.as_ref() {
@@ -53,7 +53,7 @@ pub fn query_expressions(perspective: String, attributes: Vec<String>, query_opt
 
         "dos" => {
             if dos < 1 || dos > 6 {return Err(ZomeApiError::from("DOS not within bounds 1 -> 6".to_string()))};
-            let mut expressions = dos::dos_query(index_strings, query_options, query_type, dos, seed)?;
+            let mut expressions = dos::dos_query(index_strings, query_options, query_type, dos, seed, resonations)?;
             expressions = expressions.into_iter().unique().collect::<Vec<_>>(); //ensure all posts returned are unique
             query_from_address(None, None, target_type, Some(expressions), false)
         },
@@ -70,7 +70,7 @@ pub fn query_expressions(perspective: String, attributes: Vec<String>, query_opt
                 },
                 Ok(Some(function_definitions::ContextAuthResult::Group(_context_entry))) => {
                     hdk::debug("Making a group query")?;
-                    query_from_address(Some(&context_address), Some(index_strings), target_type, None, true)
+                    query_from_address(Some(&context_address), Some(index_strings), target_type, None, resonations)
                 },
                 Ok(None) => { 
                     hdk::debug("Making a perspective query")?;
@@ -80,7 +80,11 @@ pub fn query_expressions(perspective: String, attributes: Vec<String>, query_opt
                     for user in perspective_users{
                         let mut expressions = vec![];
                         for index_string in &index_strings{
-                            expressions.append(&mut utils::get_links_and_load_type::<app_definitions::ExpressionPost>(&user.address, LinkMatch::Exactly("expression_post"), LinkMatch::Regex(index_string))?);
+                            if resonations == true{
+                                expressions.append(&mut utils::get_links_and_load_type::<app_definitions::ExpressionPost>(&user.address, LinkMatch::Exactly("resonation"), LinkMatch::Regex(index_string))?);
+                            } else {
+                                expressions.append(&mut utils::get_links_and_load_type::<app_definitions::ExpressionPost>(&user.address, LinkMatch::Exactly("expression_post"), LinkMatch::Regex(index_string))?);
+                            }
                         };
                         let mut expressions = expressions.into_iter().map(|expression| utils::get_expression_attributes(expression, true)).collect::<Result<Vec<_>,_>>()?;
                         out.append(&mut expressions);
@@ -108,13 +112,15 @@ pub fn get_expression(expression: Address) -> ZomeApiResult<function_definitions
 }
 
 pub fn query_from_address(anchor: Option<&Address>, index_strings: Option<Vec<String>>, target_type: QueryTarget, 
-                            results: Option<Vec<Address>>, include_resonations: bool) -> ZomeApiResult<JsonString> {
+                            results: Option<Vec<Address>>, resonations: bool) -> ZomeApiResult<JsonString> {
+    
     let results = results.unwrap_or_else(|| {
         let mut expressions = vec![];
         for index_string in index_strings.unwrap(){
-            expressions.append(&mut hdk::get_links(anchor.unwrap(), LinkMatch::Exactly("expression_post"), LinkMatch::Regex(index_string.as_str())).unwrap().addresses());
-            if include_resonations == true{
+            if resonations == true{
                 expressions.append(&mut hdk::get_links(anchor.unwrap(), LinkMatch::Exactly("resonation"), LinkMatch::Regex(index_string.as_str())).unwrap().addresses());
+            } else {
+                expressions.append(&mut hdk::get_links(anchor.unwrap(), LinkMatch::Exactly("expression_post"), LinkMatch::Regex(index_string.as_str())).unwrap().addresses());
             };
         };
         expressions.into_iter().unique().collect::<Vec<_>>() 
