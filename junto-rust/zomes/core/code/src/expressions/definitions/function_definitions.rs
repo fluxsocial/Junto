@@ -74,7 +74,7 @@ pub struct ExpressionData{
     pub sub_expressions: Vec<ExpressionData>,
     pub author_username: EntryAndAddress<app_definitions::UserName>,
     pub author_profile: EntryAndAddress<app_definitions::User>,
-    pub resonations: Vec<EntryAndAddress<app_definitions::User>>,
+    pub resonations: Vec<EntryAndAddress<app_definitions::UserName>>,
     pub timestamp: String,
     pub channels: Vec<EntryAndAddress<app_definitions::Attribute>>
 }

@@ -105,6 +105,18 @@ pub fn post_definition() -> ValidatingEntryType {
                 validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
+            ),
+            to!(
+                "username",
+                link_type: "resonation",
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
             )
         ]
     )

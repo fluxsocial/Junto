@@ -31,18 +31,27 @@ async function updateBitPrefix(t, agent, bit_prefix) {
     return update_bit_prefix_value
 }
 
-async function queryExpressions(t, agent, perspective, attributes, query_options, target_type, query_type, dos, seed) {  
+async function queryExpressions(t, agent, perspective, attributes, query_options, target_type, query_type, dos, seed, resonations) {  
     const query = await agent.call('core', 'query_expressions', {perspective: perspective, 
                                                                     attributes: attributes,
                                                                     query_options: query_options,
                                                                     target_type: target_type,
                                                                     query_type: query_type,
                                                                     dos: dos,
-                                                                    seed: seed});
+                                                                    seed: seed,
+                                                                    resonations: resonations});
     console.log("Make query result", query);
     t.deepEqual(query.hasOwnProperty("Ok"), true);
     console.log("Completed query\n\n\n\n");
     return query
+}
+
+async function resonation(t, agent, expression) {
+    const resonate = await agent.call('core', 'resonation', {expression: expression});
+    console.log("Resonation result", resonate);
+    t.deepEqual(resonate.hasOwnProperty("Ok"), true);
+    console.log("Completed resonation\n\n\n\n");
+    return resonate
 }
 
 async function getExpression(t, agent, address) {
@@ -59,6 +68,9 @@ function getCurrentTimestamps() {
     let month = d.getUTCMonth() + 1;
     let day = d.getUTCDate();
     let hour = d.getUTCHours();  
+    if (hour < 10) {
+        hour = "0" + hour;
+    };
     return {year: year, month: month, day: day, hour: hour}
 }
 
@@ -154,6 +166,7 @@ module.exports = {
     postComment: postComment,
     updateBitPrefix: updateBitPrefix,
     queryExpressions: queryExpressions,
+    resonation: resonation,
     getExpression: getExpression,
     getCurrentTimestamps: getCurrentTimestamps,
     addUserToPerspective: addUserToPerspective,

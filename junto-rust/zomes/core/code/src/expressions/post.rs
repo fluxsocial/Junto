@@ -160,30 +160,38 @@ pub fn build_hooks<'a>(contexts: Vec<Address>, address: &Address, indexes: &'a V
 }
 
 //Function to handle the resonation of an expression post - will put the post into packs which the post should be resonated into
-pub fn handle_resonation(expression: Address) -> ZomeApiResult<&'static str>{
-    match hdk::api::get_entry(&expression)?{
-        None => {return Err(ZomeApiError::from("No expression at given address".to_string()))},
-        _ => {}
-    };
-    let user_name_address = user::get_user_username_by_agent_address()?.address;
-    let user_pack = user::get_user_pack(user_name_address.clone())?.address;
+pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
+    let expression_entry = hdk::utils::get_as_type::<app_definitions::ExpressionPost>(expression.clone())
+        .map_err(|_err| ZomeApiError::from(String::from("Expression was not of type ExpressionPost")))?;
+    let username = user::get_user_username_by_agent_address()?;
+    let user_pack = user::get_user_pack(username.address.clone())?.address;
 
-    let channels = utils::get_links_and_load_type::<app_definitions::Attribute>(&expression, LinkMatch::Exactly("channels"), LinkMatch::Any)?;
-    let exp_type = utils::get_links_and_load_type::<app_definitions::Attribute>(&expression, LinkMatch::Exactly("expression_type"), LinkMatch::Any)?;
+    let mut channels = utils::get_links_and_load_type::<app_definitions::Attribute>(&expression, LinkMatch::Exactly("channels"), LinkMatch::Any)?
+                        .iter().map(|channel| channel.entry.value.clone()).collect::<Vec<_>>();
+    let owner = utils::get_links_and_load_type::<app_definitions::UserName>(&expression, LinkMatch::Exactly("auth"), LinkMatch::Exactly("owner"))?;
     let timestamps = utils::get_entries_timestamp(&expression)?;
-    
-    let mut index: Vec<HashMap<&'static str, String>> = channels.iter().map(|channel| hashmap!{"type" => "channel".to_string(), "value" => channel.entry.value.clone()}).collect();
-    index.push(hashmap!{"type" => "time:y".to_string(), "value" => timestamps["year"].to_string()}); //add year slice to query params
-    index.push(hashmap!{"type" => "time:m".to_string(), "value" => timestamps["month"].to_string()}); //add month slice to query params
-    index.push(hashmap!{"type" => "time:d".to_string(), "value" => timestamps["day"].to_string()}); //add day slice to query params
-    index.push(hashmap!{"type" => "time:h".to_string(), "value" => timestamps["hour"].to_string()}); //add hour slice to query params
-    index.push(hashmap!{"type" => "type".to_string(), "value" => exp_type[0].entry.value.to_string()});
-    let mut index_string = index.clone().iter().map(|qp| format!("{}<{}>", qp["value"], qp["type"])).collect::<Vec<String>>().join("/");
+    channels.sort_by(|a, b| b.cmp(&a));
+    if channels.len() < 4{
+        for _ in channels.len()..4{
+            channels.push("*null*".to_string());
+        };
+    };
+
+    let mut indexes: Vec<HashMap<&'static str, String>> = channels.iter().map(|channel| hashmap!{"type" => "channel".to_string(), "value" => channel.clone()}).collect();
+    indexes.push(hashmap!{"type" => "user".to_string(), "value" => owner[0].entry.username.to_lowercase()});
+    indexes.push(hashmap!{"type" => "type".to_string(), "value" => expression_entry.expression_type.clone().to_string().to_lowercase()});
+    indexes.push(hashmap!{"type" => "time:y".to_string(), "value" => timestamps["year"].to_string()}); //add year slice to query params
+    indexes.push(hashmap!{"type" => "time:m".to_string(), "value" => timestamps["month"].to_string()}); //add month slice to query params
+    indexes.push(hashmap!{"type" => "time:d".to_string(), "value" => timestamps["day"].to_string()}); //add day slice to query params
+    indexes.push(hashmap!{"type" => "time:h".to_string(), "value" => timestamps["hour"].to_string()}); //add hour slice to query params
+    let mut index_string = indexes.clone().iter().map(|qp| format!("{}<{}>", qp["value"], qp["type"])).collect::<Vec<String>>().join("/");
     index_string = format!("{}{}{}", "/", index_string, "/");
+    indexes = indexes.into_iter().filter(|index| index["value"] != "*null*".to_string()).collect();
 
     //add link on expression to user who made the resonation?
-    let hook_definitions = vec![FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: &index, context: user_pack.clone(), expression: expression.clone(), link_type: "resonation", index_string: index_string.as_str()}},
-                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "resonation", tag: "", direction: "both", parent_expression: user_pack, child_expression: expression}}];
+    let hook_definitions = vec![FunctionDescriptor{name: "create_post_index", parameters: FunctionParameters::CreatePostIndex{indexes: &indexes, context: user_pack.clone(), expression: expression.clone(), link_type: "resonation", index_string: index_string.as_str()}},
+                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "resonation", tag: "", direction: "forward", parent_expression: user_pack, child_expression: expression.clone()}},
+                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "resonation", tag: "", direction: "forward", parent_expression: expression, child_expression: username.address}}];
     utils::handle_hooks(hook_definitions)?;
-    Ok("Resonation Generated")
+    Ok("Resonation Generated".to_string())
 }

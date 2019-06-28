@@ -30,7 +30,7 @@ pub fn create_post_attributes(indexes: &Vec<HashMap<&str, String>>, expression: 
                 let address = hdk::commit_entry(&entry)?;
                 hdk::api::link_entries(expression, &address, "expression_type", &index["value"])?;
             },
-            
+
             _ => {
 
             }
@@ -42,7 +42,8 @@ pub fn create_post_attributes(indexes: &Vec<HashMap<&str, String>>, expression: 
 ///Creates index between post and expression. Also adds attributes to context.
 pub fn create_post_index(indexes: &Vec<HashMap<&str, String>>, context: &Address, 
                             expression: &Address, index_string: &str, link_type: &str) -> ZomeApiResult<&'static str>{
-    hdk::api::link_entries(&context, expression, link_type, index_string)?;
+    hdk::debug(format!("Creating post index with string: {} and type {}", index_string, link_type))?;
+    hdk::api::link_entries(context, expression, link_type, index_string)?;
     
     //Code below is used to enable a given context to see which index points exist on in their context - useful for searching within a context
     hdk::debug("Creating entries for each index in each context and linking expression")?;
@@ -90,9 +91,7 @@ pub fn create_post_index(indexes: &Vec<HashMap<&str, String>>, context: &Address
                 hdk::api::link_entries(context, &address, "time", &index["value"])?;
             },
 
-            "user" => {
-                //nothing currently needs to be done for user - expression -> owner link has already been done in handle_post_expression
-            },
+            "user" => {}, //nothing currently needs to be done for user
 
             _ => {
                 return Err(ZomeApiError::from("That index type does not exist".to_string()))

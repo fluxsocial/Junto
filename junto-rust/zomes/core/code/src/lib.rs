@@ -123,7 +123,8 @@ define_zome! {
         }
         query_expressions: {
             inputs: |perspective: String, attributes: Vec<String>, query_options: function_definitions::QueryOptions, 
-                    target_type: function_definitions::QueryTarget, query_type: function_definitions::QueryType, dos: u32, seed: String|,
+                    target_type: function_definitions::QueryTarget, query_type: function_definitions::QueryType, dos: u32, 
+                    seed: String, resonations: bool|,
             outputs: |result: ZomeApiResult<JsonString>|,
             handler: expressions::query::query_expressions
         }
@@ -144,7 +145,7 @@ define_zome! {
         }
         resonation: {
             inputs: |expression: Address|,
-            outputs: |result: ZomeApiResult<&'static str>|,
+            outputs: |result: ZomeApiResult<String>|,
             handler: expressions::post::handle_resonation
         }
         show_env: {
