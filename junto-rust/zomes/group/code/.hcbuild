@@ -7,5 +7,5 @@
       "--target-dir=../../../target"
     ]
   },
-  "artifact": "../../../target/wasm32-unknown-unknown/release/core.wasm"
+  "artifact": "../../../target/wasm32-unknown-unknown/release/group.wasm"
 }
