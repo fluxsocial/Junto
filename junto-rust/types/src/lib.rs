@@ -22,7 +22,3 @@ pub mod perspective_definition;
 pub mod post_definition;
 pub mod user_definition;
 pub mod app_definition;
-
-fn main() {
-    println!("Junto Applications Type Crate");
-}

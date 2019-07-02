@@ -2,3 +2,5 @@ dist
 test
 bundle.json
 README.md
+./types
+./docs
