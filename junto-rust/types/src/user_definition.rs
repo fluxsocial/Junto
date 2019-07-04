@@ -7,7 +7,7 @@ use hdk::{
 
 use super::app_definition;
 
-pub fn user_name_definition() -> ValidatingEntryType {
+pub fn username_definition() -> ValidatingEntryType {
     entry!(
         name: "username",
         description: "Username Object Entry",
