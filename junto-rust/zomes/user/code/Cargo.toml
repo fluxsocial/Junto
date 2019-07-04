@@ -1,5 +1,5 @@
 [package]
-name = "utils"
+name = "user"
 version = "0.1.0"
 authors = ["jdeepee <joshuadparkin@gmail.com>"]
 edition = "2018"
@@ -19,6 +19,7 @@ holochain_wasm_utils = { git = "https://github.com/holochain/holochain-rust", ta
 holochain_core_types_derive = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.20-alpha3" }
 strum_macros = "0.15.0"
 types = { path = "../../../types" }
+utils = { path = "../../../utils"}
 
 [lib]
 path = "src/lib.rs"

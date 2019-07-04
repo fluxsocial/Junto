@@ -1,5 +1,5 @@
 [package]
-name = "query"
+name = "utils"
 version = "0.1.0"
 authors = ["jdeepee <joshuadparkin@gmail.com>"]
 edition = "2018"
@@ -18,7 +18,7 @@ hdk = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.20-alph
 holochain_wasm_utils = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.20-alpha3" }
 holochain_core_types_derive = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.20-alpha3" }
 strum_macros = "0.15.0"
+types = { path = "../types"}
 
 [lib]
-path = "src/lib.rs"
-crate-type = ["cdylib"]
+crate-type = ["lib"]

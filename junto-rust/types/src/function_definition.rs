@@ -173,6 +173,7 @@ impl<T: Into<JsonString>> From<EntryAndAddress<T>> for JsonString  where T: Seri
 }
 
 //Parameters for each function in holochain application
+#[derive(Serialize, Debug)]
 pub enum FunctionParameters<'a>{
     TimeToExpression{
         link_type: &'a str,
@@ -201,5 +202,12 @@ pub enum FunctionParameters<'a>{
         expression: Address,
         index_string: &'a str,
         link_type: &'a str
+    }
+}
+
+
+impl<'a> From<FunctionParameters<'a>> for JsonString {
+    fn from(result: FunctionParameters) -> JsonString {
+        JsonString::from(default_to_json(result))
     }
 }
