@@ -1,0 +1,26 @@
+[package]
+name = "config"
+version = "0.1.0"
+authors = ["jdeepee <joshuadparkin@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+serde = "=1.0.89"
+serde_json = { version = "=1.0.39", features = ["preserve_order"] }
+serde_derive = "=1.0.89"
+maplit = "1.0.1"
+itertools = "0.8"
+regex = "*"
+lazy_static = "1.2.0"
+multihash = "0.8.0"
+rust-base58 = "=0.0.4"
+hdk = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.20-alpha3" }
+holochain_wasm_utils = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.20-alpha3" }
+holochain_core_types_derive = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.20-alpha3" }
+strum_macros = "0.15.0"
+types = { path = "../../../types" }
+utils = { path = "../../../utils"}
+
+[lib]
+path = "src/lib.rs"
+crate-type = ["cdylib"]
