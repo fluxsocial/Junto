@@ -5,7 +5,7 @@ use hdk::{
     }
 };
 
-use super::app_definition;
+use crate::app_definition;
 
 pub fn username_definition() -> ValidatingEntryType {
     entry!(

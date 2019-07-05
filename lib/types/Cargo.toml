@@ -20,4 +20,5 @@ holochain_core_types_derive = { git = "https://github.com/holochain/holochain-ru
 strum_macros = "0.15.0"
 
 [lib]
+path = "src/lib.rs"
 crate-type = ["lib"]

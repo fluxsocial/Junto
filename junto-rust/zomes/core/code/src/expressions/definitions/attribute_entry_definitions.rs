@@ -6,7 +6,7 @@ use hdk::{
     }
 };
 
-use super::app_definitions;
+use crate::app_definition;;
 
 pub fn attribute_definition() -> ValidatingEntryType {
     entry!(

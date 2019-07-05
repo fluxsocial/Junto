@@ -21,4 +21,5 @@ strum_macros = "0.15.0"
 types = { path = "../types"}
 
 [lib]
+path = "src/lib.rs"
 crate-type = ["lib"]

@@ -6,7 +6,7 @@ use hdk::{
 };
 
 //Entry Definition(s)
-use super::app_definitions;
+use crate::app_definition;;
 
 pub fn collection_definition() -> ValidatingEntryType {
     entry!(

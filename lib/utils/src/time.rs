@@ -13,9 +13,7 @@ use hdk::{
 
 use std::collections::HashMap;
 
-use types::{
-    app_definition
-};
+use types::app_definition;
 use super::helpers;
 
 pub fn time_to_expression(link_type: &str, tag: &str, direction: &str, expression_address: &Address) -> ZomeApiResult<Vec<Address>> {

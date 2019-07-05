@@ -8,7 +8,7 @@ use hdk::{
     }
 };
 
-use super::app_definitions;
+use crate::app_definition;;
 
 pub fn config_definition() -> ValidatingEntryType {
     entry!(

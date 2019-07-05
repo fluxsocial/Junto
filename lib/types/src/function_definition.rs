@@ -8,7 +8,8 @@ use hdk::{
         hash::HashString,
         json::{
             JsonString,
-            default_to_json
+            default_to_json,
+            DefaultJson
         },
         error::HolochainError,
         dna::capabilities::CapabilityRequest
@@ -16,10 +17,11 @@ use hdk::{
 };
 
 use std::collections::HashMap;
-use serde::Serialize;
+use serde::ser::Serialize;
+use serde::de::DeserializeOwned;
 use std::fmt::Debug;
 
-use super::app_definition;
+use crate::app_definition;
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 pub struct Env {
@@ -85,29 +87,29 @@ pub enum HooksResultTypes{
     CreatePack(EntryAndAddress<app_definition::Group>),
     CreateDen(UserDens),
     LinkExpression(&'static str),
-    CreatePostIndex(&'static str)
+    CreatePostIndex(String)
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, DefaultJson)]
 pub enum QueryTarget{
     ExpressionPost,
     User
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, DefaultJson)]
 pub enum QueryOptions {
     FilterPopular,
     FilterNew,
     FilterOld
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, DefaultJson)]
 pub enum QueryType {
     And,
     Or
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, DefaultJson)]
 pub enum ContextAuthResult {
     Collection(app_definition::Collection),
     Group(app_definition::Group)
@@ -115,10 +117,23 @@ pub enum ContextAuthResult {
 
 pub type EntryAndAddressResult<T> = Vec<EntryAndAddress<T>>;
 
-#[derive(Serialize, Deserialize, Debug, Clone, Eq, Hash)]
+#[derive(Debug, Clone, Eq, Hash, Deserialize, Serialize)]
 pub struct EntryAndAddress<T>{
 	pub address: HashString,
 	pub entry: T
+}
+
+impl<T: Into<JsonString>> From<EntryAndAddress<T>> for JsonString  where T: Serialize + Debug + DefaultJson{
+    fn from(result: EntryAndAddress<T>) -> JsonString {
+        JsonString::from(default_to_json(result))
+    }
+}
+
+impl<T> From<JsonString> for EntryAndAddress<T> where T: DeserializeOwned + Debug{
+    fn from(result: JsonString) -> EntryAndAddress<T> {
+        let entry: EntryAndAddress<T> = result.into();
+        entry
+    }
 }
 
 impl HooksResultTypes{
@@ -163,12 +178,6 @@ impl<T> PartialEq for EntryAndAddress<T>{
 impl From<GroupMembers> for JsonString {
     fn from(result: GroupMembers) -> JsonString {
         JsonString::from(json!(default_to_json(result)))
-    }
-}
-
-impl<T: Into<JsonString>> From<EntryAndAddress<T>> for JsonString  where T: Serialize + Debug{
-    fn from(result: EntryAndAddress<T>) -> JsonString {
-        JsonString::from(default_to_json(result))
     }
 }
 

@@ -19,7 +19,7 @@ use std::collections::HashMap;
 use serde::Serialize;
 use std::fmt::Debug;
 
-use super::app_definitions;
+use crate::app_definition;;
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 pub struct Env {

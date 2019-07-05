@@ -18,8 +18,8 @@ hdk = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.20-alph
 holochain_wasm_utils = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.20-alpha3" }
 holochain_core_types_derive = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.20-alpha3" }
 strum_macros = "0.15.0"
-types = { path = "../../../types" }
-utils = { path = "../../../utils"}
+types = { path = "../../../../lib/types" }
+utils = { path = "../../../../lib/utils"}
 
 [lib]
 path = "src/lib.rs"

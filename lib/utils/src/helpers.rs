@@ -5,27 +5,29 @@ use hdk::{
         entry::Entry, 
         entry::AppEntryValue,
         hash::HashString,
-        link::LinkMatch,
-        json::JsonString
+        link::LinkMatch
     }
 };
 
 use std::convert::TryFrom;
+use std::convert::TryInto;
 use std::collections::HashSet;
 use std::hash::Hash;
 use types::{
     function_definition::{
+        UserDens,
         FunctionDescriptor,
         FunctionParameters,
         EntryAndAddressResult,
-        EntryAndAddress
-    }
+        EntryAndAddress,
+        HooksResultTypes
+    },
 };
 
 use super::time;
 
 //This is a helper function which allows us to easily and dynamically handle all functions calls that need to happen
-pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<JsonString>> {
+pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<HooksResultTypes>> {
     //First we get all hook functions which can be run on given expression types
     let mut hook_result_outputs = vec![];
     for hook_descriptor in hooks{ //iterate over hook function names provided in function call
@@ -36,7 +38,7 @@ pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<JsonStr
                         hdk::debug("Running time_to_expression")?;
                         let time_addresses = time::time_to_expression(link_type, tag, direction, &expression_address)?;
                         hdk::debug("Ran time_to_expression")?;
-                        hook_result_outputs.push(JsonString::from(time_addresses));
+                        hook_result_outputs.push(HooksResultTypes::TimeToExpression(time_addresses));
                     },
                     _ => return Err(ZomeApiError::from("time_to_expresssion expects the LocalTimeToExpression enum value to be present".to_string()))
                 }
@@ -45,10 +47,10 @@ pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<JsonStr
                 match hook_descriptor.parameters{
                     FunctionParameters::CreatePack {username_address, first_name} =>{
                         hdk::debug("Running create_pack")?;
-                        let pack = hdk::call(hdk::THIS_INSTANCE, "group", Address::from(hdk::PUBLIC_TOKEN.to_string()), "create_pack", 
-                                                        FunctionParameters::CreatePack{username_address, first_name}.into())?;
+                        let pack = hdk::call(hdk::THIS_INSTANCE, "group", Address::from(hdk::PUBLIC_TOKEN.to_string()), "create_pack", FunctionParameters::CreatePack{username_address, first_name}.into())?;
+                        let pack: EntryAndAddress<types::app_definition::Group> = pack.try_into()?;
                         hdk::debug(format!("Ran create_pack, pack is: {:?}", pack.clone()))?;
-                        hook_result_outputs.push(pack);
+                        hook_result_outputs.push(HooksResultTypes::CreatePack(pack));
                     },
                     _ => return Err(ZomeApiError::from("create_pack expectes the CreatePack enum value to be present".to_string()))
                 }
@@ -59,8 +61,9 @@ pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<JsonStr
                         hdk::debug("Running create_den")?;
                         let dens = hdk::call(hdk::THIS_INSTANCE, "collection", Address::from(hdk::PUBLIC_TOKEN.to_string()), "create_den",
                                                 FunctionParameters::CreateDen{username_address, first_name}.into())?;
+                        let dens: UserDens = dens.try_into()?;
                         hdk::debug(format!("Ran create_den, dens: {:?}", dens.clone()))?;
-                        hook_result_outputs.push(dens);
+                        hook_result_outputs.push(HooksResultTypes::CreateDen(dens));
                     },
                     _ => return Err(ZomeApiError::from("create_den expectes the CreateDen enum value to be present".to_string()))
                 }
@@ -71,7 +74,7 @@ pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<JsonStr
                         hdk::debug("Running link_expression")?;
                         let link_result = link_expression(link_type, tag, direction, &parent_expression, &child_expression)?;
                         hdk::debug("Ran link_expression")?;
-                        hook_result_outputs.push(JsonString::from(link_result));
+                        hook_result_outputs.push(HooksResultTypes::LinkExpression(link_result));
                     },
                     _ => return Err(ZomeApiError::from("link_expression expects the LinkExpression enum value to be present".to_string()))
                 }
@@ -82,8 +85,9 @@ pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<JsonStr
                         hdk::debug("Running create_post_index")?;
                         let query_point_result = hdk::call(hdk::THIS_INSTANCE, "query", Address::from(hdk::PUBLIC_TOKEN.to_string()), "create_post_index",
                                                             FunctionParameters::CreatePostIndex{indexes, context, expression, index_string, link_type}.into())?;
+                        let query_point_result: String = query_point_result.try_into()?;
                         hdk::debug("Ran create_post_index")?;
-                        hook_result_outputs.push(query_point_result);
+                        hook_result_outputs.push(HooksResultTypes::CreatePostIndex(query_point_result));
                     },
                     _ => return Err(ZomeApiError::from("create_post_index expects the CreatePostIndex enum value to be present".to_string()))
                 }

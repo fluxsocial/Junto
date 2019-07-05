@@ -6,7 +6,6 @@ use hdk::{
         hash::HashString
     }
 };
-use strum_macros::{Display};
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone)]
 pub enum Privacy {
