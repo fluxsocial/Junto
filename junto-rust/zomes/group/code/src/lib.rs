@@ -11,6 +11,10 @@ extern crate holochain_json_derive;
 extern crate types;
 extern crate utils;
 
+pub mod group;
+pub mod definition;
+
+
 use hdk::{
     error::{
         ZomeApiResult
@@ -28,9 +32,6 @@ use types::{
     app_definition,
     function_definition
 };
-
-pub mod group;
-pub mod definition;
 
 define_zome! {
     entries: [

@@ -1,4 +1,3 @@
-//Module to handle all group related operations
 use hdk::{
     error::{
         ZomeApiResult,

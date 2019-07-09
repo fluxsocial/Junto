@@ -2,18 +2,29 @@
 #[macro_use]
 extern crate hdk;
 extern crate serde;
-#[macro_use]
 extern crate maplit;
 #[macro_use]
 extern crate serde_derive;
-#[macro_use]
 extern crate serde_json;
-#[macro_use]
 extern crate holochain_json_derive;
 extern crate types;
 extern crate utils;
 
 pub mod definition;
+pub mod perspective;
+
+use hdk::{
+    error::{
+        ZomeApiResult
+    },
+    holochain_persistence_api::{
+        cas::content::Address
+    },
+    holochain_json_api::{
+        json::JsonString,
+        error::JsonError
+    }
+};
 
 define_zome! {
     entries: [
@@ -22,9 +33,29 @@ define_zome! {
 
     genesis: || { Ok(()) }
 
-    functions: []
+    functions: [
+        create_perspective: {
+            inputs: |name: String|,
+            outputs: |result: ZomeApiResult<types::function_definition::EntryAndAddress<types::app_definition::Perspective>>|,
+            handler: perspective::create_perspective
+        }
+        add_user_to_perspective: {
+            inputs: |perspective: Address, target_user: Address|,
+            outputs: |result: ZomeApiResult<Address>|,
+            handler: perspective::add_user_to_perspective
+        }
+        get_perspectives_users: {
+            inputs: |perspective: Address|,
+            outputs: |result: ZomeApiResult<Vec<types::function_definition::EntryAndAddress<types::app_definition::UserName>>>|,
+            handler: perspective::get_perspectives_users
+        }
+    ]
 
     traits: {
-        hc_public []
+        hc_public [
+            create_perspective,
+            add_user_to_perspective,
+            get_perspectives_users
+        ]
     }
 }
