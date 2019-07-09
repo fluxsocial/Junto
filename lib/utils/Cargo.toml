@@ -14,9 +14,10 @@ regex = "*"
 lazy_static = "1.2.0"
 multihash = "0.8.0"
 rust-base58 = "=0.0.4"
-hdk = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.20-alpha3" }
-holochain_wasm_utils = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.20-alpha3" }
-holochain_core_types_derive = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.20-alpha3" }
+hdk = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.22-alpha1" }
+holochain_wasm_utils = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.22-alpha1" }
+holochain_json_derive = { version = "0.0.1-alpha2" }
+holochain_json_api = { version = "0.0.1-alpha2" }
 strum_macros = "0.15.0"
 types = { path = "../types"}
 

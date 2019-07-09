@@ -4,16 +4,19 @@ use hdk::{
         ZomeApiError
     },
     holochain_core_types::{
-        cas::content::Address, 
-        hash::HashString,
-        json::{
-            JsonString,
-            default_to_json,
-            DefaultJson
-        },
-        error::HolochainError,
         dna::capabilities::CapabilityRequest
+    },
+    holochain_persistence_api::{
+        cas::content::Address,
+    },
+    holochain_json_api::{
+        json::JsonString,
+        error::JsonError,
+        json::default_to_json
     }
+};
+use holochain_json_derive::{ 
+    DefaultJson 
 };
 
 use std::collections::HashMap;
@@ -21,7 +24,7 @@ use serde::ser::Serialize;
 use serde::de::DeserializeOwned;
 use std::fmt::Debug;
 
-use crate::app_definition;
+use super::app_definition;
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 pub struct Env {
@@ -119,11 +122,11 @@ pub type EntryAndAddressResult<T> = Vec<EntryAndAddress<T>>;
 
 #[derive(Debug, Clone, Eq, Hash, Deserialize, Serialize)]
 pub struct EntryAndAddress<T>{
-	pub address: HashString,
+	pub address: Address,
 	pub entry: T
 }
 
-impl<T: Into<JsonString>> From<EntryAndAddress<T>> for JsonString  where T: Serialize + Debug + DefaultJson{
+impl<T: Into<JsonString>> From<EntryAndAddress<T>> for JsonString  where T: Serialize + Debug{
     fn from(result: EntryAndAddress<T>) -> JsonString {
         JsonString::from(default_to_json(result))
     }

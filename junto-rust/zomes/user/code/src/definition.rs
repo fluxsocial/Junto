@@ -2,10 +2,13 @@ use hdk::{
     entry_definition::ValidatingEntryType,
     holochain_core_types::{
         dna::entry_types::Sharing
+    },
+    holochain_json_api::{
+        json::JsonString
     }
 };
 
-use crate::app_definition;
+use types::app_definition;
 
 pub fn username_definition() -> ValidatingEntryType {
     entry!(
@@ -163,7 +166,7 @@ pub fn user_definition() -> ValidatingEntryType {
         name: "user",
         description: "User Metadata Object Entry",
         sharing: Sharing::Public,
-        //native_type: app_definition::User,
+        //native_type: User,
         validation_package: || {
             hdk::ValidationPackageDefinition::Entry
         },

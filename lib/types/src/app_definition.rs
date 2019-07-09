@@ -1,11 +1,15 @@
 use hdk::{
-    holochain_core_types::{
-        cas::content::Address, 
-        error::HolochainError,
+    holochain_persistence_api::{
+        cas::content::Address,
+    },
+    holochain_json_api::{
         json::JsonString,
-        hash::HashString
-    }
+        error::JsonError
+    },
 };
+// use holochain_json_derive::{ 
+//     DefaultJson 
+// };
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone)]
 pub enum Privacy {
@@ -78,7 +82,7 @@ pub struct Config {
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct User {
-    pub parent: HashString, //Parent HashString allows user object to be unique for a given username
+    pub parent: Address, //Parent Address allows user object to be unique for a given username
     pub first_name: String,
     pub last_name: String,
     pub bio: String,
@@ -93,14 +97,14 @@ pub struct UserName {
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct Collection {
-    pub parent: HashString,
+    pub parent: Address,
     pub name: String,
     pub privacy: Privacy //Privacy enum 
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
 pub struct Perspective {
-    pub parent: HashString,
+    pub parent: Address,
     pub name: String
 }
 

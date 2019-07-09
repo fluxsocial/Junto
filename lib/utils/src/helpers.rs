@@ -1,12 +1,13 @@
 use hdk::{
     error::{ZomeApiResult, ZomeApiError},
     holochain_core_types::{
-        cas::content::Address, 
         entry::Entry, 
         entry::AppEntryValue,
-        hash::HashString,
         link::LinkMatch
-    }
+    },
+    holochain_persistence_api::{
+        cas::content::Address,
+    },
 };
 
 use std::convert::TryFrom;
@@ -14,14 +15,15 @@ use std::convert::TryInto;
 use std::collections::HashSet;
 use std::hash::Hash;
 use types::{
+    app_definition,
     function_definition::{
-        UserDens,
         FunctionDescriptor,
         FunctionParameters,
-        EntryAndAddressResult,
+        HooksResultTypes,
         EntryAndAddress,
-        HooksResultTypes
-    },
+        EntryAndAddressResult,
+        UserDens
+    }
 };
 
 use super::time;
@@ -115,7 +117,7 @@ pub fn link_expression(link_type: &str, tag: &str, direction: &str, parent_expre
 }
 
 pub fn get_links_and_load(
-    base: &HashString,
+    base: &Address,
     link_type: LinkMatch<&str>,
     tag: LinkMatch<&str>
 ) -> ZomeApiResult<EntryAndAddressResult<Entry>>  {
@@ -137,7 +139,7 @@ pub fn get_links_and_load(
 }
 
 //This function has now been implemented in the HDK - but its still useful as it can return the address as well as the entry
-pub fn get_links_and_load_type<R: TryFrom<AppEntryValue>>(base: &HashString, link_type: LinkMatch<&str>, tag: LinkMatch<&str>) -> ZomeApiResult<EntryAndAddressResult<R>> {
+pub fn get_links_and_load_type<R: TryFrom<AppEntryValue>>(base: &Address, link_type: LinkMatch<&str>, tag: LinkMatch<&str>) -> ZomeApiResult<EntryAndAddressResult<R>> {
 	let link_load_results = get_links_and_load(base, link_type, tag)?;
 
 	Ok(link_load_results

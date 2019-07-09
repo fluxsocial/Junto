@@ -2,10 +2,13 @@ use hdk::{
     entry_definition::ValidatingEntryType,
     holochain_core_types::{
         dna::entry_types::Sharing
+    },
+    holochain_json_api::{
+        json::JsonString
     }
 };
 
-use crate::app_definition;;
+use types::app_definition;
 
 pub fn group_definition() -> ValidatingEntryType {
     entry!(
@@ -17,7 +20,7 @@ pub fn group_definition() -> ValidatingEntryType {
             hdk::ValidationPackageDefinition::Entry
         },
 
-        validation: |_validation_data: hdk::EntryValidationData<app_definitions::Group>| {
+        validation: |_validation_data: hdk::EntryValidationData<app_definition::Group>| {
             Ok(())
         },
 

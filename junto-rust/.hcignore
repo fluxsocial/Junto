@@ -3,3 +3,4 @@ test
 bundle.json
 README.md
 docs
+./zomes/core/*

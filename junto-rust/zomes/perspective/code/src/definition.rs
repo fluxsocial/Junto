@@ -2,11 +2,14 @@ use hdk::{
     entry_definition::ValidatingEntryType,
     holochain_core_types::{
         dna::entry_types::Sharing
+    },
+    holochain_json_api::{
+        json::JsonString
     }
 };
 
 //Entry Definition(s)
-use super::app_definition;
+use types::app_definition;
 
 pub fn perspective_definition() -> ValidatingEntryType {
     entry!(

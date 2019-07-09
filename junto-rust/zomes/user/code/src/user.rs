@@ -4,10 +4,14 @@ use hdk::{
         ZomeApiError
     },
     holochain_core_types::{
-        cas::content::Address,
         entry::Entry, 
-        json::JsonString,
         link::LinkMatch
+    },
+    holochain_persistence_api::{
+        cas::content::Address
+    },
+    holochain_json_api::{
+        json::JsonString
     },
     api::{
         AGENT_ADDRESS, AGENT_ID_STR, CAPABILITY_REQ, DNA_ADDRESS, DNA_NAME

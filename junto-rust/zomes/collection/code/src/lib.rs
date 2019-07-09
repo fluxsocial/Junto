@@ -9,13 +9,15 @@ extern crate serde_derive;
 #[macro_use]
 extern crate serde_json;
 #[macro_use]
-extern crate holochain_core_types_derive;
+extern crate holochain_json_derive;
 extern crate types;
 extern crate utils;
 
+pub mod definition;
+
 define_zome! {
     entries: [
-        types::collection_definition::collection_definition()
+        definition::collection_definition()
     ]
 
     genesis: || { Ok(()) }

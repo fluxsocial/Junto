@@ -4,10 +4,8 @@ extern crate hdk;
 extern crate serde;
 #[macro_use]
 extern crate serde_derive;
-#[macro_use]
 extern crate serde_json;
-#[macro_use]
-extern crate holochain_core_types_derive;
+extern crate holochain_json_derive;
 extern crate types;
 extern crate utils;
 
@@ -15,19 +13,22 @@ use hdk::{
     error::{
         ZomeApiResult
     },
-    holochain_core_types::{
-        cas::content::Address,
+    holochain_persistence_api::{
+        cas::content::Address
+    },
+    holochain_json_api::{
         json::JsonString,
-        error::HolochainError
+        error::JsonError
     }
 };
 
 pub mod user;
+pub mod definition;
 
 define_zome! {
     entries: [
-        types::user_definition::username_definition(),
-        types::user_definition::user_definition()
+        definition::username_definition(),
+        definition::user_definition()
     ]
 
     genesis: || { Ok(()) }
