@@ -22,8 +22,8 @@ use hdk::{
 
 define_zome! {
     entries: [
-        definition::bucket_definition(),
-        definition::config_definition()
+        definition::config_definition(),
+        definition::anchor_definition()
     ]
 
     genesis: || { Ok(()) }

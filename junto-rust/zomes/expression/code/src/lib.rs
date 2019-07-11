@@ -38,7 +38,8 @@ use types::{
 
 define_zome! {
     entries: [
-        definition::post_definition()
+        definition::post_definition(),
+        definition::bucket_definition()
     ]
 
     genesis: || { Ok(()) }
