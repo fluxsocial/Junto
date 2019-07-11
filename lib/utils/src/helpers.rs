@@ -14,8 +14,14 @@ use std::convert::TryFrom;
 use std::convert::TryInto;
 use std::collections::HashSet;
 use std::hash::Hash;
+use rust_base58::{FromBase58};
+use multihash::{
+    encode, 
+    decode,
+    Hash::SHA2256
+};
+
 use types::{
-    app_definition,
     function_definition::{
         FunctionDescriptor,
         FunctionParameters,
@@ -174,4 +180,42 @@ where
 {
     let mut uniq = HashSet::new();
     iter.into_iter().all(move |x| uniq.insert(x))
+}
+
+//for now we use functions from holochain-collections directly in our app, HDK is unstable and holochain-collection may go out of date
+pub fn hash_prefix(hash: Address, n_prefix_bits: u32) -> u32{
+	// multi-hash encoding has a prefix which tells the hashing algorithm. We need to remove this or
+	// everything will be put in the same bucket
+	let multihash_bytes = String::from(hash).from_base58().unwrap();
+	let bytes: &[u8] = decode(&multihash_bytes).unwrap().digest;
+
+	// encode the bucket it as a 32 bit integer stringified. Not optimal but not terrible
+	let mask: u32 = 2_u32.pow(n_prefix_bits) - 1;
+
+	// println!("{:b}", mask);
+	// println!("{:b} {:b}", bytes[1], bytes[0]);
+
+	let id = u32::from_ne_bytes([
+		bytes[0],
+		bytes[1],
+		bytes[2],
+		bytes[3],
+	]) & mask;
+
+	// println!("{:b}", id);
+	id
+}
+
+pub fn generate_random_number(min: f32, max: f32, seed: &String) -> u32{
+    let seed_hash = encode(SHA2256, seed.as_bytes()).unwrap();
+    let bytes: &[u8] = decode(&seed_hash).unwrap().digest;
+    let mask: u32 = 2_u32.pow(14) - 1; //16383 - we shouldnt have to generate number outside of this bound - if we do then there is a big scaling problem
+    let id = u32::from_ne_bytes([
+		bytes[0],
+		bytes[1],
+		bytes[2],
+		bytes[3],
+	]) & mask;
+    let id = id as f32 / mask as f32;
+    ((id * (max - min + 1.0)).floor() + min) as u32
 }

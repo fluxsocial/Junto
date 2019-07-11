@@ -12,7 +12,7 @@ use hdk::{
     },
     holochain_json_api::{
         json::JsonString
-    },
+    }
 };
 
 use std::convert::TryFrom;

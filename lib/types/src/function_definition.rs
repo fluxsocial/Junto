@@ -118,13 +118,14 @@ pub enum ContextAuthResult {
     Group(app_definition::Group)
 }
 
-pub type EntryAndAddressResult<T> = Vec<EntryAndAddress<T>>;
-
 #[derive(Debug, Clone, Eq, Hash, Deserialize, Serialize)]
 pub struct EntryAndAddress<T>{
 	pub address: Address,
 	pub entry: T
 }
+
+pub type EntryAndAddressResult<T> = Vec<EntryAndAddress<T>>;
+pub struct EntryAndAddressVec<T>(pub Vec<EntryAndAddress<T>>);
 
 impl<T: Into<JsonString>> From<EntryAndAddress<T>> for JsonString  where T: Serialize + Debug{
     fn from(result: EntryAndAddress<T>) -> JsonString {
@@ -134,8 +135,14 @@ impl<T: Into<JsonString>> From<EntryAndAddress<T>> for JsonString  where T: Seri
 
 impl<T> From<JsonString> for EntryAndAddress<T> where T: DeserializeOwned + Debug{
     fn from(result: JsonString) -> EntryAndAddress<T> {
-        let entry: EntryAndAddress<T> = result.into();
-        entry
+        result.into()
+    }
+}
+
+//Cannot make trait on Vec<T> as this could cause conflicting trait implementations for From<JsonString> on Vec
+impl<T> From<JsonString> for EntryAndAddressVec<T>{
+    fn from(result: JsonString) -> EntryAndAddressVec<T> {
+        result.into()
     }
 }
 

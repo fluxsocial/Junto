@@ -123,8 +123,8 @@ pub fn get_user_username_by_agent_address() -> ZomeApiResult<EntryAndAddress<app
     Ok(user_name_links[0].clone())
 }
 
-pub fn get_user_dens(user: Address) -> ZomeApiResult<UserDens>{
-    let den_links = utils::helpers::get_links_and_load_type::<app_definition::Collection>(&user, LinkMatch::Exactly("collection"), LinkMatch::Exactly("den"))?;
+pub fn get_user_dens(username_address: Address) -> ZomeApiResult<UserDens>{
+    let den_links = utils::helpers::get_links_and_load_type::<app_definition::Collection>(&username_address, LinkMatch::Exactly("collection"), LinkMatch::Exactly("den"))?;
     let mut private_den = None;
     let mut shared_den = None;
     let mut public_den = None;
