@@ -32,8 +32,7 @@ use types::{
         EntryAndAddress,
         CreateUserInformation,
         Env,
-        JuntoUser,
-        UserDens
+        JuntoUser
     }
 };
 
@@ -121,30 +120,4 @@ pub fn get_user_username_by_agent_address() -> ZomeApiResult<EntryAndAddress<app
         return Err(ZomeApiError::from("agent does not have any profile links".to_string()))
     };
     Ok(user_name_links[0].clone())
-}
-
-pub fn get_user_dens(username_address: Address) -> ZomeApiResult<UserDens>{
-    let den_links = utils::helpers::get_links_and_load_type::<app_definition::Collection>(&username_address, LinkMatch::Exactly("collection"), LinkMatch::Exactly("den"))?;
-    let mut private_den = None;
-    let mut shared_den = None;
-    let mut public_den = None;
-    for den in den_links{
-        if den.entry.privacy == app_definition::Privacy::Private{
-            private_den = Some(den.clone());
-        };
-        if den.entry.privacy == app_definition::Privacy::Shared{
-            shared_den = Some(den.clone());
-        };
-        if den.entry.privacy == app_definition::Privacy::Public{
-            public_den = Some(den.clone());
-        };
-    };
-    if private_den.is_none() == true{
-        return Err(ZomeApiError::from("User has no private den".to_string()))
-    } else if shared_den.is_none() == true{
-        return Err(ZomeApiError::from("User has no shared den".to_string()))
-    } else if public_den.is_none() == true{
-        return Err(ZomeApiError::from("User has no public den".to_string()))
-    };
-    Ok(UserDens{private_den: private_den.unwrap(), shared_den: shared_den.unwrap(), public_den: public_den.unwrap()})
 }

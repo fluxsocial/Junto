@@ -16,7 +16,6 @@ multihash = "0.8.0"
 rust-base58 = "=0.0.4"
 hdk = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.22-alpha1" }
 holochain_wasm_utils = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.22-alpha1" }
-holochain_json_derive = { version = "0.0.1-alpha2" }
 strum_macros = "0.15.0"
 types = { path = "../../../../lib/types" }
 utils = { path = "../../../../lib/utils"}
