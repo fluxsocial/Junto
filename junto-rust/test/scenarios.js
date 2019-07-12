@@ -84,7 +84,7 @@ async function addUserToPerspective(t, agent, perspective, target_user){
 
 async function isCollectionOwner(t, agent, den, user){
     //check current user is den owner
-    const owner_status = await agent.call('core', 'is_collection_owner', {den: den, user: user});
+    const owner_status = await agent.call('collection', 'is_collection_owner', {den: den, user: user});
     console.log("Get den(s) result", owner_status);
     t.deepEqual(owner_status.hasOwnProperty("Ok"), true);
     console.log("Completed is collection owner\n\n\n\n");
@@ -145,7 +145,7 @@ async function getHolochainEnv(t, agent) {
 }
 
 async function getDens(t, agent, user) {
-    const get_dens = await agent.call('core', 'user_dens', {username_address: user});
+    const get_dens = await agent.call('collection', 'user_dens', {username_address: user});
     console.log("Get den(s) result", get_dens);
     t.equal(get_dens.hasOwnProperty("Ok"), true);
     console.log("Completed get den results\n\n\n\n");
