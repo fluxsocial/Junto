@@ -186,7 +186,7 @@ pub fn post_comment_expression(expression: app_definition::ExpressionPost, paren
     indexing::create_post_attributes(&indexes, &address)?;
     hdk::api::link_entries(&address, &current_user.address, "expression_auth".to_string(), "owner".to_string())?;
     let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "sub_expression", tag: index_string.as_str(), direction: "forward", parent_expression: current_user.address, child_expression: address.clone()}},
-                                    FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "sub_expression", tag: index_string.as_str(), direction: "forward", parent_expression: parent_expression.clone(), child_expression: address.clone()}},
+                                    FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "expression_sub_expression", tag: index_string.as_str(), direction: "forward", parent_expression: parent_expression.clone(), child_expression: address.clone()}},
                                     FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "parent_expression", tag: "", direction: "forward", parent_expression: address.clone(), child_expression: parent_expression}}];
     utils::helpers::handle_hooks(hook_definitions)?;
     Ok(address)

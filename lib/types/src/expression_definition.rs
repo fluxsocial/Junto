@@ -75,7 +75,7 @@ pub fn post_definition() -> ValidatingEntryType {
             ),
             to!(
                 "expression_post",
-                link_type: "sub_expression", //Links parent expression to its sub
+                link_type: "expression_sub_expression", //Links parent expression to its sub
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

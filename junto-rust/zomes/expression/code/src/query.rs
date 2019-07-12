@@ -255,7 +255,7 @@ pub fn get_expression_attributes(expression_data: EntryAndAddress<app_definition
     let mut sub_expressions = vec![];
     if fetch_sub_expressions == true {
         hdk::debug("Getting sub expressions")?;
-        sub_expressions = utils::helpers::get_links_and_load_type::<app_definition::ExpressionPost>(&expression_data.address, LinkMatch::Exactly("sub_expression"), LinkMatch::Any)?
+        sub_expressions = utils::helpers::get_links_and_load_type::<app_definition::ExpressionPost>(&expression_data.address, LinkMatch::Exactly("expression_sub_expression"), LinkMatch::Any)?
                                 .into_iter().map(|sub_expression| get_expression_attributes(sub_expression, false)).collect::<Result<Vec<_>,_>>()?;
     }
     let resonations = utils::helpers::get_links_and_load_type::<app_definition::UserName>(&expression_data.address, LinkMatch::Exactly("resonation"), LinkMatch::Any)?;
