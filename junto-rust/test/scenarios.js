@@ -24,7 +24,7 @@ async function postComment(t, agent, expression, parent_expression) {
 }
 
 async function updateBitPrefix(t, agent, bit_prefix) {
-    const update_bit_prefix_value = await agent.call('core', 'update_bit_prefix', {bit_prefix: bit_prefix});
+    const update_bit_prefix_value = await agent.call('config', 'update_bit_prefix', {bit_prefix: bit_prefix});
     console.log("Update bit prefix result", update_bit_prefix_value);
     t.deepEqual(update_bit_prefix_value.hasOwnProperty("Ok"), true);
     console.log("Completed bit prefix config setting\n\n\n\n");
