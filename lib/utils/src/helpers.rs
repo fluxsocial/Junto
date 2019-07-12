@@ -38,7 +38,7 @@ use types::{
 //This is a helper function which allows us to easily and dynamically handle all functions calls that need to happen
 pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<HooksResultTypes>> {
     //First we get all hook functions which can be run on given expression types
-    let mut hook_result_outputs = vec![];
+    let mut hook_result_outputs: Vec<HooksResultTypes> = vec![];
     for hook_descriptor in hooks{ //iterate over hook function names provided in function call
         match hook_descriptor.name{ //Match function names
             "create_pack" => {
@@ -59,7 +59,7 @@ pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<HooksRe
                     FunctionParameters::CreateDen {username_address, first_name} =>{
                         hdk::debug("Running create_den")?;
                         let dens = hdk::call(hdk::THIS_INSTANCE, "collection", Address::from(hdk::PUBLIC_TOKEN.to_string()), "create_den",
-                                                FunctionParameters::CreateDen{username_address, first_name}.into())?;
+                                                JsonString::from(json!({"username_address": username_address, "first_name": first_name})))?;
                         let dens: ZomeApiResult<UserDens> = dens.try_into()?;
                         hdk::debug(format!("Ran create_den, dens: {:?}", dens.clone()))?;
                         hook_result_outputs.push(HooksResultTypes::CreateDen(dens?));
@@ -70,9 +70,7 @@ pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<HooksRe
             "link_expression" => {
                 match hook_descriptor.parameters{
                     FunctionParameters::LinkExpression {link_type, tag, direction, parent_expression, child_expression} =>{
-                        hdk::debug("Running link_expression")?;
                         let link_result = link_expression(link_type, tag, direction, &parent_expression, &child_expression)?;
-                        hdk::debug("Ran link_expression")?;
                         hook_result_outputs.push(HooksResultTypes::LinkExpression(link_result));
                     },
                     _ => return Err(ZomeApiError::from("link_expression expects the LinkExpression enum value to be present".to_string()))

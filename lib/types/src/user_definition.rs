@@ -75,7 +75,7 @@ pub fn username_definition() -> ValidatingEntryType {
             ),
             to!(
                 "group",
-                link_type: "group_auth", //link type which will handle all auth links e.g: owner, member etc
+                link_type: "auth", //link type which will handle all auth links e.g: owner, member etc
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

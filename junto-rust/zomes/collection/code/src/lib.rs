@@ -25,7 +25,8 @@ use hdk::{
 
 define_zome! {
     entries: [
-        types::collection_definition::collection_definition()
+        types::collection_definition::collection_definition(),
+        types::user_definition::username_definition()
     ]
 
     genesis: || { Ok(()) }

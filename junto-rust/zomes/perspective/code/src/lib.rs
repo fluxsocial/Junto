@@ -34,7 +34,7 @@ define_zome! {
 
     functions: [
         create_perspective: {
-            inputs: |name: String|,
+            inputs: |username_address: Address, name: String|,
             outputs: |result: ZomeApiResult<types::function_definition::EntryAndAddress<types::app_definition::Perspective>>|,
             handler: perspective::create_perspective
         }

@@ -62,7 +62,7 @@ pub fn handle_post_expression(expression: app_definition::ExpressionPost, mut at
     let timestamps = utils::time::get_entries_timestamp(&address)?;
 
     hdk::debug("Link user to expression as owner")?;
-    hdk::api::link_entries(&address, &current_user_username.address, "auth".to_string(), "owner".to_string())?;
+    hdk::api::link_entries(&address, &current_user_username.address, "expression_auth".to_string(), "owner".to_string())?;
 
     indexes.push(hashmap!{"type" => "user".to_string(), "value" => current_user_username.entry.username.to_lowercase()});
     indexes.push(hashmap!{"type" => "type".to_string(), "value" => expression_type.to_lowercase()});
@@ -113,7 +113,7 @@ pub fn post_comment_expression(expression: app_definition::ExpressionPost, paren
     index_string = format!("{}{}{}", "/", index_string, "/");
     hdk::debug(format!("Index string: {}", index_string))?;
     indexing::create_post_attributes(&indexes, &address)?;
-    hdk::api::link_entries(&address, &current_user_username.address, "auth".to_string(), "owner".to_string())?;
+    hdk::api::link_entries(&address, &current_user_username.address, "expression_auth".to_string(), "owner".to_string())?;
     let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "sub_expression", tag: index_string.as_str(), direction: "forward", parent_expression: current_user_username.address, child_expression: address.clone()}},
                                     FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "sub_expression", tag: index_string.as_str(), direction: "forward", parent_expression: parent_expression.clone(), child_expression: address.clone()}},
                                     FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "parent_expression", tag: "", direction: "forward", parent_expression: address.clone(), child_expression: parent_expression}}];
@@ -201,7 +201,7 @@ pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
 
     let mut channels = utils::helpers::get_links_and_load_type::<app_definition::Attribute>(&expression, LinkMatch::Exactly("channels"), LinkMatch::Any)?
                         .iter().map(|channel| channel.entry.value.clone()).collect::<Vec<_>>();
-    let owner = utils::helpers::get_links_and_load_type::<app_definition::UserName>(&expression, LinkMatch::Exactly("auth"), LinkMatch::Exactly("owner"))?;
+    let owner = utils::helpers::get_links_and_load_type::<app_definition::UserName>(&expression, LinkMatch::Exactly("expression_auth"), LinkMatch::Exactly("owner"))?;
     let timestamps = utils::time::get_entries_timestamp(&expression)?;
     channels.sort_by(|a, b| b.cmp(&a));
     if channels.len() < 4{

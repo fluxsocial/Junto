@@ -155,7 +155,7 @@ pub fn query_from_address(anchor: Option<&Address>, index_strings: Option<Vec<St
         QueryTarget::User => {
             let mut out = vec![];
             for result in results{
-                out.push(utils::helpers::get_links_and_load_type::<app_definition::UserName>(&result, LinkMatch::Exactly("auth"), LinkMatch::Exactly("owner"))?[0].clone());
+                out.push(utils::helpers::get_links_and_load_type::<app_definition::UserName>(&result, LinkMatch::Exactly("expression_auth"), LinkMatch::Exactly("owner"))?[0].clone());
             };
             Ok(JsonString::from(out.into_iter().unique().collect::<Vec<_>>()))
         }
@@ -249,7 +249,7 @@ pub fn get_channel_combinations(mut channels: Vec<&str>) -> ZomeApiResult<Vec<Ve
 }
 
 pub fn get_expression_attributes(expression_data: EntryAndAddress<app_definition::ExpressionPost>, fetch_sub_expressions: bool) -> ZomeApiResult<ExpressionData> {
-    let user = utils::helpers::get_links_and_load_type::<app_definition::UserName>(&expression_data.address, LinkMatch::Exactly("auth"), LinkMatch::Exactly("owner"))?;
+    let user = utils::helpers::get_links_and_load_type::<app_definition::UserName>(&expression_data.address, LinkMatch::Exactly("expression_auth"), LinkMatch::Exactly("owner"))?;
     let profile = utils::helpers::get_links_and_load_type::<app_definition::User>(&user[0].address, LinkMatch::Exactly("profile"), LinkMatch::Any)?;
     let timestamp = utils::time::get_entries_timestamp(&expression_data.address)?;
     let channels = utils::helpers::get_links_and_load_type::<app_definition::Attribute>(&expression_data.address, LinkMatch::Exactly("channels"), LinkMatch::Any)?;

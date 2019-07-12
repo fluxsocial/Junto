@@ -29,8 +29,8 @@ define_zome! {
         types::user_definition::username_definition(),
         types::user_definition::user_definition(),
         types::attribute_definition::attribute_definition(),
-        types::collection_definition::collection_definition(),
-        types::group_definition::group_definition()
+        types::group_definition::group_definition(),
+        types::collection_definition::collection_definition()
     ]
 
     genesis: || { Ok(()) }

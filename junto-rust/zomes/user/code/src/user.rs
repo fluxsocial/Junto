@@ -70,14 +70,14 @@ pub fn handle_create_user(user_data: CreateUserInformation) -> ZomeApiResult<Jun
                                 FunctionDescriptor{name: "create_den", parameters: FunctionParameters::CreateDen{username_address: username_address.clone(), first_name: user_data.first_name}}];
 
     let hook_result = utils::helpers::handle_hooks(hook_definitions)?;
-    let pack = hook_result[1].clone().create_pack_result()?;
-    let dens = hook_result[2].clone().create_den_result()?;
+    let pack = hook_result[0].clone().create_pack_result()?;
+    let dens = hook_result[1].clone().create_den_result()?;
     let user_perspective = hdk::call(hdk::THIS_INSTANCE, "perspective", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                                "create_perspective", JsonString::from(json!({"name": "Default Perspective"})))?;
-    let user_perspective: EntryAndAddress<types::app_definition::Perspective> = user_perspective.try_into()?;
+                                                "create_perspective", JsonString::from(json!({"username_address": username_address.clone(), "name": "Default Perspective"})))?;
+    let user_perspective: ZomeApiResult<EntryAndAddress<types::app_definition::Perspective>> = user_perspective.try_into()?;
 
     let junto_user = JuntoUser{profile: EntryAndAddress{entry: user_meta_data.into(), address: address}, username: EntryAndAddress{entry: username_struct.into(), address: username_address},
-                                private_den: dens.private_den, shared_den: dens.shared_den, public_den: dens.public_den, pack: pack, user_perspective: user_perspective};
+                                private_den: dens.private_den, shared_den: dens.shared_den, public_den: dens.public_den, pack: pack, user_perspective: user_perspective?};
     Ok(junto_user)
 }
 
