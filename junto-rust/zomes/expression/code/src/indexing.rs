@@ -156,8 +156,8 @@ pub fn run_context_auth(context: &Address, username_address: &Address) -> ZomeAp
                                                         "is_group_owner", JsonString::from(json!({"group": context.clone(), "user": username_address.clone()})))?;
                         let is_group_owner: ZomeApiResult<bool> = is_group_owner.try_into()?;
 
-                        let is_group_member = hdk::call(hdk::THIS_INSTANCE, "collection", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                                        "is_group_member", JsonString::from(json!({"group": context.clone(), "user": username_address.clone()})))?;
+                        let is_group_member = hdk::call(hdk::THIS_INSTANCE, "group", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
+                                                        "is_group_member", JsonString::from(json!({"group": context, "user": username_address})))?;
                         let is_group_member: ZomeApiResult<bool> = is_group_member.try_into()?;
 
                         if (is_group_owner? == false) & (is_group_member? == false){

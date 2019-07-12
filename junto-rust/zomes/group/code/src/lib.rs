@@ -58,6 +58,11 @@ define_zome! {
             outputs: |result: ZomeApiResult<types::function_definition::GroupMembers>|,
             handler: group::get_group_members
         }
+        is_group_owner: {
+            inputs: |group: Address, user: Address|,
+            outputs: |result: ZomeApiResult<bool>|,
+            handler: group::is_group_owner
+        }
         is_group_member: {
             inputs: |group: Address, user: Address|,
             outputs: |result: ZomeApiResult<bool>|,
@@ -83,6 +88,7 @@ define_zome! {
             add_member_to_group,
             remove_group_member,
             group_members,
+            is_group_owner,
             is_group_member,
             user_pack,
             get_user_member_packs
