@@ -125,6 +125,8 @@ pub struct EntryAndAddress<T>{
 }
 
 pub type EntryAndAddressResult<T> = Vec<EntryAndAddress<T>>;
+
+#[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct EntryAndAddressVec<T>(pub Vec<EntryAndAddress<T>>);
 
 impl<T: Into<JsonString>> From<EntryAndAddress<T>> for JsonString  where T: Serialize + Debug{
@@ -134,15 +136,17 @@ impl<T: Into<JsonString>> From<EntryAndAddress<T>> for JsonString  where T: Seri
 }
 
 impl<T> From<JsonString> for EntryAndAddress<T> where T: DeserializeOwned + Debug{
-    fn from(result: JsonString) -> EntryAndAddress<T> {
-        result.into()
+    fn from(result: JsonString) -> EntryAndAddress<T>{
+        serde_json::from_str(result.to_string().as_str())
+            .unwrap_or_else(|_| panic!("could not deserialize: {:?}", result))
     }
 }
 
 //Cannot make trait on Vec<T> as this could cause conflicting trait implementations for From<JsonString> on Vec
-impl<T> From<JsonString> for EntryAndAddressVec<T>{
+impl<T> From<JsonString> for EntryAndAddressVec<T> where T: DeserializeOwned + Debug{
     fn from(result: JsonString) -> EntryAndAddressVec<T> {
-        result.into()
+        serde_json::from_str(result.to_string().as_str())
+            .unwrap_or_else(|_| panic!("could not deserialize: {:?}", result))
     }
 }
 
