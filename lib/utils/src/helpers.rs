@@ -77,19 +77,6 @@ pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<HooksRe
                     _ => return Err(ZomeApiError::from("link_expression expects the LinkExpression enum value to be present".to_string()))
                 }
             },
-            "create_post_index" => {
-                match hook_descriptor.parameters{
-                    FunctionParameters::CreatePostIndex {indexes, context, expression, index_string, link_type} =>{
-                        hdk::debug("Running create_post_index")?;
-                        let query_point_result = hdk::call(hdk::THIS_INSTANCE, "query", Address::from(hdk::PUBLIC_TOKEN.to_string()), "create_post_index",
-                                                            FunctionParameters::CreatePostIndex{indexes, context, expression, index_string, link_type}.into())?;
-                        let query_point_result: String = query_point_result.try_into()?;
-                        hdk::debug("Ran create_post_index")?;
-                        hook_result_outputs.push(HooksResultTypes::CreatePostIndex(query_point_result));
-                    },
-                    _ => return Err(ZomeApiError::from("create_post_index expects the CreatePostIndex enum value to be present".to_string()))
-                }
-            },
             &_ => {
                 return Err(ZomeApiError::from("Specified function does not exist".to_string()))
             }

@@ -19,7 +19,6 @@ use holochain_json_derive::{
     DefaultJson 
 };
 
-use std::collections::HashMap;
 use serde::ser::Serialize;
 use serde::de::DeserializeOwned;
 use std::fmt::Debug;
@@ -118,6 +117,12 @@ pub enum ContextAuthResult {
     Group(app_definition::Group)
 }
 
+#[derive(Debug, Serialize, Deserialize, DefaultJson)]
+pub enum ContextType {
+    Collection,
+    Group
+}
+
 #[derive(Debug, Clone, Eq, Hash, Deserialize, Serialize)]
 pub struct EntryAndAddress<T>{
 	pub address: Address,
@@ -125,9 +130,6 @@ pub struct EntryAndAddress<T>{
 }
 
 pub type EntryAndAddressResult<T> = Vec<EntryAndAddress<T>>;
-
-#[derive(Debug, Clone, Deserialize, Serialize)]
-pub struct EntryAndAddressVec<T>(pub Vec<EntryAndAddress<T>>);
 
 impl<T: Into<JsonString>> From<EntryAndAddress<T>> for JsonString  where T: Serialize + Debug{
     fn from(result: EntryAndAddress<T>) -> JsonString {
@@ -137,14 +139,6 @@ impl<T: Into<JsonString>> From<EntryAndAddress<T>> for JsonString  where T: Seri
 
 impl<T> From<JsonString> for EntryAndAddress<T> where T: DeserializeOwned + Debug{
     fn from(result: JsonString) -> EntryAndAddress<T>{
-        serde_json::from_str(result.to_string().as_str())
-            .unwrap_or_else(|_| panic!("could not deserialize: {:?}", result))
-    }
-}
-
-//Cannot make trait on Vec<T> as this could cause conflicting trait implementations for From<JsonString> on Vec
-impl<T> From<JsonString> for EntryAndAddressVec<T> where T: DeserializeOwned + Debug{
-    fn from(result: JsonString) -> EntryAndAddressVec<T> {
         serde_json::from_str(result.to_string().as_str())
             .unwrap_or_else(|_| panic!("could not deserialize: {:?}", result))
     }
@@ -169,12 +163,6 @@ impl HooksResultTypes{
     //         _ => Err(ZomeApiError::from("Hook result enum value not: LinkExpression".to_string())),
     //     }
     // }
-    // pub fn create_post_index_result(self) -> ZomeApiResult<String> {
-    //     match self {
-    //         HooksResultTypes::CreateQueryPoints(r) => Ok(r),
-    //         _ => Err(ZomeApiError::from("Hook result enum value not: CreateQueryPoints".to_string())),
-    //     }
-    // }
 }
 
 impl<T> PartialEq for EntryAndAddress<T>{
@@ -192,12 +180,6 @@ impl From<GroupMembers> for JsonString {
 //Parameters for each function in holochain application
 #[derive(Serialize, Debug)]
 pub enum FunctionParameters<'a>{
-    TimeToExpression{
-        link_type: &'a str,
-        tag: &'a str, 
-        direction: &'a str, 
-        expression_address: Address
-    },
     CreatePack{
         username_address: Address,
         first_name: String
@@ -212,13 +194,6 @@ pub enum FunctionParameters<'a>{
         direction: &'a str, 
         parent_expression: Address, 
         child_expression: Address
-    },
-    CreatePostIndex{
-        indexes: &'a Vec<HashMap<&'static str, String>>, 
-        context: Address, 
-        expression: Address,
-        index_string: &'a str,
-        link_type: &'a str
     }
 }
 
