@@ -8,19 +8,20 @@ use hdk::{
     }
 };
 
-use types::app_definition;
+//Entry Definition(s)
+use super::app_definition;
 
-pub fn group_definition() -> ValidatingEntryType {
+pub fn collection_definition() -> ValidatingEntryType {
     entry!(
-        name: "group",
-        description: "Group Object Entry",
+        name: "collection",
+        description: "Collection Object Entry",
         sharing: Sharing::Public,
 
         validation_package: || {
             hdk::ValidationPackageDefinition::Entry
         },
 
-        validation: |_validation_data: hdk::EntryValidationData<app_definition::Group>| {
+        validation: |_validation_data: hdk::EntryValidationData<app_definition::Collection>| {
             Ok(())
         },
 
@@ -39,7 +40,7 @@ pub fn group_definition() -> ValidatingEntryType {
             ),
             to!(
                 "attribute",
-                link_type: "created_at", //Link groups to time which they are created
+                link_type: "time", //Time attribute of collections creation 
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -48,10 +49,10 @@ pub fn group_definition() -> ValidatingEntryType {
                 validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
-            ),
+            ), 
             to!(
-                "expression_post",
-                link_type: "expression_post", //Expression post on group
+                "attribute",
+                link_type: "created_at", 
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -60,10 +61,10 @@ pub fn group_definition() -> ValidatingEntryType {
                 validation: |_validation_data: hdk::LinkValidationData| {
                     Ok(())
                 }
-            ),
-            to!(
+            ), 
+            to!( 
                 "expression_post",
-                link_type: "resonation", //Expression post on group
+                link_type: "expression_post", 
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -75,7 +76,7 @@ pub fn group_definition() -> ValidatingEntryType {
             ),
             to!(
                 "attribute",
-                link_type: "channel", //Channel within group
+                link_type: "expression_type",
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -87,31 +88,7 @@ pub fn group_definition() -> ValidatingEntryType {
             ),
             to!(
                 "attribute",
-                link_type: "expression_type", //Channel within group
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
-                "attribute",
-                link_type: "time", //Time entry in group to be used to associate group actions to given time entries
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
-                "expression_post",
-                link_type: "resonation",
+                link_type: "channel",
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

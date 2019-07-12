@@ -8,62 +8,38 @@ use hdk::{
     }
 };
 
-use types::app_definition;
+use super::app_definition;
 
-pub fn post_definition() -> ValidatingEntryType {
+pub fn group_definition() -> ValidatingEntryType {
     entry!(
-        name: "expression_post",
-        description: "ExpressionPost Object Entry",
+        name: "group",
+        description: "Group Object Entry",
         sharing: Sharing::Public,
 
         validation_package: || {
             hdk::ValidationPackageDefinition::Entry
         },
 
-        validation: |_validation_data: hdk::EntryValidationData<app_definition::ExpressionPost>| {
+        validation: |_validation_data: hdk::EntryValidationData<app_definition::Group>| {
             Ok(())
         },
 
         links: [
             to!(
-                "attribute",
-                link_type: "channels", 
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
-                "attribute",
-                link_type: "expression_type", //type which expression is
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
-                "attribute",
-                link_type: "created_at", //time entries which the expression is associated to
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
                 "username",
-                link_type: "auth", //links types which will contain auth information of a given post: example: owner, co-writer etc
+                link_type: "auth", //link type which will handle all auth links e.g: owner, member etc
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "attribute",
+                link_type: "created_at", //Link groups to time which they are created
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -75,7 +51,7 @@ pub fn post_definition() -> ValidatingEntryType {
             ),
             to!(
                 "expression_post",
-                link_type: "related", //used for mapping other expressions to current expression: example: comments
+                link_type: "expression_post", //Expression post on group
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -87,7 +63,43 @@ pub fn post_definition() -> ValidatingEntryType {
             ),
             to!(
                 "expression_post",
-                link_type: "sub_expression", //Links parent expression to its sub
+                link_type: "resonation", //Expression post on group
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "attribute",
+                link_type: "channel", //Channel within group
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "attribute",
+                link_type: "expression_type", //Channel within group
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "attribute",
+                link_type: "time", //Time entry in group to be used to associate group actions to given time entries
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -99,50 +111,7 @@ pub fn post_definition() -> ValidatingEntryType {
             ),
             to!(
                 "expression_post",
-                link_type: "parent_expression", //Links sub expression to its parent
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
-                "username",
                 link_type: "resonation",
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            )
-        ]
-    )
-}
-
-pub fn bucket_definition() -> ValidatingEntryType {
-    entry!(
-        name: "bucket",
-        description: "Entry to be used as anchor for entries which need to be distributed across the hash space",
-        sharing: Sharing::Public,
-
-        validation_package: || {
-            hdk::ValidationPackageDefinition::Entry
-        },
-
-        validation: |_validation_data: hdk::EntryValidationData<app_definition::Bucket>| {
-            Ok(())
-        },
-
-        links: [
-            to!(
-                "expression_post",
-                link_type: "expression_post",
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

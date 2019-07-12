@@ -8,7 +8,7 @@ use hdk::{
     }
 };
 
-use types::app_definition;
+use super::app_definition;
 
 pub fn username_definition() -> ValidatingEntryType {
     entry!(

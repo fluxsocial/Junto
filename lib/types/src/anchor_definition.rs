@@ -8,27 +8,26 @@ use hdk::{
     }
 };
 
-//Entry Definition(s)
-use types::app_definition;
+use super::app_definition;
 
-pub fn perspective_definition() -> ValidatingEntryType {
+pub fn anchor_definition() -> ValidatingEntryType {
     entry!(
-        name: "perspective",
-        description: "Perspective Object Entry",
+        name: "anchor",
+        description: "Entry which is a global index point - for example an entry which all users may link from to be indexable",
         sharing: Sharing::Public,
 
         validation_package: || {
             hdk::ValidationPackageDefinition::Entry
         },
 
-        validation: |_validation_data: hdk::EntryValidationData<app_definition::Perspective>| {
+        validation: |_validation_data: hdk::EntryValidationData<app_definition::Anchor>| {
             Ok(())
         },
 
-        links: [
+        links: [            
             to!(
-                "username",
-                link_type: "user_perspective", //link to a user who is part of a given perspective
+                "attribute",
+                link_type: "tag",
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -40,7 +39,19 @@ pub fn perspective_definition() -> ValidatingEntryType {
             ),
             to!(
                 "attribute",
-                link_type: "created_at", 
+                link_type: "expression_type",
+
+                validation_package: || {
+                    hdk::ValidationPackageDefinition::Entry
+                },
+
+                validation: |_validation_data: hdk::LinkValidationData| {
+                    Ok(())
+                }
+            ),
+            to!(
+                "attribute",
+                link_type: "time",
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

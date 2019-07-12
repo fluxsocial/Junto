@@ -64,9 +64,9 @@ pub fn handle_create_user(user_data: CreateUserInformation) -> ZomeApiResult<Jun
     hdk::link_entries(&AGENT_ADDRESS, &address, "user", "")?; 
     hdk::link_entries(&AGENT_ADDRESS, &username_address, "username", "")?; 
     hdk::link_entries(&username_address, &address, "profile", "")?;
+    hdk::debug("Creating hook definitions")?;
     //Build hook definitions to link user to timestamps and create pack/den
-    let hook_definitions = vec![FunctionDescriptor{name: "time_to_expression", parameters: FunctionParameters::TimeToExpression{link_type: "created_at", tag: "", direction: "reverse", expression_address: username_address.clone()}},
-                                FunctionDescriptor{name: "create_pack", parameters: FunctionParameters::CreatePack{username_address: username_address.clone(), first_name: user_data.first_name.clone()}},
+    let hook_definitions = vec![FunctionDescriptor{name: "create_pack", parameters: FunctionParameters::CreatePack{username_address: username_address.clone(), first_name: user_data.first_name.clone()}},
                                 FunctionDescriptor{name: "create_den", parameters: FunctionParameters::CreateDen{username_address: username_address.clone(), first_name: user_data.first_name}}];
 
     let hook_result = utils::helpers::handle_hooks(hook_definitions)?;

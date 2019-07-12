@@ -11,7 +11,6 @@ extern crate serde_json;
 extern crate types;
 extern crate utils;
 
-pub mod definition;
 pub mod indexing;
 pub mod dos;
 pub mod query;
@@ -32,8 +31,8 @@ use hdk::{
 
 define_zome! {
     entries: [
-        definition::post_definition(),
-        definition::bucket_definition()
+        types::expression_definition::post_definition(),
+        types::bucket_definition::bucket_definition()
     ]
 
     genesis: || { Ok(()) }

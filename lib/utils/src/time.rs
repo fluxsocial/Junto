@@ -37,7 +37,7 @@ pub fn time_to_expression(link_type: &str, tag: &str, direction: &str, expressio
         return Err(ZomeApiError::from("Timestamps not found on header".to_string()))
     };
     for timestamp in &timestamps{
-        helpers::link_expression(link_type, tag, direction, timestamp, expression_address)?;
+        helpers::link_expression(link_type, tag, direction, expression_address, timestamp)?;
     };
 
     Ok(timestamps)  

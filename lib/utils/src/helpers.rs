@@ -8,6 +8,9 @@ use hdk::{
     holochain_persistence_api::{
         cas::content::Address,
     },
+    holochain_json_api::{
+        json::JsonString
+    }
 };
 
 use std::convert::TryFrom;
@@ -55,10 +58,11 @@ pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<HooksRe
                 match hook_descriptor.parameters{
                     FunctionParameters::CreatePack {username_address, first_name} =>{
                         hdk::debug("Running create_pack")?;
-                        let pack = hdk::call(hdk::THIS_INSTANCE, "group", Address::from(hdk::PUBLIC_TOKEN.to_string()), "create_pack", FunctionParameters::CreatePack{username_address, first_name}.into())?;
-                        let pack: EntryAndAddress<types::app_definition::Group> = pack.try_into()?;
+                        let pack = hdk::call(hdk::THIS_INSTANCE, "group", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
+                                                "create_pack", JsonString::from(json!({"username_address": username_address, "first_name": first_name})))?;
+                        let pack: ZomeApiResult<EntryAndAddress<types::app_definition::Group>> = pack.try_into()?;
                         hdk::debug(format!("Ran create_pack, pack is: {:?}", pack.clone()))?;
-                        hook_result_outputs.push(HooksResultTypes::CreatePack(pack));
+                        hook_result_outputs.push(HooksResultTypes::CreatePack(pack?));
                     },
                     _ => return Err(ZomeApiError::from("create_pack expectes the CreatePack enum value to be present".to_string()))
                 }
@@ -69,9 +73,9 @@ pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<HooksRe
                         hdk::debug("Running create_den")?;
                         let dens = hdk::call(hdk::THIS_INSTANCE, "collection", Address::from(hdk::PUBLIC_TOKEN.to_string()), "create_den",
                                                 FunctionParameters::CreateDen{username_address, first_name}.into())?;
-                        let dens: UserDens = dens.try_into()?;
+                        let dens: ZomeApiResult<UserDens> = dens.try_into()?;
                         hdk::debug(format!("Ran create_den, dens: {:?}", dens.clone()))?;
-                        hook_result_outputs.push(HooksResultTypes::CreateDen(dens));
+                        hook_result_outputs.push(HooksResultTypes::CreateDen(dens?));
                     },
                     _ => return Err(ZomeApiError::from("create_den expectes the CreateDen enum value to be present".to_string()))
                 }
@@ -113,11 +117,11 @@ pub fn link_expression(link_type: &str, tag: &str, direction: &str, parent_expre
     hdk::debug("Linking expressions")?;
     if (direction == "reverse") | (direction == "both"){
         hdk::debug(format!("Linking expression: {} (child) to: {} (parent) with tag: {} and link_type: {}", child_expression, parent_expression, tag, link_type))?;
-        hdk::link_entries(child_expression, parent_expression, link_type, tag)?;
+        hdk::api::link_entries(child_expression, parent_expression, link_type, tag)?;
     }
     if (direction == "forward") | (direction == "both"){
         hdk::debug(format!("Linking expression: {} (parent) to: {} (child) with tag: {} and link_type: {}", parent_expression, child_expression, tag, link_type))?;
-        hdk::link_entries(parent_expression, child_expression, link_type, tag)?;
+        hdk::api::link_entries(parent_expression, child_expression, link_type, tag)?;
     }
     Ok("Links between expressions made with specified tag")
 }

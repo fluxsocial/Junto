@@ -10,7 +10,6 @@ extern crate types;
 extern crate utils;
 
 pub mod user;
-pub mod definition;
 
 use hdk::{
     error::{
@@ -27,8 +26,11 @@ use hdk::{
 
 define_zome! {
     entries: [
-        definition::username_definition(),
-        definition::user_definition()
+        types::user_definition::username_definition(),
+        types::user_definition::user_definition(),
+        types::attribute_definition::attribute_definition(),
+        types::collection_definition::collection_definition(),
+        types::group_definition::group_definition()
     ]
 
     genesis: || { Ok(()) }

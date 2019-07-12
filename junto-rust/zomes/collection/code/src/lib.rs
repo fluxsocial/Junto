@@ -7,7 +7,6 @@ extern crate serde_derive;
 extern crate types;
 extern crate utils;
 
-pub mod definition;
 pub mod collection;
 
 use hdk::{
@@ -26,7 +25,7 @@ use hdk::{
 
 define_zome! {
     entries: [
-        definition::collection_definition()
+        types::collection_definition::collection_definition()
     ]
 
     genesis: || { Ok(()) }

@@ -6,7 +6,6 @@ extern crate serde;
 extern crate serde_derive;
 extern crate types;
 
-pub mod definition;
 pub mod config;
 
 use hdk::{
@@ -22,8 +21,8 @@ use hdk::{
 
 define_zome! {
     entries: [
-        definition::config_definition(),
-        definition::anchor_definition()
+        types::config_definition::config_definition(),
+        types::anchor_definition::anchor_definition()
     ]
 
     genesis: || { Ok(()) }

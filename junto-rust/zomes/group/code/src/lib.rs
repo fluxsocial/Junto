@@ -12,8 +12,6 @@ extern crate types;
 extern crate utils;
 
 pub mod group;
-pub mod definition;
-
 
 use hdk::{
     error::{
@@ -28,19 +26,20 @@ use hdk::{
     }
 };
 
-use types::{
-    app_definition,
-    function_definition
-};
-
 define_zome! {
     entries: [
-        definition::group_definition()
+        types::group_definition::group_definition(),
+        types::user_definition::username_definition()
     ]
 
     genesis: || { Ok(()) }
 
     functions: [
+        create_pack: {
+            inputs: |username_address: Address, first_name: String|,
+            outputs: |result: ZomeApiResult<types::function_definition::EntryAndAddress<types::app_definition::Group>>|,
+            handler: group::create_pack
+        }
         add_pack_member: {
             inputs: |username_address: Address|,
             outputs: |result: ZomeApiResult<JsonString>|,
@@ -58,7 +57,7 @@ define_zome! {
         }
         group_members: {
             inputs: |group: Address|,
-            outputs: |result: ZomeApiResult<function_definition::GroupMembers>|,
+            outputs: |result: ZomeApiResult<types::function_definition::GroupMembers>|,
             handler: group::get_group_members
         }
         is_group_member: {
@@ -68,7 +67,7 @@ define_zome! {
         }
         user_pack: {
             inputs: |username_address: Address|,
-            outputs: |result: ZomeApiResult<function_definition::EntryAndAddress<app_definition::Group>>|,
+            outputs: |result: ZomeApiResult<types::function_definition::EntryAndAddress<types::app_definition::Group>>|,
             handler: group::get_user_pack
         }
         get_user_member_packs: {
@@ -80,6 +79,7 @@ define_zome! {
 
     traits: {
         hc_public [
+            create_pack,
             user_pack,
             add_pack_member,
             add_member_to_group,
