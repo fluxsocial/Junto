@@ -8,7 +8,7 @@ async function registerAgent(t, agent, username, first_name, last_name) {
 
 async function postExpression(t, agent, expression, attributes, context) {
     //Post expression to one context (global) with all four attributes specified - all unique with one tag having an uppercase letter
-    const post_expression = await agent.call('core', 'post_expression', {expression: expression, attributes: attributes, context: context});
+    const post_expression = await agent.call('expression', 'post_expression', {expression: expression, attributes: attributes, context: context});
     console.log("Post expression result", post_expression);
     t.deepEqual(post_expression.hasOwnProperty("Ok"), true);
     console.log("Completed posting expression\n\n\n\n");
@@ -16,7 +16,7 @@ async function postExpression(t, agent, expression, attributes, context) {
 }
 
 async function postComment(t, agent, expression, parent_expression) {
-    const comment_expression = await agent.call('core', 'post_comment_expression', {expression: expression, parent_expression: parent_expression});
+    const comment_expression = await agent.call('expression', 'post_comment_expression', {expression: expression, parent_expression: parent_expression});
     console.log("Comment expression result", comment_expression);
     t.deepEqual(comment_expression.hasOwnProperty("Ok"), true);
     console.log("Completed comment expression\n\n\n\n");
@@ -32,7 +32,7 @@ async function updateBitPrefix(t, agent, bit_prefix) {
 }
 
 async function queryExpressions(t, agent, perspective, attributes, query_options, target_type, query_type, dos, seed, resonations) {  
-    const query = await agent.call('core', 'query_expressions', {perspective: perspective, 
+    const query = await agent.call('expression', 'query_expressions', {perspective: perspective, 
                                                                     attributes: attributes,
                                                                     query_options: query_options,
                                                                     target_type: target_type,
@@ -47,7 +47,7 @@ async function queryExpressions(t, agent, perspective, attributes, query_options
 }
 
 async function resonation(t, agent, expression) {
-    const resonate = await agent.call('core', 'resonation', {expression: expression});
+    const resonate = await agent.call('expression', 'resonation', {expression: expression});
     console.log("Resonation result", resonate);
     t.deepEqual(resonate.hasOwnProperty("Ok"), true);
     console.log("Completed resonation\n\n\n\n");
@@ -55,7 +55,7 @@ async function resonation(t, agent, expression) {
 }
 
 async function getExpression(t, agent, address) {
-    const get = await agent.call('core', 'get_expression', {expression: address});
+    const get = await agent.call('expression', 'get_expression', {expression: address});
     console.log("Get expression result", get);
     t.deepEqual(get.hasOwnProperty("Ok"), true);
     console.log("Completed get expression\n\n\n\n");

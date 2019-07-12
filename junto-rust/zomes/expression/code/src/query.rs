@@ -50,8 +50,9 @@ pub fn query_expressions(perspective: String, attributes: Vec<String>, query_opt
             let seed = HashString::encode_from_str(&seed, Hash::SHA2256);
             hdk::debug(format!("Seed addresss: {}", seed.to_string()))?;
             let current_bit_prefix = hdk::call(hdk::THIS_INSTANCE, "config", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                                        "get_current_bit_prefix", JsonString::from(""))?;
-            let current_bit_prefix: u32 = current_bit_prefix.try_into()?;
+                                                        "get_current_bit_prefix", JsonString::from(json!({})))?;
+            let current_bit_prefix: ZomeApiResult<u32> = current_bit_prefix.try_into()?;
+            let current_bit_prefix = current_bit_prefix?;
             let bit_prefix_bucket_id = utils::helpers::hash_prefix(Address::from(seed), current_bit_prefix); //get and id for bucket to make query from using seed passed into function
             hdk::debug(format!("Making random query with bit prefix: {}", bit_prefix_bucket_id))?;
             let bit_prefix_bucket = hdk::entry_address(&Entry::App("bucket".into(), app_definition::Bucket{id: bit_prefix_bucket_id}.into()))?;
@@ -67,12 +68,10 @@ pub fn query_expressions(perspective: String, attributes: Vec<String>, query_opt
 
         _ => { //TODO: Add maximum post retrieval here - perhaps dont return over 50 posts - and posts should either be selected randomly or by a pagination query?
             hdk::debug("Making either a group, perspective or collection query")?;
-            let current_user_username = hdk::call(hdk::THIS_INSTANCE, "user", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                                        "get_user_username_by_agent_address", JsonString::from(""))?;
-            let current_user_username: EntryAndAddress<app_definition::UserName> = current_user_username.try_into()?;
+            let current_user = utils::helpers::call_and_get_current_user_username()?;
             let context_address = Address::from(perspective);
 
-            match indexing::run_context_auth(&context_address, &current_user_username.address){
+            match indexing::run_context_auth(&context_address, &current_user.address){
                 Ok(Some(function_definition::ContextAuthResult::Collection(_context_entry))) => {
                     hdk::debug("Making a collection query")?;
                     query_from_address(Some(&context_address), Some(index_strings), target_type, None, false, Some("collection_expression_post"))

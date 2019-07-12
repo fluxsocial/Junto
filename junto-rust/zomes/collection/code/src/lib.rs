@@ -43,7 +43,7 @@ define_zome! {
             handler: collection::get_user_dens
         }
         is_collection_owner: {
-            inputs: |den: Address, user: Address|,
+            inputs: |collection: Address, user: Address|,
             outputs: |result: ZomeApiResult<bool>|,
             handler: collection::is_collection_owner
         }
