@@ -1,6 +1,6 @@
 async function registerAgent(t, agent, username, first_name, last_name) {
-    const register_result = await agent.call('core', 'create_user', {user_data: {username: username, first_name: first_name, last_name: last_name, bio: "Junto Testing", profile_picture: "pictureurl"}})
-    console.log("Registered user: ", first_name);
+    const register_result = await agent.call('user', 'create_user', {user_data: {username: username, first_name: first_name, last_name: last_name, bio: "Junto Testing", profile_picture: "pictureurl"}});
+    console.log("Registered user result: ", register_result);
     t.deepEqual(register_result.hasOwnProperty("Ok"), true);
     console.log("Completed user registration\n\n\n\n");
     return register_result
