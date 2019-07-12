@@ -20,11 +20,12 @@ use types::{
     function_definition::EntryAndAddress
 };
 
-pub fn create_perspective(username_address: Address, name: String) -> ZomeApiResult<EntryAndAddress<app_definition::Perspective>>{
+pub fn create_perspective(name: String) -> ZomeApiResult<EntryAndAddress<app_definition::Perspective>>{
     hdk::debug("Creating user perspective")?;
-    let perspective_entry = app_definition::Perspective{name: name, parent: username_address.clone()};
+    let current_user = utils::helpers::call_and_get_current_user_username()?;
+    let perspective_entry = app_definition::Perspective{name: name, parent: current_user.address.clone()};
     let perspective_address = hdk::api::commit_entry(&Entry::App("perspective".into(), perspective_entry.clone().into()))?;
-    hdk::api::link_entries(&username_address, &perspective_address, "perspective", "")?;
+    hdk::api::link_entries(&current_user.address, &perspective_address, "perspective", "")?;
     Ok(EntryAndAddress{address: perspective_address, entry: perspective_entry})
 }
 
