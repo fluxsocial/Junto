@@ -32,7 +32,9 @@ use hdk::{
 define_zome! {
     entries: [
         types::expression_definition::post_definition(),
-        types::bucket_definition::bucket_definition()
+        types::bucket_definition::bucket_definition(),
+        types::attribute_definition::attribute_definition(),
+        types::group_definition::group_definition()
     ]
 
     genesis: || { Ok(()) }

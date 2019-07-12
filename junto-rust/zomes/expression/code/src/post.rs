@@ -185,10 +185,9 @@ pub fn post_comment_expression(expression: app_definition::ExpressionPost, paren
     hdk::debug(format!("Index string: {}", index_string))?;
     indexing::create_post_attributes(&indexes, &address)?;
     hdk::api::link_entries(&address, &current_user.address, "expression_auth".to_string(), "owner".to_string())?;
-    let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "sub_expression", tag: index_string.as_str(), direction: "forward", parent_expression: current_user.address, child_expression: address.clone()}},
-                                    FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "expression_sub_expression", tag: index_string.as_str(), direction: "forward", parent_expression: parent_expression.clone(), child_expression: address.clone()}},
-                                    FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "parent_expression", tag: "", direction: "forward", parent_expression: address.clone(), child_expression: parent_expression}}];
-    utils::helpers::handle_hooks(hook_definitions)?;
+    utils::helpers::link_expression("sub_expression", index_string.as_str(), "forward", &current_user.address, &address)?;
+    utils::helpers::link_expression("expression_sub_expression", index_string.as_str(), "forward", &parent_expression, &address)?;
+    utils::helpers::link_expression("parent_expression", "", "forward", &address, &parent_expression)?;
     Ok(address)
 }
 
@@ -227,8 +226,8 @@ pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
     indexes = indexes.into_iter().filter(|index| index["value"] != "*null*".to_string()).collect();
 
     //add link on expression to user who made the resonation?
-    indexing::create_post_index(&indexes, &users_pack.address, &expression, "resonation", index_string.as_str(), ContextType::Group)?;
-    utils::helpers::link_expression("resonation", "", "forward", &users_pack.address, &expression)?;
-    utils::helpers::link_expression("resonation", "", "forward", &expression, &current_user.address)?;
+    indexing::create_post_index(&indexes, &users_pack.address, &expression, index_string.as_str(), "resonation", ContextType::Group)?;
+    hdk::debug("Created post index")?;
+    utils::helpers::link_expression("resonator", "", "forward", &expression, &current_user.address)?;
     Ok("Resonation Generated".to_string())
 }

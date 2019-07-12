@@ -99,7 +99,7 @@ pub fn post_definition() -> ValidatingEntryType {
             ),
             to!(
                 "username",
-                link_type: "resonation",
+                link_type: "resonator",
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

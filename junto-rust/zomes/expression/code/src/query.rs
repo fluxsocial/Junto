@@ -258,7 +258,7 @@ pub fn get_expression_attributes(expression_data: EntryAndAddress<app_definition
         sub_expressions = utils::helpers::get_links_and_load_type::<app_definition::ExpressionPost>(&expression_data.address, LinkMatch::Exactly("expression_sub_expression"), LinkMatch::Any)?
                                 .into_iter().map(|sub_expression| get_expression_attributes(sub_expression, false)).collect::<Result<Vec<_>,_>>()?;
     }
-    let resonations = utils::helpers::get_links_and_load_type::<app_definition::UserName>(&expression_data.address, LinkMatch::Exactly("resonation"), LinkMatch::Any)?;
+    let resonations = utils::helpers::get_links_and_load_type::<app_definition::UserName>(&expression_data.address, LinkMatch::Exactly("resonator"), LinkMatch::Any)?;
     Ok(ExpressionData{expression: expression_data, sub_expressions: sub_expressions, author_username: user[0].clone(), author_profile: profile[0].clone(), 
                         resonations: resonations, timestamp: format!("{}-{}-{}-{}", timestamp["year"], timestamp["month"], timestamp["day"], timestamp["hour"]),
                         channels: channels})
