@@ -151,12 +151,6 @@ impl<T> From<JsonString> for EntryAndAddressVec<T> where T: DeserializeOwned + D
 }
 
 impl HooksResultTypes{
-    // pub fn time_to_expression_result(self) -> ZomeApiResult<Vec<Address>> {
-    //     match self {
-    //         HooksResultTypes::TimeToExpression(r) => Ok(r),
-    //         _ => Err(ZomeApiError::from("Hook result enum value not: TimeToExpression".to_string())),
-    //     }
-    // }
     pub fn create_pack_result(self) -> ZomeApiResult<EntryAndAddress<app_definition::Group>> {
         match self {
             HooksResultTypes::CreatePack(r) => Ok(r),

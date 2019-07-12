@@ -1,9 +1,6 @@
 use hdk::{
     error::ZomeApiResult,
     error::ZomeApiError,
-    holochain_core_types::{
-        entry::Entry,
-    },
     holochain_persistence_api::{
         cas::content::Address,
     },
@@ -14,58 +11,6 @@ use hdk::{
 };
 
 use std::collections::HashMap;
-
-use types::{
-    app_definition
-};
-
-use super::helpers;
-
-pub fn time_to_expression(link_type: &str, tag: &str, direction: &str, expression_address: &Address) -> ZomeApiResult<Vec<Address>> {
-    let timestamps = 
-        match hdk::get_entry_result(expression_address, GetEntryOptions {headers: true, ..Default::default()},)?.result {
-            GetEntryResultType::Single(result) => {
-                let iso_timestamp = serde_json::to_string(&result.headers[0].timestamp()).map_err(|err| ZomeApiError::from(err.to_string()))?;
-                create_timestamps(&iso_timestamp)?
-            },  
-            GetEntryResultType::All(_entry_history) => {
-                return Err(ZomeApiError::from("EntryResultType not of enum variant Single".to_string()))
-            }
-        };
-
-    if timestamps.clone().len() == 0{
-        return Err(ZomeApiError::from("Timestamps not found on header".to_string()))
-    };
-    for timestamp in &timestamps{
-        helpers::link_expression(link_type, tag, direction, expression_address, timestamp)?;
-    };
-
-    Ok(timestamps)  
-}
-
-//Create and link current timestamps (year, month, day) to given parent address - returns vector of timestamps
-pub fn create_timestamps(iso_timestamp: &String) -> ZomeApiResult<Vec<Address>> {
-    let timestamps = vec![Entry::App("attribute".into(), app_definition::Attribute{value: iso_timestamp[0..5].to_string(), attribute_type: app_definition::AttributeType::Year}.into()),
-                        Entry::App("attribute".into(), app_definition::Attribute{value: iso_timestamp[6..8].to_string(), attribute_type: app_definition::AttributeType::Month}.into()),
-                        Entry::App("attribute".into(), app_definition::Attribute{value: iso_timestamp[9..11].to_string(), attribute_type: app_definition::AttributeType::Day}.into()),
-                        Entry::App("attribute".into(), app_definition::Attribute{value: iso_timestamp[12..14].to_string(), attribute_type: app_definition::AttributeType::Hour}.into())];
-    let mut timestamp_address = vec![];
-
-    for timestamp in timestamps{
-        let entry_address = hdk::entry_address(&timestamp)?;
-        match hdk::get_entry(&entry_address)? {
-            Some(_entry) => {
-                timestamp_address.push(entry_address);
-            },
-            None => {
-                hdk::commit_entry(&timestamp)?;
-                timestamp_address.push(entry_address);
-            }
-        };
-    };
-
-    Ok(timestamp_address)
-}
 
 pub fn get_entries_timestamp(entry: &Address) -> ZomeApiResult<HashMap<&'static str, String>>{
     let mut out = HashMap::new();

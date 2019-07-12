@@ -35,25 +35,12 @@ use types::{
     }
 };
 
-use super::time;
-
 //This is a helper function which allows us to easily and dynamically handle all functions calls that need to happen
 pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<HooksResultTypes>> {
     //First we get all hook functions which can be run on given expression types
     let mut hook_result_outputs = vec![];
     for hook_descriptor in hooks{ //iterate over hook function names provided in function call
         match hook_descriptor.name{ //Match function names
-            "time_to_expression" => {
-                match hook_descriptor.parameters{
-                    FunctionParameters::TimeToExpression {link_type, tag, direction, expression_address} => {
-                        hdk::debug("Running time_to_expression")?;
-                        let time_addresses = time::time_to_expression(link_type, tag, direction, &expression_address)?;
-                        hdk::debug("Ran time_to_expression")?;
-                        hook_result_outputs.push(HooksResultTypes::TimeToExpression(time_addresses));
-                    },
-                    _ => return Err(ZomeApiError::from("time_to_expresssion expects the LocalTimeToExpression enum value to be present".to_string()))
-                }
-            },
             "create_pack" => {
                 match hook_descriptor.parameters{
                     FunctionParameters::CreatePack {username_address, first_name} =>{

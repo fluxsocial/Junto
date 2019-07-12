@@ -50,20 +50,8 @@ pub fn post_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "attribute",
-                link_type: "created_at", //time entries which the expression is associated to
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
                 "username",
-                link_type: "auth", //links types which will contain auth information of a given post: example: owner, co-writer etc
+                link_type: "expression_auth", //links types which will contain auth information of a given post: example: owner, co-writer etc
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

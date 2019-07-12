@@ -38,18 +38,6 @@ pub fn username_definition() -> ValidatingEntryType {
                 }
             ),
             to!(
-                "attribute",
-                link_type: "created_at", //Link user to time which they are created
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
                 "username",
                 link_type: "follower", //Occurs when user add another user to one of their perspective and thus are "following" their posts - name due to change
 
@@ -87,7 +75,7 @@ pub fn username_definition() -> ValidatingEntryType {
             ),
             to!(
                 "group",
-                link_type: "auth", //link type which will handle all auth links e.g: owner, member etc
+                link_type: "group_auth", //link type which will handle all auth links e.g: owner, member etc
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

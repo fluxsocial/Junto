@@ -27,19 +27,7 @@ pub fn group_definition() -> ValidatingEntryType {
         links: [
             to!(
                 "username",
-                link_type: "auth", //link type which will handle all auth links e.g: owner, member etc
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
-                "attribute",
-                link_type: "created_at", //Link groups to time which they are created
+                link_type: "group_auth", //link type which will handle all auth links e.g: owner, member etc
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

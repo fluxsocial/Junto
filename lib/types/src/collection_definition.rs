@@ -28,7 +28,7 @@ pub fn collection_definition() -> ValidatingEntryType {
         links: [
             to!(
                 "username",
-                link_type: "auth", //link type which will handle all auth links e.g: owner, member etc
+                link_type: "collection_auth", //link type which will handle all auth links e.g: owner, member etc
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
@@ -41,18 +41,6 @@ pub fn collection_definition() -> ValidatingEntryType {
             to!(
                 "attribute",
                 link_type: "time", //Time attribute of collections creation 
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ), 
-            to!(
-                "attribute",
-                link_type: "created_at", 
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry

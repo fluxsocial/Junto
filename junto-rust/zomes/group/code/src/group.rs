@@ -40,7 +40,7 @@ pub fn create_pack(username_address: Address, first_name: String) -> ZomeApiResu
     let entry = Entry::App("group".into(), pack.clone().into());
     let address = hdk::commit_entry(&entry)?;
     let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "group", tag: "pack", direction: "reverse", parent_expression: address.clone(), child_expression: username_address.clone()}},
-                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "auth", tag: "owner", direction: "forward", parent_expression: address.clone(), child_expression: username_address.clone()}}];
+                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "group_auth", tag: "owner", direction: "forward", parent_expression: address.clone(), child_expression: username_address.clone()}}];
 
     let _hook_result = utils::helpers::handle_hooks(hook_definitions)?;
     Ok(EntryAndAddress{entry: pack, address: address})
