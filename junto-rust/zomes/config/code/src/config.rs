@@ -5,10 +5,28 @@ use hdk::{
     holochain_core_types::{
         link::LinkMatch,
         entry::Entry
+    },
+    api::{
+        AGENT_ADDRESS, AGENT_ID_STR, CAPABILITY_REQ, DNA_ADDRESS, DNA_NAME
     }
 };
 
-use types::app_definition;
+use types::{
+    app_definition,
+    function_definition::Env
+};
+
+pub fn show_env() -> ZomeApiResult<Env> {
+    let _dna_entry = hdk::get_entry(&DNA_ADDRESS)?;
+    let _agent_entry = hdk::get_entry(&AGENT_ADDRESS)?;
+    Ok(Env {
+        dna_name: DNA_NAME.to_string(),
+        dna_address: DNA_ADDRESS.to_string(),
+        agent_id: AGENT_ID_STR.to_string(),
+        agent_address: AGENT_ADDRESS.to_string(),
+        cap_request: CAPABILITY_REQ.clone(),
+    })
+}
 
 pub fn get_current_bit_prefix() -> ZomeApiResult<u32>{
     let bit_prefix_anchor = hdk::commit_entry(&Entry::App("anchor".into(), app_definition::Anchor{anchor_type: String::from("bit_prefix")}.into()))?;

@@ -14,7 +14,7 @@ use hdk::{
         json::JsonString
     },
     api::{
-        AGENT_ADDRESS, AGENT_ID_STR, CAPABILITY_REQ, DNA_ADDRESS, DNA_NAME
+        AGENT_ADDRESS
     }
 };
 
@@ -31,25 +31,9 @@ use types::{
         FunctionParameters,
         EntryAndAddress,
         CreateUserInformation,
-        Env,
         JuntoUser
     }
 };
-
-/// This handler shows how you can access the globals that are always available
-/// inside a zome.  In this case it just creates an object with their values
-/// and returns it as the result.
-pub fn show_env() -> ZomeApiResult<Env> {
-    let _dna_entry = hdk::get_entry(&DNA_ADDRESS)?;
-    let _agent_entry = hdk::get_entry(&AGENT_ADDRESS)?;
-    Ok(Env {
-        dna_name: DNA_NAME.to_string(),
-        dna_address: DNA_ADDRESS.to_string(),
-        agent_id: AGENT_ID_STR.to_string(),
-        agent_address: AGENT_ADDRESS.to_string(),
-        cap_request: CAPABILITY_REQ.clone(),
-    })
-}
 
 //Create methods
 //Function to create user and all necassary expression centers for the user

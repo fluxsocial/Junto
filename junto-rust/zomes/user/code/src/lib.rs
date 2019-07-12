@@ -36,11 +36,6 @@ define_zome! {
     genesis: || { Ok(()) }
 
     functions: [
-        show_env: {
-            inputs: | |,
-            outputs: |result: ZomeApiResult<types::function_definition::Env>|,
-            handler: user::show_env
-        }
         create_user: {
             inputs: |user_data: types::function_definition::CreateUserInformation|,
             outputs: |result: ZomeApiResult<types::function_definition::JuntoUser>|,
@@ -70,7 +65,6 @@ define_zome! {
 
     traits: {
         hc_public [
-            show_env,
             create_user,
             get_username_from_address,
             get_user_profile_from_address,

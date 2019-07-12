@@ -16,7 +16,6 @@ use hdk::{
 };
 
 use std::convert::TryFrom;
-use std::convert::TryInto;
 
 use utils;
 use types::{
@@ -47,18 +46,14 @@ pub fn create_pack(username_address: Address, first_name: String) -> ZomeApiResu
 }
 
 pub fn add_pack_member(username_address: Address) -> ZomeApiResult<JsonString>{
-    let current_user_username = hdk::call(hdk::THIS_INSTANCE, "user", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                                "get_user_username_by_agent_address", JsonString::from(""))?;
-    let current_user_username: EntryAndAddress<app_definition::UserName> = current_user_username.try_into()?;
-    let group = get_user_pack(current_user_username.address)?;   
+    let current_user = utils::helpers::call_and_get_current_user_username()?;
+    let group = get_user_pack(current_user.address)?;   
     add_member_to_group(username_address.clone(), group.address.clone())
 }
 
 pub fn add_member_to_group(username_address: Address, group: Address) -> ZomeApiResult<JsonString>{
-    let current_user_username = hdk::call(hdk::THIS_INSTANCE, "user", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                                "get_user_username_by_agent_address", JsonString::from(""))?;
-    let current_user_username: EntryAndAddress<app_definition::UserName> = current_user_username.try_into()?;
-    let group_owner = is_group_owner(group.clone(), current_user_username.address)?;
+    let current_user = utils::helpers::call_and_get_current_user_username()?;
+    let group_owner = is_group_owner(group.clone(), current_user.address)?;
     if group_owner == true{
         let group_member = is_group_member(group.clone(), username_address.clone())?;
         if group_member == false{
@@ -74,10 +69,8 @@ pub fn add_member_to_group(username_address: Address, group: Address) -> ZomeApi
 }
 
 pub fn remove_group_member(username_address: Address, group: Address) -> ZomeApiResult<JsonString>{
-    let current_user_username = hdk::call(hdk::THIS_INSTANCE, "user", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                                "get_user_username_by_agent_address", JsonString::from(""))?;
-    let current_user_username: EntryAndAddress<app_definition::UserName> = current_user_username.try_into()?;
-    let group_owner = is_group_owner(group.clone(), current_user_username.address)?;
+    let current_user = utils::helpers::call_and_get_current_user_username()?;
+    let group_owner = is_group_owner(group.clone(), current_user.address)?;
     if group_owner == true{
         let group_member = is_group_member(group.clone(), username_address.clone())?;
         if group_member == true{
@@ -116,10 +109,8 @@ pub fn get_group_members(group: Address) -> ZomeApiResult<GroupMembers> {
     match group_entry {
         Some(Entry::App(_, entry_value)) => {
             let _entry = app_definition::Group::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Specified group address is not of type Group".to_string()))?; //will return error here if cannot ser entry to group
-            let current_user_username = hdk::call(hdk::THIS_INSTANCE, "user", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                                        "get_user_username_by_agent_address", JsonString::from(""))?;
-            let current_user_username: EntryAndAddress<app_definition::UserName> = current_user_username.try_into()?;
-            if is_group_owner(group.clone(), current_user_username.address.clone())? == false && is_group_member(group.clone(), current_user_username.address)? == false {
+            let current_user = utils::helpers::call_and_get_current_user_username()?;
+            if is_group_owner(group.clone(), current_user.address.clone())? == false && is_group_member(group.clone(), current_user.address)? == false {
                 return Err(ZomeApiError::from("You are not an owner or member of this group and thus are not allowed to view given information".to_string()))
             };
             let member_vec = utils::helpers::get_links_and_load_type::<app_definition::UserName>(&group, LinkMatch::Exactly("group_auth"), LinkMatch::Exactly("member"))?;
