@@ -81,15 +81,14 @@ pub fn dos_query(index_strings: Vec<String>, _query_options: QueryOptions, _quer
     let mut packs_traversed_count = 0;
     let mut depth = 0;
     let mut has_new_path: bool;
-    let user_username = hdk::call(hdk::THIS_INSTANCE, "user", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                    "get_user_username_by_agent_address", JsonString::from(""))?;
-    let user_username: EntryAndAddress<app_definition::UserName> = user_username.try_into()?;
+    let current_user = utils::helpers::call_and_get_current_user_username()?;
 
     let users_pack = hdk::call(hdk::THIS_INSTANCE, "group", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                "get_user_pack", JsonString::from(json!({"username_address": user_username.address})))?;
-    let users_pack: EntryAndAddress<app_definition::Group> = users_pack.try_into()?;
+                                "user_pack", JsonString::from(json!({"username_address": current_user.address})))?;
+    let users_pack: ZomeApiResult<EntryAndAddress<app_definition::Group>> = users_pack.try_into()?;
+    let users_pack: EntryAndAddress<app_definition::Group> = users_pack?;
 
-    let mut pack_members = hdk::get_links(&users_pack.address, LinkMatch::Exactly("auth"), LinkMatch::Exactly("member"))?.addresses();
+    let mut pack_members = hdk::get_links(&users_pack.address, LinkMatch::Exactly("group_auth"), LinkMatch::Exactly("member"))?.addresses();
     
     if pack_members.len() == 0 {return Err(ZomeApiError::from("You have no pack members and thus cannot make degree of seperation query".to_string()))};
     let mut pack_recursions = vec![];
@@ -109,9 +108,11 @@ pub fn dos_query(index_strings: Vec<String>, _query_options: QueryOptions, _quer
                     hdk::debug(format!("Pack member choosen at depth: {}", depth))?;
                     avoid_addresses.push(pack_member.clone());
                     let recursions_pack = hdk::call(hdk::THIS_INSTANCE, "group", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                "get_user_pack", JsonString::from(json!({"username_address": pack_member})))?;
-                    let recursions_pack: EntryAndAddress<app_definition::Group> = recursions_pack.try_into()?;
-                    pack_members = hdk::get_links(&recursions_pack.address, LinkMatch::Exactly("auth"), LinkMatch::Exactly("member"))?.addresses();
+                                "user_pack", JsonString::from(json!({"username_address": pack_member})))?;
+                    let recursions_pack: ZomeApiResult<EntryAndAddress<app_definition::Group>> = recursions_pack.try_into()?;
+                    let recursions_pack: EntryAndAddress<app_definition::Group> = recursions_pack?;
+
+                    pack_members = hdk::get_links(&recursions_pack.address, LinkMatch::Exactly("group_auth"), LinkMatch::Exactly("member"))?.addresses();
                     packs_traversed_count += 1;
                     depth += 1;
                     pack_recursions[depth as usize].append(&mut pack_members);

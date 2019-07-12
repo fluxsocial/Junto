@@ -75,7 +75,7 @@ pub fn create_post_index(indexes: &Vec<HashMap<&str, String>>, context: &Address
     };
     
     //Code below is used to enable a given context to see which index points exist on in their context - useful for searching within a context
-    hdk::debug("Creating entries for each index in each context and linking expression")?;
+    hdk::debug("Creating index in context")?;
     for index in indexes{
         match index["type"].as_str(){
             "channel" => {
