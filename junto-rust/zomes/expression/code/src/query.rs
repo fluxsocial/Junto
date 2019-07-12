@@ -55,14 +55,14 @@ pub fn query_expressions(perspective: String, attributes: Vec<String>, query_opt
             let bit_prefix_bucket_id = utils::helpers::hash_prefix(Address::from(seed), current_bit_prefix); //get and id for bucket to make query from using seed passed into function
             hdk::debug(format!("Making random query with bit prefix: {}", bit_prefix_bucket_id))?;
             let bit_prefix_bucket = hdk::entry_address(&Entry::App("bucket".into(), app_definition::Bucket{id: bit_prefix_bucket_id}.into()))?;
-            query_from_address(Some(&bit_prefix_bucket), Some(index_strings), target_type, None, false)
+            query_from_address(Some(&bit_prefix_bucket), Some(index_strings), target_type, None, false, Some("bucket_expression_post"))
         },
 
         "dos" => {
             if dos < 1 || dos > 6 {return Err(ZomeApiError::from("DOS not within bounds 1 -> 6".to_string()))};
             let mut expressions = dos::dos_query(index_strings, query_options, query_type, dos, seed, resonations)?;
             expressions = expressions.into_iter().unique().collect::<Vec<_>>(); //ensure all posts returned are unique
-            query_from_address(None, None, target_type, Some(expressions), false)
+            query_from_address(None, None, target_type, Some(expressions), false, None)
         },
 
         _ => { //TODO: Add maximum post retrieval here - perhaps dont return over 50 posts - and posts should either be selected randomly or by a pagination query?
@@ -75,20 +75,20 @@ pub fn query_expressions(perspective: String, attributes: Vec<String>, query_opt
             match indexing::run_context_auth(&context_address, &current_user_username.address){
                 Ok(Some(function_definition::ContextAuthResult::Collection(_context_entry))) => {
                     hdk::debug("Making a collection query")?;
-                    query_from_address(Some(&context_address), Some(index_strings), target_type, None, false)
+                    query_from_address(Some(&context_address), Some(index_strings), target_type, None, false, Some("collection_expression_post"))
                 },
                 Ok(Some(function_definition::ContextAuthResult::Group(_context_entry))) => {
                     hdk::debug("Making a group query")?;
-                    query_from_address(Some(&context_address), Some(index_strings), target_type, None, resonations)
+                    query_from_address(Some(&context_address), Some(index_strings), target_type, None, resonations, Some("group_expression_post"))
                 },
                 Ok(None) => { 
                     hdk::debug("Making a perspective query")?;
                     let perspective_users = hdk::call(hdk::THIS_INSTANCE, "perspective", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
                                                         "get_perspectives_users", JsonString::from(json!({"perspective": context_address})))?;
-                    let function_definition::EntryAndAddressVec(perspective_users): function_definition::EntryAndAddressVec<app_definition::UserName> = perspective_users.try_into()?;
+                    let perspective_users: ZomeApiResult<Vec<EntryAndAddress<app_definition::UserName>>> = perspective_users.try_into()?;
                     let mut out = vec![];
                 
-                    for user in perspective_users.into_iter(){
+                    for user in perspective_users?{
                         let mut expressions = vec![];
                         for index_string in &index_strings{
                             if resonations == true{
@@ -123,7 +123,7 @@ pub fn get_expression(expression: Address) -> ZomeApiResult<function_definition:
 }
 
 pub fn query_from_address(anchor: Option<&Address>, index_strings: Option<Vec<String>>, target_type: QueryTarget, 
-                            results: Option<Vec<Address>>, resonations: bool) -> ZomeApiResult<JsonString> {
+                            results: Option<Vec<Address>>, resonations: bool, link_type: Option<&'static str>) -> ZomeApiResult<JsonString> {
     
     let results = results.unwrap_or_else(|| {
         let mut expressions = vec![];
@@ -131,7 +131,7 @@ pub fn query_from_address(anchor: Option<&Address>, index_strings: Option<Vec<St
             if resonations == true{
                 expressions.append(&mut hdk::get_links(anchor.unwrap(), LinkMatch::Exactly("resonation"), LinkMatch::Regex(index_string.as_str())).unwrap().addresses());
             } else {
-                expressions.append(&mut hdk::get_links(anchor.unwrap(), LinkMatch::Exactly("expression_post"), LinkMatch::Regex(index_string.as_str())).unwrap().addresses());
+                expressions.append(&mut hdk::get_links(anchor.unwrap(), LinkMatch::Exactly(link_type.unwrap()), LinkMatch::Regex(index_string.as_str())).unwrap().addresses());
             };
         };
         expressions.into_iter().unique().collect::<Vec<_>>() 

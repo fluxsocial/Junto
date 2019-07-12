@@ -24,43 +24,6 @@ pub fn anchor_definition() -> ValidatingEntryType {
             Ok(())
         },
 
-        links: [            
-            to!(
-                "attribute",
-                link_type: "tag",
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
-                "attribute",
-                link_type: "expression_type",
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            ),
-            to!(
-                "attribute",
-                link_type: "time",
-
-                validation_package: || {
-                    hdk::ValidationPackageDefinition::Entry
-                },
-
-                validation: |_validation_data: hdk::LinkValidationData| {
-                    Ok(())
-                }
-            )
-        ]
+        links: []
     )
 }

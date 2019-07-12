@@ -69,9 +69,9 @@ define_zome! {
             handler: group::get_user_pack
         }
         get_user_member_packs: {
-            inputs: |group: Address, user: Address|,
-            outputs: |result: ZomeApiResult<bool>|,
-            handler: group::is_group_member
+            inputs: |username_address: Address|,
+            outputs: |result: ZomeApiResult<Vec<types::function_definition::EntryAndAddress<types::app_definition::Group>>>|,
+            handler: group::get_user_member_packs
         }
     ]
 

@@ -19,7 +19,10 @@ use std::collections::HashMap;
 
 use types::{
     app_definition,
-    function_definition::ContextAuthResult
+    function_definition::{
+        ContextAuthResult,
+        ContextType
+    }
 };
 
 ///Creates links between expression and its attributes (channels, types, times etc)
@@ -52,9 +55,24 @@ pub fn create_post_attributes(indexes: &Vec<HashMap<&str, String>>, expression: 
 
 ///Creates index between post and expression. Also adds attributes to context.
 pub fn create_post_index(indexes: &Vec<HashMap<&str, String>>, context: &Address, 
-                            expression: &Address, index_string: &str, link_type: &str) -> ZomeApiResult<&'static str>{
+                            expression: &Address, index_string: &str, link_type: &str, context_type: ContextType) -> ZomeApiResult<&'static str>{
     hdk::debug(format!("Creating post index with string: {} and type {}", index_string, link_type))?;
     hdk::api::link_entries(context, expression, link_type, index_string)?;
+    let channel_link_type;
+    let type_link_type;
+    let time_link_type;
+    match context_type{
+        ContextType::Collection => {
+            channel_link_type = "collection_channel";
+            type_link_type = "collection_expression_type";
+            time_link_type = "collection_time";
+        },
+        ContextType::Group => {
+            channel_link_type = "group_channel";
+            type_link_type = "group_expression_type";
+            time_link_type = "group_time";
+        }
+    };
     
     //Code below is used to enable a given context to see which index points exist on in their context - useful for searching within a context
     hdk::debug("Creating entries for each index in each context and linking expression")?;
@@ -64,42 +82,42 @@ pub fn create_post_index(indexes: &Vec<HashMap<&str, String>>, context: &Address
                 let entry = Entry::App("attribute".into(), app_definition::Attribute{value: index["value"].clone(), 
                                 attribute_type: app_definition::AttributeType::Channel}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(context, &address, "channel", &index["value"])?;
+                hdk::api::link_entries(context, &address, channel_link_type, index["value"].as_str())?;
             },
 
             "type" => {
                 let entry = Entry::App("attribute".into(), app_definition::Attribute{value: index["value"].clone(), 
                                 attribute_type: app_definition::AttributeType::Type}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(context, &address, "expression_type", &index["value"])?;
+                hdk::api::link_entries(context, &address, type_link_type, index["value"].as_str())?;
             },
 
             "time:y" => {
                 let entry = Entry::App("attribute".into(), app_definition::Attribute{value: index["value"].clone(), 
                                         attribute_type: app_definition::AttributeType::Year}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(context, &address, "time", &index["value"])?;
+                hdk::api::link_entries(context, &address, time_link_type, index["value"].as_str())?;
             },
 
             "time:m" => {
                 let entry = Entry::App("attribute".into(), app_definition::Attribute{value: index["value"].clone(), 
                                         attribute_type: app_definition::AttributeType::Month}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(context, &address, "time", &index["value"])?;
+                hdk::api::link_entries(context, &address, time_link_type, index["value"].as_str())?;
             },
 
             "time:d" => {
                 let entry = Entry::App("attribute".into(), app_definition::Attribute{value: index["value"].clone(), 
                                         attribute_type: app_definition::AttributeType::Day}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(context, &address, "time", &index["value"])?;
+                hdk::api::link_entries(context, &address, time_link_type, index["value"].as_str())?;
             },
 
             "time:h" => {
                 let entry = Entry::App("attribute".into(), app_definition::Attribute{value: index["value"].clone(), 
                                         attribute_type: app_definition::AttributeType::Hour}.into()).into();
                 let address = hdk::commit_entry(&entry)?;
-                hdk::api::link_entries(context, &address, "time", &index["value"])?;
+                hdk::api::link_entries(context, &address, time_link_type, index["value"].as_str())?;
             },
 
             "user" => {}, //nothing currently needs to be done for user

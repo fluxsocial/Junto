@@ -27,7 +27,7 @@ pub fn bucket_definition() -> ValidatingEntryType {
         links: [
             to!(
                 "expression_post",
-                link_type: "expression_post",
+                link_type: "bucket_expression_post",
 
                 validation_package: || {
                     hdk::ValidationPackageDefinition::Entry
