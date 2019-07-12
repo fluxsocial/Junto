@@ -25,6 +25,7 @@ use multihash::{
 };
 
 use types::{
+    app_definition,
     function_definition::{
         FunctionDescriptor,
         FunctionParameters,
@@ -207,4 +208,11 @@ pub fn generate_random_number(min: f32, max: f32, seed: &String) -> u32{
 	]) & mask;
     let id = id as f32 / mask as f32;
     ((id * (max - min + 1.0)).floor() + min) as u32
+}
+
+pub fn call_and_get_current_user_username() -> ZomeApiResult<EntryAndAddress<app_definition::UserName>>{
+    let current_user = hdk::call(hdk::THIS_INSTANCE, "user", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
+                                                "get_user_username_by_agent_address", JsonString::from(json!({})))?;
+    let current_user: ZomeApiResult<EntryAndAddress<app_definition::UserName>> = current_user.try_into()?;
+    current_user
 }

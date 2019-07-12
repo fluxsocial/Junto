@@ -9,14 +9,10 @@ use hdk::{
     },
     holochain_persistence_api::{
         cas::content::Address
-    },
-    holochain_json_api::{
-        json::JsonString
-    },
+    }
 };
 
 use std::convert::TryFrom;
-use std::convert::TryInto;
 
 use utils;
 use types::{
@@ -35,9 +31,7 @@ pub fn create_perspective(username_address: Address, name: String) -> ZomeApiRes
 pub fn add_user_to_perspective(perspective: Address, target_user: Address) -> ZomeApiResult<Address>{
     let _perspective_entry = get_and_check_is_perspective(&perspective)?;
     let _user_entry = hdk::api::get_entry(&target_user)?.ok_or(ZomeApiError::from("No such target user".to_string()))?;
-    let current_user = hdk::call(hdk::THIS_INSTANCE, "user", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                                "get_user_username_by_agent_address", JsonString::from(""))?;
-    let current_user: EntryAndAddress<app_definition::UserName> = current_user.try_into()?;
+    let current_user = utils::helpers::call_and_get_current_user_username()?;
     hdk::api::link_entries(&target_user, &current_user.address, "follower", "")?;
     hdk::api::link_entries(&current_user.address, &target_user, "following", "")?;
     hdk::api::link_entries(&perspective, &target_user, "user_perspective", "")
@@ -45,9 +39,7 @@ pub fn add_user_to_perspective(perspective: Address, target_user: Address) -> Zo
 
 pub fn get_perspectives_users(perspective: Address) -> ZomeApiResult<Vec<EntryAndAddress<app_definition::UserName>>> {
     let perspective_entry = get_and_check_is_perspective(&perspective)?;
-    let current_user = hdk::call(hdk::THIS_INSTANCE, "user", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                                "get_user_username_by_agent_address", JsonString::from(""))?;
-    let current_user: EntryAndAddress<app_definition::UserName> = current_user.try_into()?;
+    let current_user = utils::helpers::call_and_get_current_user_username()?;
     if perspective_entry.parent == current_user.address{
         let perspective_users = utils::helpers::get_links_and_load_type::<app_definition::UserName>(&perspective, LinkMatch::Exactly("user_perspective"), LinkMatch::Any)?;
         Ok(perspective_users)

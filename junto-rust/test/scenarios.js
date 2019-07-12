@@ -75,7 +75,7 @@ function getCurrentTimestamps() {
 }
 
 async function addUserToPerspective(t, agent, perspective, target_user){
-    const add_user_to_perspective = await agent.call('core', 'add_user_to_perspective', {perspective: perspective, target_user: target_user});
+    const add_user_to_perspective = await agent.call('perspective', 'add_user_to_perspective', {perspective: perspective, target_user: target_user});
     console.log("Add user to perspective result", add_user_to_perspective);
     t.deepEqual(add_user_to_perspective.hasOwnProperty("Ok"), true);
     console.log('Completed add user to perspective\n\n\n\n');
@@ -153,7 +153,7 @@ async function getDens(t, agent, user) {
 }
 
 async function getPerspectivesUsers(t, agent, perspective) {
-    const perspective_users = await agent.call('core', 'get_perspectives_users', {perspective: perspective});
+    const perspective_users = await agent.call('perspective', 'get_perspectives_users', {perspective: perspective});
     console.log("User perspective results: ", perspective_users);
     t.equal(perspective_users.hasOwnProperty("Ok"), true);
     console.log('Completed user perspective results\n\n\n\n');
