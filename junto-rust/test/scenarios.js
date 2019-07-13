@@ -1,6 +1,6 @@
 async function registerAgent(t, agent, username, first_name, last_name) {
-    const register_result = await agent.call('core', 'create_user', {user_data: {username: username, first_name: first_name, last_name: last_name, bio: "Junto Testing", profile_picture: "pictureurl"}})
-    console.log("Registered user: ", first_name);
+    const register_result = await agent.call('user', 'create_user', {user_data: {username: username, first_name: first_name, last_name: last_name, bio: "Junto Testing", profile_picture: "pictureurl"}});
+    console.log("Registered user result: ", register_result);
     t.deepEqual(register_result.hasOwnProperty("Ok"), true);
     console.log("Completed user registration\n\n\n\n");
     return register_result
@@ -8,7 +8,7 @@ async function registerAgent(t, agent, username, first_name, last_name) {
 
 async function postExpression(t, agent, expression, attributes, context) {
     //Post expression to one context (global) with all four attributes specified - all unique with one tag having an uppercase letter
-    const post_expression = await agent.call('core', 'post_expression', {expression: expression, attributes: attributes, context: context});
+    const post_expression = await agent.call('expression', 'post_expression', {expression: expression, attributes: attributes, context: context});
     console.log("Post expression result", post_expression);
     t.deepEqual(post_expression.hasOwnProperty("Ok"), true);
     console.log("Completed posting expression\n\n\n\n");
@@ -16,7 +16,7 @@ async function postExpression(t, agent, expression, attributes, context) {
 }
 
 async function postComment(t, agent, expression, parent_expression) {
-    const comment_expression = await agent.call('core', 'post_comment_expression', {expression: expression, parent_expression: parent_expression});
+    const comment_expression = await agent.call('expression', 'post_comment_expression', {expression: expression, parent_expression: parent_expression});
     console.log("Comment expression result", comment_expression);
     t.deepEqual(comment_expression.hasOwnProperty("Ok"), true);
     console.log("Completed comment expression\n\n\n\n");
@@ -24,7 +24,7 @@ async function postComment(t, agent, expression, parent_expression) {
 }
 
 async function updateBitPrefix(t, agent, bit_prefix) {
-    const update_bit_prefix_value = await agent.call('core', 'update_bit_prefix', {bit_prefix: bit_prefix});
+    const update_bit_prefix_value = await agent.call('config', 'update_bit_prefix', {bit_prefix: bit_prefix});
     console.log("Update bit prefix result", update_bit_prefix_value);
     t.deepEqual(update_bit_prefix_value.hasOwnProperty("Ok"), true);
     console.log("Completed bit prefix config setting\n\n\n\n");
@@ -32,7 +32,7 @@ async function updateBitPrefix(t, agent, bit_prefix) {
 }
 
 async function queryExpressions(t, agent, perspective, attributes, query_options, target_type, query_type, dos, seed, resonations) {  
-    const query = await agent.call('core', 'query_expressions', {perspective: perspective, 
+    const query = await agent.call('expression', 'query_expressions', {perspective: perspective, 
                                                                     attributes: attributes,
                                                                     query_options: query_options,
                                                                     target_type: target_type,
@@ -47,7 +47,7 @@ async function queryExpressions(t, agent, perspective, attributes, query_options
 }
 
 async function resonation(t, agent, expression) {
-    const resonate = await agent.call('core', 'resonation', {expression: expression});
+    const resonate = await agent.call('expression', 'resonation', {expression: expression});
     console.log("Resonation result", resonate);
     t.deepEqual(resonate.hasOwnProperty("Ok"), true);
     console.log("Completed resonation\n\n\n\n");
@@ -55,7 +55,7 @@ async function resonation(t, agent, expression) {
 }
 
 async function getExpression(t, agent, address) {
-    const get = await agent.call('core', 'get_expression', {expression: address});
+    const get = await agent.call('expression', 'get_expression', {expression: address});
     console.log("Get expression result", get);
     t.deepEqual(get.hasOwnProperty("Ok"), true);
     console.log("Completed get expression\n\n\n\n");
@@ -75,7 +75,7 @@ function getCurrentTimestamps() {
 }
 
 async function addUserToPerspective(t, agent, perspective, target_user){
-    const add_user_to_perspective = await agent.call('core', 'add_user_to_perspective', {perspective: perspective, target_user: target_user});
+    const add_user_to_perspective = await agent.call('perspective', 'add_user_to_perspective', {perspective: perspective, target_user: target_user});
     console.log("Add user to perspective result", add_user_to_perspective);
     t.deepEqual(add_user_to_perspective.hasOwnProperty("Ok"), true);
     console.log('Completed add user to perspective\n\n\n\n');
@@ -84,7 +84,7 @@ async function addUserToPerspective(t, agent, perspective, target_user){
 
 async function isCollectionOwner(t, agent, den, user){
     //check current user is den owner
-    const owner_status = await agent.call('core', 'is_collection_owner', {den: den, user: user});
+    const owner_status = await agent.call('collection', 'is_collection_owner', {den: den, user: user});
     console.log("Get den(s) result", owner_status);
     t.deepEqual(owner_status.hasOwnProperty("Ok"), true);
     console.log("Completed is collection owner\n\n\n\n");
@@ -92,7 +92,7 @@ async function isCollectionOwner(t, agent, den, user){
 }
 
 async function isGroupMember(t, agent, group, user) {
-    const is_group_member = await agent.call('core', 'is_group_member', {group: group, user: user});
+    const is_group_member = await agent.call('group', 'is_group_member', {group: group, user: user});
     console.log("is group member result", is_group_member);
     t.deepEqual(is_group_member.hasOwnProperty("Ok"), true);
     console.log("Completed is group member\n\n\n\n");
@@ -100,7 +100,7 @@ async function isGroupMember(t, agent, group, user) {
 }
 
 async function getGroupMembers(t, agent, group, expect_ok) {
-    const get_group_members = await agent.call('core', 'group_members', {group: group});
+    const get_group_members = await agent.call('group', 'group_members', {group: group});
     console.log("Get group members", get_group_members);
     if (expect_ok == true){
         t.equal(get_group_members.hasOwnProperty("Ok"), true);
@@ -112,7 +112,7 @@ async function getGroupMembers(t, agent, group, expect_ok) {
 }
 
 async function addPackMember(t, agent, user) {
-    const add_group_member = await agent.call('core', 'add_pack_member', {username_address: user});
+    const add_group_member = await agent.call('group', 'add_pack_member', {username_address: user});
     console.log("add group member result", add_group_member);
     t.deepEqual(add_group_member.hasOwnProperty("Ok"), true);
     console.log("Completed add group member\n\n\n\n");
@@ -120,7 +120,7 @@ async function addPackMember(t, agent, user) {
 }
 
 async function getUserPack(t, agent, user) {
-    const get_pack = await agent.call('core', 'user_pack', {username_address: user});
+    const get_pack = await agent.call('group', 'user_pack', {username_address: user});
     console.log("Get pack result", get_pack);
     t.deepEqual(get_pack.hasOwnProperty("Ok"), true);
     console.log("Completed get pack\n\n\n\n");
@@ -129,7 +129,7 @@ async function getUserPack(t, agent, user) {
 }
 
 async function removeGroupMember(t, agent, user, group) {
-    const remove_group_member = await agent.call('core', 'remove_group_member', {username_address: user, group: group});
+    const remove_group_member = await agent.call('group', 'remove_group_member', {username_address: user, group: group});
     console.log("remove group member result", remove_group_member);
     t.deepEqual(remove_group_member.hasOwnProperty("Ok"), true);
     console.log("Completed remove group member\n\n\n\n")
@@ -137,7 +137,7 @@ async function removeGroupMember(t, agent, user, group) {
 }
 
 async function getHolochainEnv(t, agent) {
-    const holochain_env = await agent.call('core', 'show_env', {});
+    const holochain_env = await agent.call('config', 'show_env', {});
     console.log("Show env result, holochain_env", holochain_env);
     t.deepEqual(holochain_env.hasOwnProperty("Ok"), true);
     console.log("Completed get Holochain Env\n\n\n\n");
@@ -145,7 +145,7 @@ async function getHolochainEnv(t, agent) {
 }
 
 async function getDens(t, agent, user) {
-    const get_dens = await agent.call('core', 'user_dens', {username_address: user});
+    const get_dens = await agent.call('collection', 'user_dens', {username_address: user});
     console.log("Get den(s) result", get_dens);
     t.equal(get_dens.hasOwnProperty("Ok"), true);
     console.log("Completed get den results\n\n\n\n");
@@ -153,7 +153,7 @@ async function getDens(t, agent, user) {
 }
 
 async function getPerspectivesUsers(t, agent, perspective) {
-    const perspective_users = await agent.call('core', 'get_perspectives_users', {perspective: perspective});
+    const perspective_users = await agent.call('perspective', 'get_perspectives_users', {perspective: perspective});
     console.log("User perspective results: ", perspective_users);
     t.equal(perspective_users.hasOwnProperty("Ok"), true);
     console.log('Completed user perspective results\n\n\n\n');
