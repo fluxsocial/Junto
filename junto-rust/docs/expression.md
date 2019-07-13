@@ -41,7 +41,7 @@ Success: {Ok: "Resonation Generated"}
 Error: {Err:  {Error Type: 'Error Message'} }
 ```
 
-**Get Expression**
+**Query Expressions**
 ###### Request: 
 ```
 Endpoint: /query_expressions

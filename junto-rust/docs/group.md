@@ -79,3 +79,33 @@ Success: {Ok: { "members": [{"address": "address of user username", "entry": {"u
 Error: {Err:  {Error Type: 'Error Message'} }
 ```
 
+**Get User Pack**
+###### Request: 
+```
+Endpoint: /user_pack
+Arguments: { username_address: "address of user"}
+```
+
+###### Response: 
+```
+Success: { Ok: {"address": "pack address", "entry": {"name": "pack name", "owner": "user address", "privacy": "Shared"}}}
+Error: {Err:  {Error Type: 'Error Message'} }
+```
+
+**Get User Member Packs**
+###### Request: 
+```
+Endpoint: /get_user_member_packs
+Arguments: { username_address: "address of user"}
+```
+
+###### Response: 
+```
+Success: { Ok: [
+            {"address": "pack address", "entry": {"name": "pack name", "owner": "user address", "privacy": "Shared"}},
+            ...
+            ]
+        }
+Error: {Err:  {Error Type: 'Error Message'} }
+```
+
