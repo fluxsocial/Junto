@@ -1,0 +1,26 @@
+[package]
+name = "utils"
+version = "0.1.0"
+authors = ["jdeepee <joshuadparkin@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+serde = "=1.0.89"
+serde_json = { version = "=1.0.39", features = ["preserve_order"] }
+serde_derive = "=1.0.89"
+maplit = "1.0.1"
+itertools = "0.8"
+regex = "*"
+lazy_static = "1.2.0"
+multihash = "0.8.0"
+rust-base58 = "=0.0.4"
+hdk = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.22-alpha1" }
+holochain_wasm_utils = { git = "https://github.com/holochain/holochain-rust", tag = "v0.0.22-alpha1" }
+holochain_json_derive = { version = "0.0.1-alpha2" }
+holochain_json_api = { version = "0.0.1-alpha2" }
+strum_macros = "0.15.0"
+types = { path = "../types"}
+
+[lib]
+path = "src/lib.rs"
+crate-type = ["lib"]
