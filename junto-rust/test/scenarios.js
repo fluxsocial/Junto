@@ -84,7 +84,7 @@ async function addUserToPerspective(t, agent, perspective, target_user){
 
 async function isCollectionOwner(t, agent, den, user){
     //check current user is den owner
-    const owner_status = await agent.call('collection', 'is_collection_owner', {collection: den, user: user});
+    const owner_status = await agent.call('collection', 'is_collection_owner', {collection: den, username_address: user});
     console.log("Get den(s) result", owner_status);
     t.deepEqual(owner_status.hasOwnProperty("Ok"), true);
     console.log("Completed is collection owner\n\n\n\n");
@@ -92,7 +92,7 @@ async function isCollectionOwner(t, agent, den, user){
 }
 
 async function isGroupMember(t, agent, group, user) {
-    const is_group_member = await agent.call('group', 'is_group_member', {group: group, user: user});
+    const is_group_member = await agent.call('group', 'is_group_member', {group: group, username_address: user});
     console.log("is group member result", is_group_member);
     t.deepEqual(is_group_member.hasOwnProperty("Ok"), true);
     console.log("Completed is group member\n\n\n\n");

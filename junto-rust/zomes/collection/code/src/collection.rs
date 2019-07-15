@@ -70,9 +70,9 @@ pub fn create_collection(collection: app_definition::Collection, collection_tag:
     Ok(EntryAndAddress{address: collection_address, entry: collection})
 }
 
-pub fn is_collection_owner(collection: Address, user: Address) -> ZomeApiResult<bool>{
+pub fn is_collection_owner(collection: Address, username_address: Address) -> ZomeApiResult<bool>{
     let den_owner_results = utils::helpers::get_links_and_load_type::<app_definition::UserName>(&collection, LinkMatch::Exactly("collection_auth"), LinkMatch::Exactly("owner"))?;
-    Ok(den_owner_results[0].address == user)
+    Ok(den_owner_results[0].address == username_address)
 }
 
 pub fn get_user_dens(username_address: Address) -> ZomeApiResult<UserDens>{
