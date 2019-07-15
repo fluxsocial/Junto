@@ -19,7 +19,7 @@ Error: {Err:  {Error Type: 'Error Message'} }
 ###### Request:
 ```
 Endpoint: /is_collection_owner
-Arguments: {collection: "address-of-collection", user: "address-of-user"}
+Arguments: {collection: "address-of-collection", username_address: "address-of-user"}
 ```
 
 ###### Response:
@@ -31,7 +31,7 @@ Error: {Err:  {Error Type: 'Error Message'} }
 **Get User Dens**
 ###### Request: 
 ```
-Endpoint: /user_dens
+Endpoint: /get_user_dens
 Arguments: { username_address: "address of user"}
 ```
 

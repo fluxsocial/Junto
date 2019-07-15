@@ -81,10 +81,10 @@ pub fn dos_query(index_strings: Vec<String>, _query_options: QueryOptions, _quer
     let mut packs_traversed_count = 0;
     let mut depth = 0;
     let mut has_new_path: bool;
-    let current_user = utils::helpers::call_and_get_current_user_username()?;
+    let current_agent_username = utils::helpers::call_and_get_current_user_username()?;
 
     let users_pack = hdk::call(hdk::THIS_INSTANCE, "group", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                "user_pack", JsonString::from(json!({"username_address": current_user.address})))?;
+                                "get_user_pack", JsonString::from(json!({"username_address": current_agent_username.address})))?;
     let users_pack: ZomeApiResult<EntryAndAddress<app_definition::Group>> = users_pack.try_into()?;
     let users_pack: EntryAndAddress<app_definition::Group> = users_pack?;
 
@@ -108,7 +108,7 @@ pub fn dos_query(index_strings: Vec<String>, _query_options: QueryOptions, _quer
                     hdk::debug(format!("Pack member choosen at depth: {}", depth))?;
                     avoid_addresses.push(pack_member.clone());
                     let recursions_pack = hdk::call(hdk::THIS_INSTANCE, "group", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                "user_pack", JsonString::from(json!({"username_address": pack_member})))?;
+                                "get_user_pack", JsonString::from(json!({"username_address": pack_member})))?;
                     let recursions_pack: ZomeApiResult<EntryAndAddress<app_definition::Group>> = recursions_pack.try_into()?;
                     let recursions_pack: EntryAndAddress<app_definition::Group> = recursions_pack?;
 

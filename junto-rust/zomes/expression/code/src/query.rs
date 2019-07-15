@@ -68,10 +68,10 @@ pub fn query_expressions(perspective: String, attributes: Vec<String>, query_opt
 
         _ => { //TODO: Add maximum post retrieval here - perhaps dont return over 50 posts - and posts should either be selected randomly or by a pagination query?
             hdk::debug("Making either a group, perspective or collection query")?;
-            let current_user = utils::helpers::call_and_get_current_user_username()?;
+            let current_agent_username = utils::helpers::call_and_get_current_user_username()?;
             let context_address = Address::from(perspective);
 
-            match indexing::run_context_auth(&context_address, &current_user.address){
+            match indexing::run_context_auth(&context_address, &current_agent_username.address){
                 Ok(Some(function_definition::ContextAuthResult::Collection(_context_entry))) => {
                     hdk::debug("Making a collection query")?;
                     query_from_address(Some(&context_address), Some(index_strings), target_type, None, false, Some("collection_expression_post"))

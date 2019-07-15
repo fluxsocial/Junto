@@ -16,8 +16,6 @@ use hdk::{
 use types::{
     app_definition,
     function_definition::{
-        FunctionDescriptor,
-        FunctionParameters,
         UserDens,
         EntryAndAddress
     }
@@ -29,11 +27,8 @@ pub fn commit_collection(collection: app_definition::Collection, tag: String) ->
     let parent = collection.parent.clone();
     let entry = Entry::App("collection".into(), collection.into());
     let address = hdk::commit_entry(&entry)?;
-    //Build vector describing hook functions which should run to correctly link this data
-    let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "collection", tag: tag.as_str(), direction: "reverse", parent_expression: address.clone(), child_expression: parent.clone()}},
-                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "collection_auth", tag: "owner", direction: "forward", parent_expression: address.clone(), child_expression: parent}}];
-
-    utils::helpers::handle_hooks(hook_definitions)?;
+    utils::helpers::link_expression("collection", tag.as_str(), "reverse", &address, &parent)?;
+    utils::helpers::link_expression("collection_auth", "owner", "forward", &address, &parent)?;
     Ok(address)
 }
 
@@ -70,9 +65,9 @@ pub fn create_collection(collection: app_definition::Collection, collection_tag:
     Ok(EntryAndAddress{address: collection_address, entry: collection})
 }
 
-pub fn is_collection_owner(collection: Address, user: Address) -> ZomeApiResult<bool>{
+pub fn is_collection_owner(collection: Address, username_address: Address) -> ZomeApiResult<bool>{
     let den_owner_results = utils::helpers::get_links_and_load_type::<app_definition::UserName>(&collection, LinkMatch::Exactly("collection_auth"), LinkMatch::Exactly("owner"))?;
-    Ok(den_owner_results[0].address == user)
+    Ok(den_owner_results[0].address == username_address)
 }
 
 pub fn get_user_dens(username_address: Address) -> ZomeApiResult<UserDens>{

@@ -69,7 +69,7 @@ Error: {Err:  {Error Type: 'Error Message'} }
 **Get Group Members**
 ###### Request: 
 ```
-Endpoint: /group_members
+Endpoint: /get_group_members
 Arguments: { group: 'address of group' }
 ```
 
@@ -82,7 +82,7 @@ Error: {Err:  {Error Type: 'Error Message'} }
 **Get User Pack**
 ###### Request: 
 ```
-Endpoint: /user_pack
+Endpoint: /get_user_pack
 Arguments: { username_address: "address of user"}
 ```
 

@@ -138,7 +138,7 @@ pub fn run_context_auth(context: &Address, username_address: &Address) -> ZomeAp
             hdk::debug("Context type collection, running auth")?;
             //check that current user making post is owner of den they are trying to post into
             let is_collection_owner = hdk::call(hdk::THIS_INSTANCE, "collection", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                                "is_collection_owner", JsonString::from(json!({"collection": context, "user": username_address})))?;
+                                                "is_collection_owner", JsonString::from(json!({"collection": context, "username_address": username_address})))?;
             let is_collection_owner: ZomeApiResult<bool> = is_collection_owner.try_into()?;
             if is_collection_owner? == false{
                 Err(ZomeApiError::from("You are attempting to access a collection which you do not own".to_string()))
@@ -153,11 +153,11 @@ pub fn run_context_auth(context: &Address, username_address: &Address) -> ZomeAp
                 Some(context_entry) => {
                     if context_entry.privacy != app_definition::Privacy::Public {
                         let is_group_owner = hdk::call(hdk::THIS_INSTANCE, "group", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                                        "is_group_owner", JsonString::from(json!({"group": context.clone(), "user": username_address.clone()})))?;
+                                                        "is_group_owner", JsonString::from(json!({"group": context.clone(), "username_address": username_address.clone()})))?;
                         let is_group_owner: ZomeApiResult<bool> = is_group_owner.try_into()?;
 
                         let is_group_member = hdk::call(hdk::THIS_INSTANCE, "group", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                                        "is_group_member", JsonString::from(json!({"group": context, "user": username_address})))?;
+                                                        "is_group_member", JsonString::from(json!({"group": context, "username_address": username_address})))?;
                         let is_group_member: ZomeApiResult<bool> = is_group_member.try_into()?;
 
                         if (is_group_owner? == false) & (is_group_member? == false){

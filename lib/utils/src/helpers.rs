@@ -68,15 +68,6 @@ pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<HooksRe
                     _ => return Err(ZomeApiError::from("create_den expectes the CreateDen enum value to be present".to_string()))
                 }
             },
-            "link_expression" => {
-                match hook_descriptor.parameters{
-                    FunctionParameters::LinkExpression {link_type, tag, direction, parent_expression, child_expression} =>{
-                        let link_result = link_expression(link_type, tag, direction, &parent_expression, &child_expression)?;
-                        hook_result_outputs.push(HooksResultTypes::LinkExpression(link_result));
-                    },
-                    _ => return Err(ZomeApiError::from("link_expression expects the LinkExpression enum value to be present".to_string()))
-                }
-            },
             &_ => {
                 return Err(ZomeApiError::from("Specified function does not exist".to_string()))
             }
@@ -198,8 +189,8 @@ pub fn generate_random_number(min: f32, max: f32, seed: &String) -> u32{
 }
 
 pub fn call_and_get_current_user_username() -> ZomeApiResult<EntryAndAddress<app_definition::UserName>>{
-    let current_user = hdk::call(hdk::THIS_INSTANCE, "user", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
+    let current_agent_username = hdk::call(hdk::THIS_INSTANCE, "user", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
                                                 "get_user_username_by_agent_address", JsonString::from(json!({})))?;
-    let current_user: ZomeApiResult<EntryAndAddress<app_definition::UserName>> = current_user.try_into()?;
-    current_user
+    let current_agent_username: ZomeApiResult<EntryAndAddress<app_definition::UserName>> = current_agent_username.try_into()?;
+    current_agent_username
 }

@@ -2,10 +2,10 @@
 
 ## Config
 
-**Show ENV**
+**Get Holochain ENV**
 ###### Request: 
 ```
-Endpoint: /show_env
+Endpoint: /get_env
 Arguments: {}
 ```
 

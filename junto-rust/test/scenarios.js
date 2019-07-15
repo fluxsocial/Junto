@@ -47,7 +47,7 @@ async function queryExpressions(t, agent, perspective, attributes, query_options
 }
 
 async function resonation(t, agent, expression) {
-    const resonate = await agent.call('expression', 'resonation', {expression: expression});
+    const resonate = await agent.call('expression', 'post_resonation', {expression: expression});
     console.log("Resonation result", resonate);
     t.deepEqual(resonate.hasOwnProperty("Ok"), true);
     console.log("Completed resonation\n\n\n\n");
@@ -84,7 +84,7 @@ async function addUserToPerspective(t, agent, perspective, target_user){
 
 async function isCollectionOwner(t, agent, den, user){
     //check current user is den owner
-    const owner_status = await agent.call('collection', 'is_collection_owner', {den: den, user: user});
+    const owner_status = await agent.call('collection', 'is_collection_owner', {collection: den, username_address: user});
     console.log("Get den(s) result", owner_status);
     t.deepEqual(owner_status.hasOwnProperty("Ok"), true);
     console.log("Completed is collection owner\n\n\n\n");
@@ -92,7 +92,7 @@ async function isCollectionOwner(t, agent, den, user){
 }
 
 async function isGroupMember(t, agent, group, user) {
-    const is_group_member = await agent.call('group', 'is_group_member', {group: group, user: user});
+    const is_group_member = await agent.call('group', 'is_group_member', {group: group, username_address: user});
     console.log("is group member result", is_group_member);
     t.deepEqual(is_group_member.hasOwnProperty("Ok"), true);
     console.log("Completed is group member\n\n\n\n");
@@ -100,7 +100,7 @@ async function isGroupMember(t, agent, group, user) {
 }
 
 async function getGroupMembers(t, agent, group, expect_ok) {
-    const get_group_members = await agent.call('group', 'group_members', {group: group});
+    const get_group_members = await agent.call('group', 'get_group_members', {group: group});
     console.log("Get group members", get_group_members);
     if (expect_ok == true){
         t.equal(get_group_members.hasOwnProperty("Ok"), true);
@@ -120,7 +120,7 @@ async function addPackMember(t, agent, user) {
 }
 
 async function getUserPack(t, agent, user) {
-    const get_pack = await agent.call('group', 'user_pack', {username_address: user});
+    const get_pack = await agent.call('group', 'get_user_pack', {username_address: user});
     console.log("Get pack result", get_pack);
     t.deepEqual(get_pack.hasOwnProperty("Ok"), true);
     console.log("Completed get pack\n\n\n\n");
@@ -137,7 +137,7 @@ async function removeGroupMember(t, agent, user, group) {
 }
 
 async function getHolochainEnv(t, agent) {
-    const holochain_env = await agent.call('config', 'show_env', {});
+    const holochain_env = await agent.call('config', 'get_env', {});
     console.log("Show env result, holochain_env", holochain_env);
     t.deepEqual(holochain_env.hasOwnProperty("Ok"), true);
     console.log("Completed get Holochain Env\n\n\n\n");
@@ -145,7 +145,7 @@ async function getHolochainEnv(t, agent) {
 }
 
 async function getDens(t, agent, user) {
-    const get_dens = await agent.call('collection', 'user_dens', {username_address: user});
+    const get_dens = await agent.call('collection', 'get_user_dens', {username_address: user});
     console.log("Get den(s) result", get_dens);
     t.equal(get_dens.hasOwnProperty("Ok"), true);
     console.log("Completed get den results\n\n\n\n");

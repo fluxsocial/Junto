@@ -21,8 +21,6 @@ use utils;
 use types::{
     app_definition,
     function_definition::{
-        FunctionDescriptor,
-        FunctionParameters,
         GroupMembers,
         EntryAndAddress
     }
@@ -38,22 +36,20 @@ pub fn create_pack(username_address: Address, first_name: String) -> ZomeApiResu
     };
     let entry = Entry::App("group".into(), pack.clone().into());
     let address = hdk::commit_entry(&entry)?;
-    let hook_definitions = vec![FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "group", tag: "pack", direction: "reverse", parent_expression: address.clone(), child_expression: username_address.clone()}},
-                                FunctionDescriptor{name: "link_expression", parameters: FunctionParameters::LinkExpression{link_type: "group_auth", tag: "owner", direction: "forward", parent_expression: address.clone(), child_expression: username_address.clone()}}];
-
-    let _hook_result = utils::helpers::handle_hooks(hook_definitions)?;
+    utils::helpers::link_expression("group", "pack", "reverse", &address, &username_address)?;
+    utils::helpers::link_expression("group_auth", "owner", "forward", &address, &username_address)?;
     Ok(EntryAndAddress{entry: pack, address: address})
 }
 
 pub fn add_pack_member(username_address: Address) -> ZomeApiResult<JsonString>{
-    let current_user = utils::helpers::call_and_get_current_user_username()?;
-    let group = get_user_pack(current_user.address)?;   
+    let current_agent_username = utils::helpers::call_and_get_current_user_username()?;
+    let group = get_user_pack(current_agent_username.address)?;   
     add_member_to_group(username_address.clone(), group.address.clone())
 }
 
 pub fn add_member_to_group(username_address: Address, group: Address) -> ZomeApiResult<JsonString>{
-    let current_user = utils::helpers::call_and_get_current_user_username()?;
-    let group_owner = is_group_owner(group.clone(), current_user.address)?;
+    let current_agent_username = utils::helpers::call_and_get_current_user_username()?;
+    let group_owner = is_group_owner(group.clone(), current_agent_username.address)?;
     if group_owner == true{
         let group_member = is_group_member(group.clone(), username_address.clone())?;
         if group_member == false{
@@ -69,8 +65,8 @@ pub fn add_member_to_group(username_address: Address, group: Address) -> ZomeApi
 }
 
 pub fn remove_group_member(username_address: Address, group: Address) -> ZomeApiResult<JsonString>{
-    let current_user = utils::helpers::call_and_get_current_user_username()?;
-    let group_owner = is_group_owner(group.clone(), current_user.address)?;
+    let current_agent_username = utils::helpers::call_and_get_current_user_username()?;
+    let group_owner = is_group_owner(group.clone(), current_agent_username.address)?;
     if group_owner == true{
         let group_member = is_group_member(group.clone(), username_address.clone())?;
         if group_member == true{
@@ -85,14 +81,14 @@ pub fn remove_group_member(username_address: Address, group: Address) -> ZomeApi
     }
 }
 
-pub fn is_group_member(group: Address, user: Address) -> ZomeApiResult<bool>{
+pub fn is_group_member(group: Address, username_address: Address) -> ZomeApiResult<bool>{
     let group_entry = hdk::api::get_entry(&group)?;
     match group_entry {
         Some(Entry::App(_, entry_value)) => {
             let _entry = app_definition::Group::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Specified group address is not of type Group".to_string()))?; //will return error here if cannot ser entry to group
             let member_vec = utils::helpers::get_links_and_load_type::<app_definition::UserName>(&group, LinkMatch::Exactly("group_auth"), LinkMatch::Exactly("member"))?;
             for member in member_vec {
-                if member.address == user{
+                if member.address == username_address{
                     return Ok(true)
                 }
             }
@@ -109,8 +105,8 @@ pub fn get_group_members(group: Address) -> ZomeApiResult<GroupMembers> {
     match group_entry {
         Some(Entry::App(_, entry_value)) => {
             let _entry = app_definition::Group::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Specified group address is not of type Group".to_string()))?; //will return error here if cannot ser entry to group
-            let current_user = utils::helpers::call_and_get_current_user_username()?;
-            if is_group_owner(group.clone(), current_user.address.clone())? == false && is_group_member(group.clone(), current_user.address)? == false {
+            let current_agent_username = utils::helpers::call_and_get_current_user_username()?;
+            if is_group_owner(group.clone(), current_agent_username.address.clone())? == false && is_group_member(group.clone(), current_agent_username.address)? == false {
                 return Err(ZomeApiError::from("You are not an owner or member of this group and thus are not allowed to view given information".to_string()))
             };
             let member_vec = utils::helpers::get_links_and_load_type::<app_definition::UserName>(&group, LinkMatch::Exactly("group_auth"), LinkMatch::Exactly("member"))?;
@@ -121,12 +117,12 @@ pub fn get_group_members(group: Address) -> ZomeApiResult<GroupMembers> {
     }
 }
 
-pub fn is_group_owner(group: Address, user: Address) -> ZomeApiResult<bool>{
+pub fn is_group_owner(group: Address, username_address: Address) -> ZomeApiResult<bool>{
     let group_entry = hdk::api::get_entry(&group)?;
     match group_entry {
         Some(Entry::App(_, entry_value)) => {
             let entry = app_definition::Group::try_from(&entry_value).map_err(|_err| ZomeApiError::from("Specified group address is not of type Group".to_string()))?;
-            Ok(entry.owner == user) 
+            Ok(entry.owner == username_address) 
         },
         Some(_) => return Err(ZomeApiError::from("Context address was not an app entry".to_string())),
         None => return Err(ZomeApiError::from("No context entry at specified address".to_string()))

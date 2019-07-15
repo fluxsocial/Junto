@@ -44,9 +44,9 @@ pub struct CreateUserInformation{
 }
 
 //Basic struct to be used to describe a function and its parameters to the handle_hooks function
-pub struct FunctionDescriptor<'a>{  
+pub struct FunctionDescriptor{  
     pub name: &'static str,
-    pub parameters: FunctionParameters<'a>,
+    pub parameters: FunctionParameters,
 }
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, Clone)]
@@ -85,11 +85,8 @@ pub struct ExpressionData{
 
 #[derive(Clone)]
 pub enum HooksResultTypes{
-    TimeToExpression(Vec<Address>),
     CreatePack(EntryAndAddress<app_definition::Group>),
-    CreateDen(UserDens),
-    LinkExpression(&'static str),
-    CreatePostIndex(String)
+    CreateDen(UserDens)
 }
 
 #[derive(Debug, Serialize, Deserialize, DefaultJson)]
@@ -131,6 +128,19 @@ pub struct EntryAndAddress<T>{
 
 pub type EntryAndAddressResult<T> = Vec<EntryAndAddress<T>>;
 
+//Parameters for each function in holochain application
+#[derive(Serialize, Debug)]
+pub enum FunctionParameters{
+    CreatePack{
+        username_address: Address,
+        first_name: String
+    },
+    CreateDen{
+        username_address: Address,
+        first_name: String
+    }
+}
+
 impl<T: Into<JsonString>> From<EntryAndAddress<T>> for JsonString  where T: Serialize + Debug{
     fn from(result: EntryAndAddress<T>) -> JsonString {
         JsonString::from(default_to_json(result))
@@ -141,6 +151,24 @@ impl<T> From<JsonString> for EntryAndAddress<T> where T: DeserializeOwned + Debu
     fn from(result: JsonString) -> EntryAndAddress<T>{
         serde_json::from_str(result.to_string().as_str())
             .unwrap_or_else(|_| panic!("could not deserialize: {:?}", result))
+    }
+}
+
+impl<T> PartialEq for EntryAndAddress<T>{
+    fn eq(self: &Self, other: &EntryAndAddress<T>) -> bool {
+        self.address == other.address
+    }
+}
+
+impl From<GroupMembers> for JsonString {
+    fn from(result: GroupMembers) -> JsonString {
+        JsonString::from(json!(default_to_json(result)))
+    }
+}
+
+impl From<FunctionParameters> for JsonString {
+    fn from(result: FunctionParameters) -> JsonString {
+        JsonString::from(default_to_json(result))
     }
 }
 
@@ -156,50 +184,5 @@ impl HooksResultTypes{
             HooksResultTypes::CreateDen(r) => Ok(r),
             _ => Err(ZomeApiError::from("Hook result enum value not: CreateDen".to_string())),
         }
-    }
-    // pub fn link_expression_result(self) -> ZomeApiResult<String> {
-    //     match self {
-    //         HooksResultTypes::LinkExpression(r) => Ok(r),
-    //         _ => Err(ZomeApiError::from("Hook result enum value not: LinkExpression".to_string())),
-    //     }
-    // }
-}
-
-impl<T> PartialEq for EntryAndAddress<T>{
-    fn eq(self: &Self, other: &EntryAndAddress<T>) -> bool {
-        self.address == other.address
-    }
-}
-
-impl From<GroupMembers> for JsonString {
-    fn from(result: GroupMembers) -> JsonString {
-        JsonString::from(json!(default_to_json(result)))
-    }
-}
-
-//Parameters for each function in holochain application
-#[derive(Serialize, Debug)]
-pub enum FunctionParameters<'a>{
-    CreatePack{
-        username_address: Address,
-        first_name: String
-    },
-    CreateDen{
-        username_address: Address,
-        first_name: String
-    },
-    LinkExpression{
-        link_type: &'a str,
-        tag: &'a str, 
-        direction: &'a str, 
-        parent_expression: Address, 
-        child_expression: Address
-    }
-}
-
-
-impl<'a> From<FunctionParameters<'a>> for JsonString {
-    fn from(result: FunctionParameters) -> JsonString {
-        JsonString::from(default_to_json(result))
     }
 }

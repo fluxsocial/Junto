@@ -62,10 +62,10 @@ define_zome! {
             outputs: |result: ZomeApiResult<Address>|,
             handler: post::post_comment_expression
         }
-        resonation: {
+        post_resonation: {
             inputs: |expression: Address|,
             outputs: |result: ZomeApiResult<String>|,
-            handler: post::handle_resonation
+            handler: post::post_resonation
         }
     ]
 
@@ -75,7 +75,7 @@ define_zome! {
             get_expression,
             post_expression,
             post_comment_expression,
-            resonation
+            post_resonation
         ]
     }
 }
