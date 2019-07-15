@@ -53,7 +53,7 @@ define_zome! {
             outputs: |result: ZomeApiResult<JsonString>|,
             handler: group::remove_group_member
         }
-        group_members: {
+        get_group_members: {
             inputs: |group: Address|,
             outputs: |result: ZomeApiResult<types::function_definition::GroupMembers>|,
             handler: group::get_group_members
@@ -68,7 +68,7 @@ define_zome! {
             outputs: |result: ZomeApiResult<bool>|,
             handler: group::is_group_member
         }
-        user_pack: {
+        get_user_pack: {
             inputs: |username_address: Address|,
             outputs: |result: ZomeApiResult<types::function_definition::EntryAndAddress<types::app_definition::Group>>|,
             handler: group::get_user_pack
@@ -83,14 +83,13 @@ define_zome! {
     traits: {
         hc_public [
             create_pack,
-            user_pack,
             add_pack_member,
             add_member_to_group,
+            get_group_members,
             remove_group_member,
-            group_members,
             is_group_owner,
             is_group_member,
-            user_pack,
+            get_user_pack,
             get_user_member_packs
         ]
     }

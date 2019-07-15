@@ -92,7 +92,7 @@ pub fn build_indexes<'a>(contexts: Vec<Address>, address: &Address, indexes: &'a
     let current_agent_username = utils::helpers::call_and_get_current_user_username()?;
 
     let users_pack = hdk::call(hdk::THIS_INSTANCE, "group", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                "user_pack", JsonString::from(json!({"username_address": current_agent_username.address})))?;
+                                "get_user_pack", JsonString::from(json!({"username_address": current_agent_username.address})))?;
     let users_pack: ZomeApiResult<EntryAndAddress<app_definition::Group>> = users_pack.try_into()?;
     let users_pack: EntryAndAddress<app_definition::Group> = users_pack?;
 
@@ -102,7 +102,7 @@ pub fn build_indexes<'a>(contexts: Vec<Address>, address: &Address, indexes: &'a
     let member_results: Vec<Address> = member_results?.iter().map(|pack| pack.address.clone()).collect();
 
     let agents_dens = hdk::call(hdk::THIS_INSTANCE, "collection", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                "user_dens", JsonString::from(json!({"username_address": current_agent_username.address})))?;
+                                "get_user_dens", JsonString::from(json!({"username_address": current_agent_username.address})))?;
     let agents_dens: ZomeApiResult<UserDens> = agents_dens.try_into()?;
     let agents_dens: UserDens = agents_dens?;
     hdk::debug("Got agents dens")?;
@@ -190,14 +190,14 @@ pub fn post_comment_expression(expression: app_definition::ExpressionPost, paren
 }
 
 //Function to handle the resonation of an expression post - will put the post into packs which the post should be resonated into
-pub fn handle_resonation(expression: Address) -> ZomeApiResult<String>{
+pub fn post_resonation(expression: Address) -> ZomeApiResult<String>{
     let expression_entry = hdk::utils::get_as_type::<app_definition::ExpressionPost>(expression.clone())
         .map_err(|_err| ZomeApiError::from(String::from("Expression was not of type ExpressionPost")))?;
 
     let current_agent_username = utils::helpers::call_and_get_current_user_username()?;
 
     let users_pack = hdk::call(hdk::THIS_INSTANCE, "group", Address::from(hdk::PUBLIC_TOKEN.to_string()), 
-                                "user_pack", JsonString::from(json!({"username_address": current_agent_username.address.clone()})))?;
+                                "get_user_pack", JsonString::from(json!({"username_address": current_agent_username.address.clone()})))?;
     let users_pack: ZomeApiResult<EntryAndAddress<app_definition::Group>> = users_pack.try_into()?;
     let users_pack: EntryAndAddress<app_definition::Group> = users_pack?;
 

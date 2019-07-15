@@ -31,7 +31,7 @@ Error: {Err:  {Error Type: 'Error Message'} }
 **Get User Dens**
 ###### Request: 
 ```
-Endpoint: /user_dens
+Endpoint: /get_user_dens
 Arguments: { username_address: "address of user"}
 ```
 

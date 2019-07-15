@@ -28,10 +28,10 @@ define_zome! {
     genesis: || { Ok(()) }
 
     functions: [
-        show_env: {
+        get_env: {
             inputs: | |,
             outputs: |result: ZomeApiResult<types::function_definition::Env>|,
-            handler: config::show_env
+            handler: config::get_env
         }
         get_current_bit_prefix: {
             inputs: | |,
@@ -47,7 +47,7 @@ define_zome! {
 
     traits: {
         hc_public [
-            show_env,
+            get_env,
             get_current_bit_prefix,
             update_bit_prefix
         ]

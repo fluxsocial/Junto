@@ -37,7 +37,7 @@ define_zome! {
             outputs: |result: ZomeApiResult<types::function_definition::UserDens>|,
             handler: collection::create_den
         }    
-        user_dens: {
+        get_user_dens: {
             inputs: |username_address: Address|,
             outputs: |result: ZomeApiResult<types::function_definition::UserDens>|,
             handler: collection::get_user_dens
@@ -57,7 +57,7 @@ define_zome! {
     traits: {
         hc_public [
             create_den,
-            user_dens,
+            get_user_dens,
             is_collection_owner,
             create_collection
         ]

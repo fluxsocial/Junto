@@ -28,10 +28,10 @@ Success: {Ok: "address of post"}
 Error: {Err:  {Error Type: 'Error Message'} }
 ```
 
-**Make Resonation**
+**Post Resonation**
 ###### Request: 
 ```
-Endpoint: /resonation
+Endpoint: /post_resonation
 Arguments: { expression: 'address of expression to resonate' }
 ```
 

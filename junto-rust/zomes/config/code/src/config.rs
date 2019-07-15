@@ -16,7 +16,7 @@ use types::{
     function_definition::Env
 };
 
-pub fn show_env() -> ZomeApiResult<Env> {
+pub fn get_env() -> ZomeApiResult<Env> {
     let _dna_entry = hdk::get_entry(&DNA_ADDRESS)?;
     let _agent_entry = hdk::get_entry(&AGENT_ADDRESS)?;
     Ok(Env {
