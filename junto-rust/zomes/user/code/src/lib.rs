@@ -5,7 +5,6 @@ extern crate serde;
 #[macro_use]
 extern crate serde_derive;
 extern crate serde_json;
-extern crate holochain_json_derive;
 extern crate types;
 extern crate utils;
 
