@@ -68,15 +68,6 @@ pub fn handle_hooks(hooks: Vec<FunctionDescriptor>) -> ZomeApiResult<Vec<HooksRe
                     _ => return Err(ZomeApiError::from("create_den expectes the CreateDen enum value to be present".to_string()))
                 }
             },
-            "link_expression" => {
-                match hook_descriptor.parameters{
-                    FunctionParameters::LinkExpression {link_type, tag, direction, parent_expression, child_expression} =>{
-                        let link_result = link_expression(link_type, tag, direction, &parent_expression, &child_expression)?;
-                        hook_result_outputs.push(HooksResultTypes::LinkExpression(link_result));
-                    },
-                    _ => return Err(ZomeApiError::from("link_expression expects the LinkExpression enum value to be present".to_string()))
-                }
-            },
             &_ => {
                 return Err(ZomeApiError::from("Specified function does not exist".to_string()))
             }

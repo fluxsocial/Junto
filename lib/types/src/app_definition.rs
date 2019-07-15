@@ -7,9 +7,6 @@ use hdk::{
         error::JsonError
     },
 };
-// use holochain_json_derive::{ 
-//     DefaultJson 
-// };
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson, PartialEq, Clone)]
 pub enum Privacy {
