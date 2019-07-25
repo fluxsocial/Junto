@@ -1,4 +1,4 @@
-#![feature(try_from, vec_remove_item)]
+#![feature(vec_remove_item)]
 #[macro_use]
 extern crate hdk;
 extern crate serde;

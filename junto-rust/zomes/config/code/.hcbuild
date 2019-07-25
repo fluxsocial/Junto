@@ -18,13 +18,13 @@
       "arguments": [
         "-Oz",
         "--vacuum",
-        "/tmp/holochain/target/wasm32-unknown-unknown/release/config.wasm
+        "/tmp/holochain/target/wasm32-unknown-unknown/release/config.wasm"
       ]
     },
     {
       "command": "wasm2wat",
       "arguments": [
-        "/tmp/holochain/target/wasm32-unknown-unknown/release/config.wasm,
+        "/tmp/holochain/target/wasm32-unknown-unknown/release/config.wasm",
         "-o",
         "/tmp/holochain/target/wasm32-unknown-unknown/release/config.wat"
       ]
@@ -34,9 +34,9 @@
       "arguments": [
         "/tmp/holochain/target/wasm32-unknown-unknown/release/config.wat",
         "-o",
-        "/tmp/holochain/target/wasm32-unknown-unknown/release/config.wasm
+        "/tmp/holochain/target/wasm32-unknown-unknown/release/config.wasm"
       ]
     }
   ],
-  "artifact": "/tmp/holochain/target/wasm32-unknown-unknown/release/config.wasm
+  "artifact": "/tmp/holochain/target/wasm32-unknown-unknown/release/config.wasm"
 }

@@ -18,13 +18,13 @@
       "arguments": [
         "-Oz",
         "--vacuum",
-        "/tmp/holochain/target/wasm32-unknown-unknown/release/perspective.wasm
+        "/tmp/holochain/target/wasm32-unknown-unknown/release/perspective.wasm"
       ]
     },
     {
       "command": "wasm2wat",
       "arguments": [
-        "/tmp/holochain/target/wasm32-unknown-unknown/release/perspective.wasm,
+        "/tmp/holochain/target/wasm32-unknown-unknown/release/perspective.wasm",
         "-o",
         "/tmp/holochain/target/wasm32-unknown-unknown/release/perspective.wat"
       ]
@@ -34,9 +34,9 @@
       "arguments": [
         "/tmp/holochain/target/wasm32-unknown-unknown/release/perspective.wat",
         "-o",
-        "/tmp/holochain/target/wasm32-unknown-unknown/release/perspective.wasm
+        "/tmp/holochain/target/wasm32-unknown-unknown/release/perspective.wasm"
       ]
     }
   ],
-  "artifact": "/tmp/holochain/target/wasm32-unknown-unknown/release/perspective.wasm
+  "artifact": "/tmp/holochain/target/wasm32-unknown-unknown/release/perspective.wasm"
 }
