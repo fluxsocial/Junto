@@ -1,4 +1,3 @@
-#![feature(try_from)]
 extern crate hdk;
 extern crate serde;
 extern crate serde_derive;
