@@ -75,6 +75,7 @@ pub struct GroupMembers{
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 pub struct ExpressionData{
     pub expression: EntryAndAddress<app_definition::ExpressionPost>,
+    pub sub_expressions_count: f32,
     pub sub_expressions: Vec<ExpressionData>,
     pub author_username: EntryAndAddress<app_definition::UserName>,
     pub author_profile: EntryAndAddress<app_definition::User>,
