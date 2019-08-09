@@ -53,6 +53,7 @@ diorama.registerScenario('Can post expression and do basic random query', async 
 
     const can_get_comment = await scenarios.getExpression(t, agent1, post_1_expression.Ok);
     t.equal(can_get_comment.Ok.sub_expressions.length, 1);
+    t.equal(can_get_comment.Ok.sub_expressions_count, 1)
 });
 
 diorama.run();
