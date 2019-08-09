@@ -10,8 +10,8 @@ serde_json = { version = "=1.0.39", features = ["preserve_order"] }
 serde_derive = "=1.0.89"
 multihash = "0.8.0"
 rust-base58 = "=0.0.4"
-hdk = { git = "https://github.com/holochain/holochain-rust", branch = "release-0.0.24-alpha2" }
-holochain_wasm_utils = { git = "https://github.com/holochain/holochain-rust", branch = "release-0.0.24-alpha2" }
+hdk = { git = "https://github.com/holochain/holochain-rust", branch = "release-0.0.26-alpha1" }
+holochain_wasm_utils = { git = "https://github.com/holochain/holochain-rust", branch = "release-0.0.26-alpha1" }
 holochain_json_api = { version = "0.0.15" }
 types = { path = "../types"}
 

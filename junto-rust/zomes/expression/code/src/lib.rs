@@ -37,7 +37,11 @@ define_zome! {
         types::group_definition::group_definition()
     ]
 
-    genesis: || { Ok(()) }
+    init: || {{ Ok(()) }}
+
+    validate_agent: |validation_data : EntryValidationData::<AgentId>| {
+        Ok(())
+    }
 
     functions: [
         query_expressions: {

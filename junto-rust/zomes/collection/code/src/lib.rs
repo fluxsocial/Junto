@@ -28,7 +28,11 @@ define_zome! {
         types::user_definition::username_definition()
     ]
 
-    genesis: || { Ok(()) }
+    init: || {{ Ok(()) }}
+
+    validate_agent: |validation_data : EntryValidationData::<AgentId>| {
+        Ok(())
+    }
 
     functions: [    
         create_den: {

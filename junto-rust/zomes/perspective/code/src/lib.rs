@@ -26,7 +26,11 @@ define_zome! {
         types::perspective_definition::perspective_definition()
     ]
 
-    genesis: || { Ok(()) }
+    init: || {{ Ok(()) }}
+
+    validate_agent: |validation_data : EntryValidationData::<AgentId>| {
+        Ok(())
+    }
 
     functions: [
         create_perspective: {
