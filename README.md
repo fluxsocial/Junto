@@ -4,6 +4,8 @@ Junto is a new breed of social media founded in the spirit of authenticity. Our 
 
 Junto is an MIT-licensed open source project powered by Holochain. This repository contains the Holochain Rust application which both the Junto web and mobile applications will run on. 
 
+## [Documentation](https://github.com/juntofoundation/Junto/tree/master/junto-rust/docs)
+
 ## Getting Started
 
 To install Holochain and run the Rust Application see: https://developer.holochain.org/start.html.

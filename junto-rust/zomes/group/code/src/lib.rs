@@ -62,7 +62,7 @@ define_zome! {
             handler: group::get_group_members
         }
         is_group_owner: {
-            inputs: |group: Address, username_address: Address|,
+            inputs: |username_address: Address, group: Address|,
             outputs: |result: ZomeApiResult<bool>|,
             handler: group::is_group_owner
         }
