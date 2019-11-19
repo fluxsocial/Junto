@@ -44,8 +44,10 @@ orchestrator.registerScenario('Simple DOS query tes', async (s, t) => {
     await s.consistency();
 
     const add_pack_member = await scenarios.addPackMember(t, user2, "QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn");
+    await s.consistency();
     const holochain_env = await scenarios.getHolochainEnv(t, user1);
     const update_bit_prefix = await scenarios.updateBitPrefix(t, user1, 2);
+    await s.consistency();
     const post_global_expression = await scenarios.postExpression(t, user1,
                                                                     {
                                                                         expression: {
