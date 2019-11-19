@@ -8,14 +8,20 @@ const mainConfig = Config.gen(
       junto: dnaJunto,  // agent_id="blog", instance_id="blog", dna=dnaBlog
     },
     {
-      // specify a bridges
-      bridges: [],
-      // use a sim2h network
-      network: {
-        type: 'sim2h',
-        sim2h_url: 'wss://sim2h.holochain.org:9000',
-      },
-      // etc., any other valid conductor config items can go here
+        // specify a bridges
+        bridges: [],
+        logger: {
+            type: 'debug',
+            state_dump: false,
+            rules: {
+                rules: [{ exclude: true, pattern: ".*" }]
+            }
+        },
+        // use a sim2h network
+        network: {
+            type: 'sim2h',
+            sim2h_url: 'wss://sim2h.holochain.org:9000',
+        },
     }
 );
 
@@ -70,7 +76,7 @@ orchestrator.registerScenario('Simple DOS query tes', async (s, t) => {
     await s.consistency();                                                                    
     const current_date = scenarios.getCurrentTimestamps();
     const make_1_dos_query = await scenarios.queryExpressions(t, user2, "dos", 
-                                                                        ["social<channel>", "junto<channel>", "holochain<channel>", "holo<channel>", "jdeepee<user>", "shortform<type>", current_date.year+"<time:y>", "0"+current_date.month+"<time:m>", current_date.day+"<time:d>", current_date.hour+"<time:h>"],
+                                                                        ["social<channel>", "junto<channel>", "holochain<channel>", "holo<channel>", "jdeepee<user>", "shortform<type>", current_date.year+"<time:y>", current_date.month+"<time:m>", current_date.day+"<time:d>", current_date.hour+"<time:h>"],
                                                                         "FilterNew",
                                                                         "ExpressionPost",
                                                                         "And",
