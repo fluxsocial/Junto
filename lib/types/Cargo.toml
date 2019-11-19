@@ -8,10 +8,10 @@ edition = "2018"
 serde = "=1.0.89"
 serde_json = { version = "=1.0.39", features = ["preserve_order"] }
 serde_derive = "=1.0.89"
-hdk = { git = "https://github.com/holochain/holochain-rust", branch = "release-0.0.26-alpha1" }
-holochain_wasm_utils = { git = "https://github.com/holochain/holochain-rust", branch = "release-0.0.26-alpha1" }
-holochain_json_derive = { version = "=0.0.15" }
-holochain_json_api = { version = "=0.0.15" }
+hdk = "=0.0.38-alpha14"
+holochain_wasm_utils = "=0.0.38-alpha14"
+holochain_json_derive = "=0.0.17"
+holochain_json_api = "=0.0.17"
 strum_macros = "0.15.0"
 
 [lib]

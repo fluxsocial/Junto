@@ -5,9 +5,6 @@ use hdk::{
         dna::entry_types::Sharing,
         validation::EntryValidationData,
     },
-    holochain_json_api::{
-        json::JsonString
-    }
 };
 
 use super::app_definition;

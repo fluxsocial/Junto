@@ -13,8 +13,8 @@ itertools = "0.8"
 regex = "*"
 multihash = "0.8.0"
 rust-base58 = "=0.0.4"
-hdk = { git = "https://github.com/holochain/holochain-rust", branch = "release-0.0.26-alpha1" }
-holochain_wasm_utils = { git = "https://github.com/holochain/holochain-rust", branch = "release-0.0.26-alpha1" }
+hdk = "=0.0.38-alpha14"
+holochain_wasm_utils = "=0.0.38-alpha14"
 strum_macros = "0.15.0"
 types = { path = "../../../../lib/types" }
 utils = { path = "../../../../lib/utils"}
