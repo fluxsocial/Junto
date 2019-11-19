@@ -1,15 +1,23 @@
-const {Diorama, tapeExecutor} = require('@holochain/diorama')
-const scenarios = require("../scenarios.js")
-const dnaPath = Diorama.dna('./dist/junto-rust.dna.json', 'junto')
+const { Orchestrator, Config } = require('@holochain/tryorama');
+const scenarios = require("../scenarios.js");
 
-const diorama = new Diorama({
-    instances: {
-      agent1: dnaPath,
-      agent2: dnaPath
+const dnaJunto = Config.dna('./dist/junto.dna.json', 'junto');
+
+const mainConfig = Config.gen(
+    {
+      junto: dnaJunto,  // agent_id="blog", instance_id="blog", dna=dnaBlog
     },
-    debugLog: false,
-    executor: tapeExecutor(require('tape'))
-});
+    {
+      // specify a bridges
+      bridges: [],
+      // use a sim2h network
+      network: {
+        type: 'sim2h',
+        sim2h_url: 'wss://sim2h.holochain.org:9000',
+      },
+      // etc., any other valid conductor config items can go here
+    }
+);
 
 String.prototype.format = function() {
     var formatted = this;
@@ -20,15 +28,19 @@ String.prototype.format = function() {
     return formatted;
 };
 
-diorama.registerScenario('Simple DOS query tes', async (s, t, {agent1, agent2}) => {
-    const user1 = await scenarios.registerAgent(t, agent1, "jdeepee", "joshua", "parkin");
-    const agent_private_den = user1.Ok.private_den.address;
-    const user2 = await scenarios.registerAgent(t, agent2, "sunyatax", "eric", "yang");
-    await s.consistent();
-    const add_pack_member = await scenarios.addPackMember(t, agent2, "QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn");
-    const holochain_env = await scenarios.getHolochainEnv(t, agent1);
-    const update_bit_prefix = await scenarios.updateBitPrefix(t, agent1, 2);
-    const post_global_expression = await scenarios.postExpression(t, agent1,
+const orchestrator = new Orchestrator();
+
+orchestrator.registerScenario('Simple DOS query tes', async (s, t) => {
+    const {user1, user2} = await s.players({user1: mainConfig, user2: mainConfig}, true);
+    const user1_res = await scenarios.registerAgent(t, user1, "jdeepee", "joshua", "parkin");
+    const agent_private_den = user1_res.Ok.private_den.address;
+    const user2_res = await scenarios.registerAgent(t, user2, "sunyatax", "eric", "yang");
+    await s.consistency();
+
+    const add_pack_member = await scenarios.addPackMember(t, user2, "QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn");
+    const holochain_env = await scenarios.getHolochainEnv(t, user1);
+    const update_bit_prefix = await scenarios.updateBitPrefix(t, user1, 2);
+    const post_global_expression = await scenarios.postExpression(t, user1,
                                                                     {
                                                                         expression: {
                                                                             ShortForm: {
@@ -41,8 +53,8 @@ diorama.registerScenario('Simple DOS query tes', async (s, t, {agent1, agent2}) 
                                                                     ["holochain", "Junto", "social", "holo"],
                                                                     [holochain_env.Ok.dna_address]
                                                                 );
-    await s.consistent();
-    const post_private_expression = await scenarios.postExpression(t, agent1,
+    await s.consistency();
+    const post_private_expression = await scenarios.postExpression(t, user1,
                                                                         {
                                                                             expression: {
                                                                                 ShortForm: {
@@ -55,9 +67,9 @@ diorama.registerScenario('Simple DOS query tes', async (s, t, {agent1, agent2}) 
                                                                         ["holochain", "Junto", "social", "holo"],
                                                                         [agent_private_den]
                                                                     );
-    await s.consistent();                                                                    
+    await s.consistency();                                                                    
     const current_date = scenarios.getCurrentTimestamps();
-    const make_1_dos_query = await scenarios.queryExpressions(t, agent2, "dos", 
+    const make_1_dos_query = await scenarios.queryExpressions(t, user2, "dos", 
                                                                         ["social<channel>", "junto<channel>", "holochain<channel>", "holo<channel>", "jdeepee<user>", "shortform<type>", current_date.year+"<time:y>", "0"+current_date.month+"<time:m>", current_date.day+"<time:d>", current_date.hour+"<time:h>"],
                                                                         "FilterNew",
                                                                         "ExpressionPost",
@@ -68,4 +80,5 @@ diorama.registerScenario('Simple DOS query tes', async (s, t, {agent1, agent2}) 
     t.equal(make_1_dos_query.Ok.length, 1);
 });
 
-diorama.run();
+const report = orchestrator.run()
+console.log(report)

@@ -21,10 +21,6 @@ const mainConfig = Config.gen(
   
 const orchestrator = new Orchestrator();
 
-orchestrator.registerScenario
-
-// Run all registered scenarios as a final step, and gather the report,
-// if you set up a reporter
 orchestrator.registerScenario('Can register a profile and retrieve', async (s, t) => {
     const {user1} = await s.players({user1: mainConfig}, true);
     let user1_res = await scenarios.registerAgent(t, user1, "jdeepee", "joshua", "parkin").catch(err => { console.log(err) } );

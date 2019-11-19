@@ -32,7 +32,7 @@ async function updateBitPrefix(t, agent, bit_prefix) {
 }
 
 async function queryExpressions(t, agent, perspective, attributes, query_options, target_type, query_type, dos, seed, resonations) {  
-    const query = await agent.call('expression', 'query_expressions', {perspective: perspective, 
+    const query = await agent.call('junto', 'expression', 'query_expressions', {perspective: perspective, 
                                                                     attributes: attributes,
                                                                     query_options: query_options,
                                                                     target_type: target_type,
