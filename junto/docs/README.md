@@ -7,7 +7,11 @@
 ## [Perspective Documentation](./perspective.md)
 ## [Config Documentation](./config.md)
 
+---
+
 ## Errors
+
+---
 
 ## Types
 
