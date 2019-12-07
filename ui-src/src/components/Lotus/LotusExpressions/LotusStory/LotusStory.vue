@@ -61,11 +61,10 @@ export default {
         linkInsertButtons: [],
         quickInsertButtons: ["image", "video", "hr"],
         toolbarVisibleWithoutSelection: false,
-        toolbarInline: true,
+        toolbarInline: true
         // fontFamily: {
         //     "Raleway": "Raleway",
         // },
-        toolbarVisibleWithoutSelection: false
         // iconsTemplate: 'material_design'
       }
     };

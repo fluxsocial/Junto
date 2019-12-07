@@ -1,10 +1,10 @@
 import Vue from "vue";
-import Vuex from 'vuex'
+import Vuex from "vuex";
 import VueRouter from "vue-router";
 import { routes } from "./routes";
-import 'es6-promise/auto'
+import "es6-promise/auto";
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 // import Froala
 import VueFroala from "vue-froala-wysiwyg";
