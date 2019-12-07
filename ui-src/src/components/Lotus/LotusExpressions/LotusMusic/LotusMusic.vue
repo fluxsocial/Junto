@@ -1,4 +1,1 @@
-<template>
-    
-    
-</template>
+<template> </template>
