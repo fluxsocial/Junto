@@ -73,6 +73,7 @@ export const store = new Vuex.Store({
                 channel_type: String,
             },
         },
+        nav_bar_location: Number,
 	},
 	mutations: { //syncronous
 	},
