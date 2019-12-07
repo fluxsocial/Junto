@@ -77,8 +77,11 @@ orchestrator.registerScenario('Simple DOS query tes', async (s, t) => {
                                                                     );
     await s.consistency();                                                                    
     const current_date = scenarios.getCurrentTimestamps();
+    let current_month = (current_date.month < 10) ? "0"+ current_date.month : current_date.month;
+    let current_year = (current_date.year < 10) ? "0"+ current_date.year : current_date.year;
+    let current_day = (current_date.day < 10) ? "0" + current_date.day : current_date.day;
     const make_1_dos_query = await scenarios.queryExpressions(t, user2, "dos", 
-                                                                        ["social<channel>", "junto<channel>", "holochain<channel>", "holo<channel>", "jdeepee<user>", "shortform<type>", current_date.year+"<time:y>", current_date.month+"<time:m>", current_date.day+"<time:d>", current_date.hour+"<time:h>"],
+                                                                        ["social<channel>", "junto<channel>", "holochain<channel>", "holo<channel>", "jdeepee<user>", "shortform<type>", current_year+"<time:y>", current_month+"<time:m>", current_day+"<time:d>", current_date.hour+"<time:h>"],
                                                                         "FilterNew",
                                                                         "ExpressionPost",
                                                                         "And",

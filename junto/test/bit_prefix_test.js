@@ -1,19 +1,39 @@
-const {Diorama, tapeExecutor} = require('@holochain/diorama')
-const scenarios = require("./scenarios.js")
-const dnaPath = Diorama.dna('./dist/junto-rust.dna.json', 'junto')
+const { Orchestrator, Config } = require('@holochain/tryorama');
+const scenarios = require("./scenarios.js");
 
-const diorama = new Diorama({
-    instances: {
-      agent1: dnaPath
+const dnaJunto = Config.dna('./dist/junto.dna.json', 'junto');
+
+const mainConfig = Config.gen(
+    {
+      junto: dnaJunto,  // agent_id="blog", instance_id="blog", dna=dnaBlog
     },
-    debugLog: false,
-    executor: tapeExecutor(require('tape'))
-});
+    {
+        // specify a bridges
+        bridges: [],
+        logger: {
+            type: 'debug',
+            state_dump: false,
+            rules: {
+                rules: [{ exclude: true, pattern: ".*" }]
+            }
+        },
+        // use a sim2h network
+        network: {
+            type: 'sim2h',
+            sim2h_url: 'wss://sim2h.holochain.org:9000',
+        },
+    }
+);
 
-diorama.registerScenario('Can add, get users from perspective and get posts from a perspective', async (s, t, {agent1}) => {
-    const user1 = await scenarios.registerAgent(t, agent1, "jdeepee", "joshua", "parkin");
+const orchestrator = new Orchestrator();
+
+orchestrator.registerScenario('Test updating bit prefix', async (s, t) => {
+    const {agent1} = await s.players({agent1: mainConfig}, true);
+
     const holochain_env = await scenarios.getHolochainEnv(t, agent1);
     const update_bit_prefix = await scenarios.updateBitPrefix(t, agent1, 2);
+    await s.consistency();
 });
 
-diorama.run();
+const report = orchestrator.run()
+console.log(report)
