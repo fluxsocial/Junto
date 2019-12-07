@@ -1,7 +1,5 @@
-
 <template>
-    
-    <div class="lotusPhoto">
-        &nbsp;
-    </div>
+  <div class="lotusPhoto">
+    &nbsp;
+  </div>
 </template>
