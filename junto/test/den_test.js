@@ -1,18 +1,37 @@
-const {Diorama, tapeExecutor} = require('@holochain/diorama')
-const scenarios = require("./scenarios.js")
-const dnaPath = Diorama.dna('./dist/junto-rust.dna.json', 'junto')
+const { Orchestrator, Config } = require('@holochain/tryorama');
+const scenarios = require("./scenarios.js");
 
-const diorama = new Diorama({
-    instances: {
-      agent1: dnaPath
+const dnaJunto = Config.dna('./dist/junto.dna.json', 'junto');
+
+const mainConfig = Config.gen(
+    {
+      junto: dnaJunto,  // agent_id="blog", instance_id="blog", dna=dnaBlog
     },
-    debugLog: false,
-    executor: tapeExecutor(require('tape'))
-});
+    {
+        // specify a bridges
+        bridges: [],
+        logger: {
+            type: 'debug',
+            state_dump: false,
+            rules: {
+                rules: [{ exclude: true, pattern: ".*" }]
+            }
+        },
+        // use a sim2h network
+        network: {
+            type: 'sim2h',
+            sim2h_url: 'wss://sim2h.holochain.org:9000',
+        },
+    }
+);
 
-diorama.registerScenario('Retrieve den(s) and make auth operations on den', async (s, t, {agent1}) => {
-    const user1 = await scenarios.registerAgent(t, agent1, "jdeepee", "joshua", "parkin");
-    await s.consistent();
+const orchestrator = new Orchestrator();
+
+orchestrator.registerScenario('Retriev den(s) and make auth  operations on den', async (s, t) => {
+    const {agent1} = await s.players({agent1: mainConfig}, true);
+    let user1 = await scenarios.registerAgent(t, agent1, "jdeepee", "joshua", "parkin").catch(err => { console.log(err) } );
+    await s.consistency();
+
     const get_dens = await scenarios.getDens(t, agent1, user1.Ok.username.address);
     t.equal(JSON.stringify(get_dens), JSON.stringify({"Ok":{"private_den":{"address":"QmNM4SrnDweAjAwNUrBoSkbpEW8G4YUHg5jihoY5VYbsoG","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"joshua\'s Den","privacy":"Private"}},"shared_den":{"address":"QmdmsxPHxWKBDn3hiaAU1mNCr58SX8r3p5PVAcrkJJwQgJ","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"joshua\'s Den","privacy":"Shared"}},"public_den":{"address":"QmfYPrDCa53A7bJBQvAFF84S3755g8fuhy1rmQVnBFWghi","entry":{"parent":"QmT7TDNsrKw2psyvYJztAMVFyKowPtR5VLbwDVHbtuoWSn","name":"joshua\'s Den","privacy":"Public"}}}}));
 
@@ -26,4 +45,5 @@ diorama.registerScenario('Retrieve den(s) and make auth operations on den', asyn
     t.equal(JSON.stringify(private_den_owner), JSON.stringify({ Ok: true }));
 });
 
-diorama.run();
+const report = orchestrator.run()
+console.log(report)
