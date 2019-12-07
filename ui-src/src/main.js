@@ -2,7 +2,8 @@ import Vue from "vue";
 import Vuex from "vuex";
 import VueRouter from "vue-router";
 import { routes } from "./routes";
-import "es6-promise/auto";
+import { store } from "./store.js";
+import 'es6-promise/auto'
 
 Vue.use(Vuex);
 
@@ -32,5 +33,6 @@ const router = new VueRouter({
 new Vue({
   el: "#app",
   router,
+  store,
   render: h => h(App)
 });
