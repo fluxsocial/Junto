@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import VueRouter from "vue-router";
 import { routes } from "./routes";
 import { store } from "./store.js";
-import 'es6-promise/auto'
+import "es6-promise/auto";
 
 Vue.use(Vuex);
 

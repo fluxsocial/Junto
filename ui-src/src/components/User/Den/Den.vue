@@ -2,21 +2,6 @@
 
 <template>
   <section class="den">
-    <junto-nav>
-      <img
-        slot="navigationLogo"
-        class="navigation__top--logo"
-        src="./../../assets/img/junto-web__logo--grey.png"
-      />
-      <!-- <div slot="navigationBottom" class="navigation__bottom navigation__bottom--den">
-                <p class="navigation__bottom--space">DEN</p>
-            </div> -->
-      <div
-        slot="navigationBorder"
-        class="navigation__border navigation__border--den"
-      ></div>
-    </junto-nav>
-
     <div class="den__content">
       <div class="den__backdrop">
         <div class="den__backdrop--details">
@@ -44,7 +29,7 @@
         <div class="den__profile">
           <div class="den__profile--picture">
             <img
-              src="./../../assets/img/junto-web__eric.png"
+              src="./../../../assets/img/junto-web__eric.png"
               alt=""
               class="den__profile--picture--photo"
             />
@@ -66,12 +51,10 @@
 </template>
 
 <script>
-import Nav from "./../Nav/Nav.vue";
-import Lotus from "./../Lotus/Lotus.vue";
+import Lotus from "./../../Lotus/Lotus.vue";
 
 export default {
   components: {
-    juntoNav: Nav,
     juntoLotus: Lotus
   }
 };
