@@ -17,21 +17,26 @@ import store from "./store.js";
 const checkSourceChain = async (to, from, next) => {
   //check if user has account in their source chain and redirect accordingly
   let connection = connect({ url: Settings.Uri });
-  makeHolochainCall(
-    connection,
-    "user",
-    "get_user_profile_by_agent_address",
-    {},
-    result => {
-      console.log(result);
-      if (isSuccess(result) == true) {
-        console.log("User has registed here it is: ", result);
-        next(next);
-      } else {
-        next("/register");
+  if (to.path != "/user/register") {
+    makeHolochainCall(
+      connection,
+      "user",
+      "get_user_profile_by_agent_address",
+      {},
+      result => {
+        console.log(result);
+        if (isSuccess(result) == true) {
+          console.log("User has registed here it is: ", result);
+          next(next);
+        } else {
+          console.log("going next");
+          next("/user/register");
+        }
       }
-    }
-  );
+    );
+  } else {
+    next()
+  };
 };
 
 export const routes = [
@@ -43,7 +48,7 @@ export const routes = [
     children: [
       {
         path: "register",
-        component: Register
+        component: Register,
       },
       {
         path: "account",
