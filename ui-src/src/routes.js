@@ -3,11 +3,23 @@ import Pack from "./components/Pack/Pack.vue";
 import Collective from "./components/Collective/Collective.vue";
 import LotusOpen from "./components/Lotus/LotusOpen/LotusOpen.vue";
 import User from "./components/User/User";
+import { makeHolochainCall, isSuccess } from "./utils.js";
+import { connect } from "@holochain/hc-web-client";
+import { Settings } from "./settings.js";
 import store from "./store.js";
 
-const checkSourceChain = (to, from, next) => {
+const checkSourceChain = async (to, from, next) => {
   //check if user has account in their source chain and redirect accordingly
-  next('/register')
+  let connection = connect( { url: Settings.Uri } );
+  makeHolochainCall(connection, "user", "get_user_profile_by_agent_address", {}, (result) => {
+      console.log(result);
+      if (isSuccess(result) == true) {
+          console.log("User has registed here it is: ", result);
+          next(next)
+      } else {
+          next("/register")
+      };
+  });
 }
 
 export const routes = [

@@ -4,7 +4,6 @@
     "description": "A social network",
     "scripts": {
       "hc:build": "rm -rf tmp-storage && mkdir -p ./dna && cd junto && hc package",
-      "hc:start": "holochain -c ./conductor-config.toml",
       "hc:make-holoscape": "npm run hc:build && rm ui.zip && cd ui-src && npm install && npm run build && zip -r ../ui.zip ./*"
     },
     "author": "Joshua Parkin (josh@junto.foundation)",

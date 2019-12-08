@@ -1,5 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { connect } from "@holochain/hc-web-client";
+import { Settings } from "./settings.js";
 
 Vue.use(Vuex)
 
@@ -74,6 +76,7 @@ export const store = new Vuex.Store({
             },
         },
         nav_bar_location: Number,
+        holochain_connection: connect({ url: Settings.Uri }),
 	},
 	mutations: { //syncronous
 	},
@@ -89,6 +92,7 @@ export const store = new Vuex.Store({
         getUsername: state => state.username,
         getUserPerspective: state => state.user_perspective,
         getState: state => state,
+        getHolochainConnection: state => state.holochain_connection
     }
 })
 	
