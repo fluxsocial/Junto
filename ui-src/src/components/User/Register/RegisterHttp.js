@@ -1,29 +1,25 @@
 import { makeHolochainCall, isSuccess } from "../../../utils.js";
 
-function registerUser(
-  template,
-  username,
-  first_name,
-  last_name,
-  profile_picture,
-  bio
-) {
+function registerUser(template, userData) {
   makeHolochainCall(
     template.$store.getters.getHolochainConnection,
     "user",
     "create_user",
     {
-      username: username,
-      first_name: first_name,
-      last_name: last_name,
-      profile_picture: profile_picture,
-      bio: bio
+      user_data: {
+        username: userData.username,
+        first_name: userData.first_name,
+        last_name: userData.last_name,
+        profile_picture: userData.profile_picture,
+        bio: userData.bio
+      }
     },
     result => {
       if (isSuccess(result) == true) {
         console.log("User has registered here is the result: ", result);
         result;
       } else {
+        console.log(result);
         template.$notify({
           type: "error",
           group: "main",
@@ -34,3 +30,5 @@ function registerUser(
     }
   );
 }
+
+export default registerUser;
