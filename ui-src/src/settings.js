@@ -1,6 +1,4 @@
 export const Settings = {
     InstanceId: "test-instance",
-    JsonRpc: "2.0",
-    Id: "0",
-    Uri: "ws://localhost:8888"
+    Uri: "ws://localhost:8888" //Again hard coded ui that wont be present when a proper configuration with holoscape is operational
 }

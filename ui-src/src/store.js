@@ -76,7 +76,7 @@ export const store = new Vuex.Store({
             },
         },
         nav_bar_location: Number,
-        holochain_connection: connect({ url: Settings.Uri }),
+        holochain_connection: connect({ url: Settings.Uri }), //Here connections is happening via settings - in the future when migration to holoscape occurs this will be blank and it can infer the url from holoscape
 	},
 	mutations: { //syncronous
 	},
