@@ -5,6 +5,8 @@
 </template>
 
 <script>
+import { registerUser } from "./RegisterHttp.js";
+
 export default {
   name: "Register",
   components: {}

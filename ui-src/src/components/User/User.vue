@@ -21,7 +21,7 @@ import Nav from "./../Nav/Nav.vue";
 export default {
   name: "User",
   components: {
-    JuntoNav: Nav,
+    JuntoNav: Nav
   }
 };
 </script>
