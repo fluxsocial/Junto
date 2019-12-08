@@ -1,5 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import { connect } from "@holochain/hc-web-client";
+import { Settings } from "./settings.js";
 
 Vue.use(Vuex);
 
@@ -73,7 +75,8 @@ export const store = new Vuex.Store({
         channel_type: String
       }
     },
-    nav_bar_location: Number
+    nav_bar_location: Number,
+    holochain_connection: connect({ url: Settings.Uri }) //Here connections is happening via settings - in the future when migration to holoscape occurs this will be blank and it can infer the url from holoscape
   },
   mutations: {
     //syncronous
@@ -90,6 +93,7 @@ export const store = new Vuex.Store({
     getProfile: state => state.profile,
     getUsername: state => state.username,
     getUserPerspective: state => state.user_perspective,
-    getState: state => state
+    getState: state => state,
+    getHolochainConnection: state => state.holochain_connection
   }
 });
