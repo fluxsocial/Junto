@@ -24,19 +24,17 @@ const checkSourceChain = async (to, from, next) => {
       "get_user_profile_by_agent_address",
       {},
       result => {
-        console.log(result);
         if (isSuccess(result) == true) {
           console.log("User has registed here it is: ", result);
           next(next);
         } else {
-          console.log("going next");
           next("/user/register");
         }
       }
     );
   } else {
-    next()
-  };
+    next();
+  }
 };
 
 export const routes = [
@@ -48,7 +46,7 @@ export const routes = [
     children: [
       {
         path: "register",
-        component: Register,
+        component: Register
       },
       {
         path: "account",

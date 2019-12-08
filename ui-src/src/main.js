@@ -3,9 +3,11 @@ import Vuex from "vuex";
 import VueRouter from "vue-router";
 import { routes } from "./routes";
 import { store } from "./store.js";
+import Notifications from "vue-notification";
 import "es6-promise/auto";
 
 Vue.use(Vuex);
+Vue.use(Notifications);
 
 // import Froala
 import VueFroala from "vue-froala-wysiwyg";
