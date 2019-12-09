@@ -1,6 +1,6 @@
 <template>
-  <div class="test">
-    <div class="tab-content">
+  <section class="user__register">
+    <div class="register__content">
       <div id="signup">
         <h1>Make movements</h1>
 
@@ -71,7 +71,7 @@
         </form>
       </div>
     </div>
-  </div>
+  </section>
 </template>
 
 <script>
