@@ -1,7 +1,7 @@
 // component for profile from member's point of view
 
 <template>
-  <section class="user__den">
+  <section class="den">
     <div class="den__content">
       <div class="den__backdrop">
         <div class="den__backdrop--details">

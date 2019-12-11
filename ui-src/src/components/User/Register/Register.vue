@@ -1,75 +1,69 @@
 <template>
-  <section class="user__register">
+  <section class="register">
     <div class="register__content">
-      <div id="signup">
-        <h1>Make movements</h1>
+      <div class="register__left"></div>
 
-        <form @submit.prevent>
-          <div class="row">
-            <div
-              class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3"
-            >
-              <h1>Signup</h1>
-              <hr />
-              <div class="form-group">
-                <label for="firstName">First Name</label>
-                <input
-                  id="firstName"
-                  v-model="userData.first_name"
-                  type="text"
-                  class="form-control"
-                />
-              </div>
-              <div class="form-group">
-                <label for="lastName">Last Name</label>
-                <input
-                  id="lastName"
-                  v-model="userData.last_name"
-                  type="text"
-                  class="form-control"
-                />
-              </div>
-              <div class="form-group">
-                <label for="username">Username</label>
-                <input
-                  id="username"
-                  v-model="userData.username"
-                  type="text"
-                  class="form-control"
-                />
-              </div>
-              <div class="form-group">
-                <label for="profile-picture">Upload a profile picture</label>
-                <input
-                  id="profile-picture"
-                  v-model="userData.profile_picture"
-                  type="text"
-                  class="form-control"
-                />
-              </div>
-              <div class="form-group">
-                <label for="bio">Write something about yourself</label>
-                <textarea
-                  id="bio"
-                  v-model="userData.bio"
-                  type="text"
-                  class="form-control"
-                />
-              </div>
-            </div>
+      <form @submit.prevent class="register__form">
+        <div class="register__form__child">
+          <h3>Welcome to <span>Junto</span></h3>
+          <p>Register here! You will be automagically logged in when you return.</p>
+        </div>
+        <div class="register__form__child">
+          <div class="form-group">
+            <input
+              id="firstName"
+              v-model="userData.first_name"
+              type="text"
+              class="form-control"
+              placeholder="First Name"
+            />
+            <label for="firstName">First Name:</label>
           </div>
-          <hr />
-          <div class="row">
-            <div
-              class="col-xs-12 col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3"
-            >
-              <button class="btn btn-primary" @click="registerHttp()">
-                Join Junto
-              </button>
-            </div>
+          <div class="form-group">
+            <input
+              id="lastName"
+              v-model="userData.last_name"
+              type="text"
+              class="form-control"
+              placeholder="Last Name"
+            />
+            <label for="lastName">Last Name:</label>
           </div>
-        </form>
-      </div>
+          <div class="form-group">
+            <input
+              id="username"
+              v-model="userData.username"
+              type="text"
+              class="form-control"
+              placeholder="Username"
+            />
+            <label for="username">Username:</label>
+          </div>
+          <div class="form-group">
+            <input
+              id="profile-picture"
+              v-model="userData.profile_picture"
+              type="text"
+              class="form-control"
+              placeholder="Upload a profile picture"
+            />
+            <label for="profile-picture">Upload a profile picture</label>
+          </div>
+          <div class="form-group">
+            <textarea
+              id="bio"
+              v-model="userData.bio"
+              type="text"
+              class="form-control"
+              placeholder="Write something about yourself"
+            />
+            <label for="bio">Write something about yourself:</label>
+          </div>
+        </div>
+        <div class="register__submit register__form__child">
+          <button class="btn register__submit__btn" @click="registerHttp()">Join Junto</button>
+        </div>
+      </form>
     </div>
   </section>
 </template>
