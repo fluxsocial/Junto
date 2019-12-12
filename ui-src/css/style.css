@@ -538,25 +538,6 @@ body {
   height: 100vh;
   width: 100vw; }
 
-*,
-*::before,
-*::after {
-  margin: 0;
-  padding: 0;
-  box-sizing: inherit; }
-
-html {
-  font-size: 62.5%; }
-
-body {
-  font-family: 'Avenir', 'Raleway', sans-serif;
-  box-sizing: border-box;
-  font-weight: 400;
-  line-height: 1.6;
-  overflow-x: hidden;
-  outline: none;
-  letter-spacing: .5px; }
-
 .register {
   display: flex;
   flex-flow: row nowrap;
@@ -694,6 +675,43 @@ body {
     .register__form .form-group input:not(:valid):not(:focus) + label {
       animation-name: shake-shake;
       animation-duration: .3s; }
+  .register__form .file-upload {
+    outline: 2px dashed #eee;
+    -moz-outline-radius: 5px;
+    min-height: 150px;
+    position: relative;
+    cursor: pointer;
+    padding: 0;
+    margin-top: 66px; }
+    .register__form .file-upload-header {
+      position: absolute;
+      top: -40px; }
+      .register__form .file-upload-header p {
+        font-size: 16px;
+        line-height: 16px;
+        letter-spacing: -0.45px;
+        margin: 0;
+        color: #777;
+        opacity: 1; }
+    .register__form .file-upload #profile-picture {
+      opacity: 0;
+      width: 100%;
+      height: 150px;
+      position: absolute;
+      cursor: pointer;
+      padding: 0; }
+    .register__form .file-upload label {
+      font-size: 1.2rem;
+      text-align: center;
+      width: 100%;
+      color: #333;
+      cursor: pointer;
+      transform: none !important; }
+      .register__form .file-upload label .image-name {
+        font-weight: 900;
+        color: #333; }
+    .register__form .file-upload:hover {
+      outline: 2px dashed #333; }
 
 @keyframes shake-shake {
   0% {

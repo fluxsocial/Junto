@@ -1,5 +1,3 @@
-@import '../../../../sass/base';
-
 .register{
     display: flex;
     flex-flow: row nowrap;
@@ -151,6 +149,57 @@
         input:not(:valid):not(:focus) + label{
             animation-name: shake-shake;
             animation-duration: .3s;
+        }
+    }
+
+    &__form .file-upload{
+        outline: 2px dashed $junto-grey-2;
+        -moz-outline-radius: 5px;
+        min-height: 150px;
+        position: relative;
+        cursor: pointer;
+        padding:0;
+        margin-top: 66px;
+        
+        &-header{
+            position: absolute;
+            top: -40px;
+
+            p{
+                font-size: 16px;
+                line-height: 16px;
+                letter-spacing: -0.45px;
+                margin: 0;
+                color: #777;
+                opacity: 1;
+            }
+        }
+
+        #profile-picture{
+            opacity: 0;
+            width: 100%;
+            height: 150px;
+            position: absolute;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        label{
+            font-size: 1.2rem;
+            text-align: center;
+            width: 100%;
+            color:$junto-grey;
+            cursor: pointer;
+            transform: none !important;
+
+            .image-name{
+                font-weight: 900;
+                color: $junto-grey;
+            }
+        }
+
+        &:hover{
+            outline: 2px dashed $junto-grey;
         }
     }
 

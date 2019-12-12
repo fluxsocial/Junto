@@ -24,7 +24,7 @@ function registerUser(template, userData) {
           type: "error",
           group: "main",
           title: "There was an error creating the account. Error is: " + result,
-          duration: 1000
+          duration: 3000
         });
       }
     }
