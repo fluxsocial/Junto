@@ -3,10 +3,16 @@
     <div class="register__content">
       <div class="register__left"></div>
 
-      <form class="register__form" @submit.prevent enctype="multipart/form-data">
+      <form
+        class="register__form"
+        enctype="multipart/form-data"
+        @submit.prevent
+      >
         <div class="register__form__child">
           <h3>Welcome to <span>Junto</span></h3>
-          <p>Register here! You will be automagically logged in when you return.</p>
+          <p>
+            Register here! You will be automagically logged in when you return.
+          </p>
         </div>
         <div class="register__form__child">
           <div class="form-group">
@@ -48,13 +54,16 @@
             </div>
             <input
               id="profile-picture"
-              @change="processFile($event)"
               type="file"
               accept="image/*"
               class="form-control"
               placeholder="Upload a profile picture"
+              @change="processFile($event)"
             />
-            <label id="profile-picture-label" for="profile-picture">Drag your image here <br> or click to browse</label>
+            <label id="profile-picture-label" for="profile-picture"
+              >Drag your image here <br />
+              or click to browse</label
+            >
           </div>
           <div class="form-group">
             <textarea
@@ -68,7 +77,9 @@
           </div>
         </div>
         <div class="register__submit register__form__child">
-          <button class="btn register__submit__btn" @click="registerHttp()">Join Junto</button>
+          <button class="btn register__submit__btn" @click="registerHttp()">
+            Join Junto
+          </button>
         </div>
       </form>
     </div>
@@ -98,8 +109,11 @@ export default {
       registerUser(this, this.userData);
       console.log(this.userData);
     },
-    processFile(event){
-      if(!event.target.files[0] || event.target.files[0].type.startsWith('image/') == false ){
+    processFile(event) {
+      if (
+        !event.target.files[0] ||
+        event.target.files[0].type.startsWith("image/") == false
+      ) {
         this.$notify({
           type: "error",
           group: "main",
@@ -107,20 +121,32 @@ export default {
           text: "Accepted formats: jpg, jpeg, png, svg",
           duration: 3000
         });
-      }else{
-        const label = event.target.labels[0];   //image upload label inside dashed box
+      } else {
+        const label = event.target.labels[0]; //image upload label inside dashed box
         label.className = "uploading";
-        label.innerHTML = 'Uploaded image: <span class="image-name">' + event.target.files[0].name + '</span>';
+        label.innerHTML =
+          'Uploaded image: <span class="image-name">' +
+          JSON.stringify(
+            // Simple HTML entity encoding for printed image name
+            String(event.target.files[0].name)
+              .replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&#x27;")
+          ) +
+          "</span>";
 
-        const image = event.target.files[0];    //show uploaded image as a preview
+        const image = event.target.files[0]; //show uploaded image as a preview
         const reader = new FileReader();
         reader.readAsDataURL(image);
-        reader.onload = e => {                              //e is a different event
-          this.previewImg = e.target.result;                
-          this.userData.profile_picture = e.target.result;  //image as base64
-        }
+        reader.onload = e => {
+          //e is a different event
+          this.previewImg = e.target.result;
+          this.userData.profile_picture = e.target.result; //image as base64
+        };
         event.target.previousElementSibling.style.display = "flex";
-      } 
+      }
     }
   }
 };
