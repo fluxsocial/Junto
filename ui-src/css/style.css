@@ -676,6 +676,8 @@ body {
       animation-name: shake-shake;
       animation-duration: .3s; }
   .register__form .file-upload {
+    display: flex;
+    align-items: center;
     outline: 2px dashed #eee;
     -moz-outline-radius: 5px;
     min-height: 150px;
@@ -693,6 +695,15 @@ body {
         margin: 0;
         color: #777;
         opacity: 1; }
+    .register__form .file-upload-preview-img-container {
+      display: none;
+      justify-content: center;
+      width: 35%; }
+      .register__form .file-upload-preview-img-container .preview-img {
+        max-width: 75%;
+        max-height: 175px;
+        object-fit: contain;
+        margin: 15px; }
     .register__form .file-upload #profile-picture {
       opacity: 0;
       width: 100%;
@@ -700,6 +711,13 @@ body {
       position: absolute;
       cursor: pointer;
       padding: 0; }
+    .register__form .file-upload .uploading {
+      width: 65%;
+      left: auto;
+      right: 0;
+      position: relative;
+      word-wrap: anywhere;
+      padding-right: 15px; }
     .register__form .file-upload label {
       font-size: 1.2rem;
       text-align: center;

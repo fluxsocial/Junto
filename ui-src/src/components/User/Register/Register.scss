@@ -153,6 +153,8 @@
     }
 
     &__form .file-upload{
+        display: flex;
+        align-items: center;
         outline: 2px dashed $junto-grey-2;
         -moz-outline-radius: 5px;
         min-height: 150px;
@@ -175,6 +177,19 @@
             }
         }
 
+        &-preview-img-container{
+            display: none;
+            justify-content: center;
+            width: 35%;
+
+            .preview-img{
+                max-width: 75%;
+                max-height: 175px;
+                object-fit: contain;
+                margin: 15px;
+            }
+        }
+
         #profile-picture{
             opacity: 0;
             width: 100%;
@@ -182,6 +197,15 @@
             position: absolute;
             cursor: pointer;
             padding: 0;
+        }
+
+        .uploading{
+            width: 65%;
+            left: auto;
+            right: 0;
+            position: relative;
+            word-wrap: anywhere;
+            padding-right: 15px;
         }
 
         label{

@@ -43,6 +43,9 @@
             <div class="file-upload-header">
               <p>Upload a profile picture</p>
             </div>
+            <div class="file-upload-preview-img-container">
+              <img :src="previewImg" class="preview-img" />
+            </div>
             <input
               id="profile-picture"
               @change="processFile($event)"
@@ -86,7 +89,8 @@ export default {
         last_name: "",
         profile_picture: "",
         bio: ""
-      }
+      },
+      previewImg: null
     };
   },
   methods: {
@@ -104,9 +108,18 @@ export default {
           duration: 3000
         });
       }else{
-        console.log(event);
-        event.target.labels[0].innerHTML = 'Uploaded image: <span class="image-name">' + event.target.files[0].name + '</span>';
-        this.userData.profile_picture = event.target.files[0];  //userData.profile_picture expects a string.
+        const label = event.target.labels[0];   //image upload label inside dashed box
+        label.className = "uploading";
+        label.innerHTML = 'Uploaded image: <span class="image-name">' + event.target.files[0].name + '</span>';
+
+        const image = event.target.files[0];    //show uploaded image as a preview
+        const reader = new FileReader();
+        reader.readAsDataURL(image);
+        reader.onload = e => {                              //e is a different event
+          this.previewImg = e.target.result;                
+          this.userData.profile_picture = e.target.result;  //image as base64
+        }
+        event.target.previousElementSibling.style.display = "flex";
       } 
     }
   }
