@@ -667,12 +667,17 @@ body {
       left: 0;
       opacity: 0;
       transition: all .3s ease; }
-    .register__form .form-group input:not(:placeholder-shown) {
+    .register__form .form-group input:not(:placeholder-shown),
+    .register__form .form-group textarea:not(:placeholder-shown) {
       padding: 28px 0px 12px 0px; }
     .register__form .form-group input:not(:placeholder-shown) + label {
       transform: translateY(-10px);
       opacity: .7; }
-    .register__form .form-group input:not(:valid):not(:focus) + label {
+    .register__form .form-group textarea:not(:placeholder-shown) + label {
+      transform: translateY(-30px);
+      opacity: .7; }
+    .register__form .form-group input:not(:valid):not(:focus) + label,
+    .register__form .form-group textarea:not(:valid):not(:focus) + label {
       animation-name: shake-shake;
       animation-duration: .3s; }
   .register__form .file-upload {

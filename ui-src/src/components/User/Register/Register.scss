@@ -138,15 +138,20 @@
             transition:  all .3s ease; 
         }
 
-        input:not(:placeholder-shown) {
+        input:not(:placeholder-shown),
+        textarea:not(:placeholder-shown) {
             padding:  28px 0px 12px 0px; 
         }
-        input:not(:placeholder-shown) + label {
+        input:not(:placeholder-shown) + label{
             transform:  translateY(-10px); 
             opacity:  .7; 
         }
-
-        input:not(:valid):not(:focus) + label{
+        textarea:not(:placeholder-shown) + label{
+            transform: translateY(-30px);
+            opacity: .7;
+        }
+        input:not(:valid):not(:focus) + label,
+        textarea:not(:valid):not(:focus) + label{
             animation-name: shake-shake;
             animation-duration: .3s;
         }
