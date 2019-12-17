@@ -79,7 +79,17 @@ export const store = new Vuex.Store({
     holochain_connection: connect({ url: Settings.Uri }) //Here connections is happening via settings - in the future when migration to holoscape occurs this will be blank and it can infer the url from holoscape
   },
   mutations: {
-    //syncronous
+    //sync
+    addUserHolochainData(state, data) {
+      state.address = data.Ok.username.address;
+      state.private_den = data.Ok.private_den;
+      state.public_den = data.Ok.public_den;
+      state.shared_den = data.Ok.shared_den;
+      state.pack = data.Ok.pack;
+      state.profile = data.Ok.profile;
+      state.username = data.Ok.username;
+      state.user_perspective = data.Ok.user_perspective;
+    }
   },
   actions: {
     //async

@@ -17,9 +17,9 @@ export const makeHolochainCall = function makeHolochainCall(
 };
 
 export const isSuccess = function isSuccess(data) {
-  if (typeof data.Ok != undefined) {
-    true;
+  if ("Ok" in data) {
+    return true;
   } else {
-    false;
+    return false;
   }
 };

@@ -16,10 +16,12 @@ function registerUser(template, userData) {
     },
     result => {
       if (isSuccess(result) == true) {
-        console.log("User has registered here is the result: ", result);
-        result;
+        console.log("Success on register: ", result);
+        template.$store.commit('addUserHolochainData', result);
+        console.log("The state is now: ", template.$store.getters.getState);
+        template.$router.push("/");
       } else {
-        console.log(result);
+        console.log("Error on registration: ", result);
         template.$notify({
           type: "error",
           group: "main",
