@@ -77,13 +77,11 @@ pub fn get_user_dens(username_address: Address) -> ZomeApiResult<UserDens>{
     let mut public_den = None;
     for den in den_links{
         if den.entry.privacy == app_definition::Privacy::Private{
-            private_den = Some(den.clone());
-        };
-        if den.entry.privacy == app_definition::Privacy::Shared{
-            shared_den = Some(den.clone());
-        };
-        if den.entry.privacy == app_definition::Privacy::Public{
-            public_den = Some(den.clone());
+            private_den = Some(den);
+        } else if den.entry.privacy == app_definition::Privacy::Shared{
+            shared_den = Some(den);
+        } else if den.entry.privacy == app_definition::Privacy::Public{
+            public_den = Some(den);
         };
     };
     if private_den.is_none() == true{

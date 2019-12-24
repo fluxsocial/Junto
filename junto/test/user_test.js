@@ -51,6 +51,11 @@ orchestrator.registerScenario('Can register a profile and retrieve', async (s, t
     console.log("Get user username", get_user_username_by_agent_address) //should return username
     t.equal(JSON.stringify(get_user_username_by_agent_address), JSON.stringify({Ok: user1_res.Ok.username}));
     console.log("Completed get username by agent address\n\n\n")
+
+    const get_user_data_by_agent_address = await user1.call('junto', 'user', 'get_user_data_by_agent_address', {})
+    console.log("Get user data", get_user_data_by_agent_address) //should return username
+    t.equal(JSON.stringify(get_user_data_by_agent_address), JSON.stringify(user1_res));
+    console.log("Completed get username by agent address\n\n\n")
 });
 
 const report = orchestrator.run()

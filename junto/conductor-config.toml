@@ -12,7 +12,7 @@ test_agent = true
 
 [[dnas]]
 file = '/home/josh/Documents/junto/Junto/junto/dist/junto.dna.json'
-hash = 'QmZwfVuGeQvetTSRP55YpTHfTk2EP3P6AqyVTWQACFkuUq'
+hash = 'QmSM7FUAsS3yrJyVfh1sxrfdvRxCgZbyhhfKS2rWXMhKTa'
 id = 'hc-run-dna'
 
 [[instances]]
@@ -32,7 +32,7 @@ id = 'test-instance'
 
 [interfaces.driver]
 port = 8888
-type = 'http'
+type = 'websocket'
 
 [logger]
 state_dump = true
