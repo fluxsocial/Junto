@@ -25,7 +25,7 @@ const checkSourceChain = async (to, from, next) => {
       {},
       result => {
         if (isSuccess(result) == true) {
-          console.log("User has registed here it is: ", result);
+          console.log("User is already registered here is their metadata: ", result);
           next(next);
         } else {
           next("/user/register");

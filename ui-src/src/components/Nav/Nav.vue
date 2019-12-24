@@ -24,6 +24,13 @@
             ></use>
           </svg>
         </router-link>
+        <router-link to="/user" class="navigation__top--user">
+          <svg class="navigation__top--icon">
+            <use
+              xlink:href="../../../src/assets/img/sprite.svg#icon-circle"
+            ></use>
+          </svg>
+        </router-link>
         <slot name="navigationLogo"></slot>
 
         <svg class="navigation__top--notifs">
