@@ -12,7 +12,7 @@ test_agent = true
 
 [[dnas]]
 file = '/home/josh/Documents/junto/Junto/junto/dist/junto.dna.json'
-hash = 'QmSM7FUAsS3yrJyVfh1sxrfdvRxCgZbyhhfKS2rWXMhKTa'
+hash = 'QmdZ6pqTb5VVfoLRKis4Cfo5hu1j1oLf8Cndh2RWxZHaco'
 id = 'hc-run-dna'
 
 [[instances]]
