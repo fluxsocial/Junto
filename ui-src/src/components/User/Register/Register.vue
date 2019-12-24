@@ -107,7 +107,6 @@ export default {
   methods: {
     registerHttp(event) {
       registerUser(this, this.userData);
-      console.log(this.userData);
     },
     processFile(event) {
       if (

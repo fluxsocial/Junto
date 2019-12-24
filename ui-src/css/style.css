@@ -36,33 +36,30 @@ body {
       border-top: 2px solid #A46BCC; }
     .navigation__border--collective {
       border-top: 2px solid #307FAB; }
+    .navigation__border--user {
+      border-top: 2px solid #555555; }
   .navigation__top {
     width: 100%;
     padding: 0 4rem;
     background-color: white;
-    display: grid;
-    grid-template-columns: repeat(12, minmax(100px, 1fr));
-    grid-template-rows: 7rem;
     align-items: center;
     font-size: 1.4rem;
-    font-weight: 500; }
+    font-weight: 500;
+    display: grid;
+    grid-template-columns: repeat(12, minmax(5%, 1fr));
+    grid-template-rows: 7rem; }
     .navigation__top--icon {
       height: 2rem;
       width: 2rem; }
       .navigation__top--icon--text {
         font-size: .5rem; }
-    .navigation__top--den {
-      grid-column: 1/2;
-      height: 2rem;
-      width: 2rem;
-      display: flex; }
     .navigation__top--pack {
       grid-column: 2/3;
       height: 2rem;
       width: 2rem;
       transform: rotate(180deg); }
     .navigation__top--collective {
-      grid-column: 3/4;
+      grid-column: 1/2;
       height: 2rem;
       width: 2rem; }
     .navigation__top--logo {
@@ -74,6 +71,45 @@ body {
       justify-self: end;
       height: 2rem;
       width: 2rem; }
+    .navigation__top--den {
+      grid-column: 11/12;
+      height: 100%;
+      width: 100%;
+      cursor: pointer;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      justify-self: end; }
+      .navigation__top--den:hover .dropdown__list {
+        -webkit-transform: translate(0, 0);
+        -moz-transform: translate(0, 0);
+        -ms-transform: translate(0, 0);
+        transform: translate(0, 0); }
+      .navigation__top--den--dropdown {
+        position: absolute;
+        z-index: 1;
+        top: 70px;
+        overflow: hidden;
+        pointer-events: none; }
+        .navigation__top--den--dropdown .dropdown__list {
+          list-style: none;
+          pointer-events: all;
+          -webkit-transform: translate(0, -100%);
+          -moz-transform: translate(0, -100%);
+          -ms-transform: translate(0, -100%);
+          transform: translate(0, -100%);
+          -webkit-transition: all 0.5s 0.1s;
+          -moz-transition: all 0.5s 0.1s;
+          -ms-transition: all 0.5s 0.1s;
+          transition: all 0.5s 0.1s;
+          padding: 10px 15px;
+          border: 1px solid #307FAB;
+          border-bottom-left-radius: 5px;
+          border-bottom-right-radius: 5px; }
+          .navigation__top--den--dropdown .dropdown__list--item {
+            cursor: pointer;
+            margin-top: 0.5rem; }
   .navigation__bottom {
     display: grid;
     grid-template-columns: repeat(12, minmax(100px, 1fr));

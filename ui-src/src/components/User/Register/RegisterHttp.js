@@ -25,7 +25,8 @@ function registerUser(template, userData) {
         template.$notify({
           type: "error",
           group: "main",
-          title: "There was an error creating the account. Error is: " + result,
+          title: "There was an error creating the account. Error is: ",
+          text: result.Err,
           duration: 10000
         });
       }

@@ -1,4 +1,3 @@
-
 .navigation {
     width: 100%;
     position: relative;
@@ -40,17 +39,13 @@
         width: 100%;
         padding: 0 4rem;
         background-color: white;
-
-        display: grid;
-        grid-template-columns: repeat(12, minmax(100px, 1fr));
-        grid-template-rows: 7rem;
-
         align-items: center;
-
         font-size: 1.4rem;
         font-weight: 500;
 
-        // border-bottom: 2px solid $junto-primary;
+        display: grid;
+        grid-template-columns: repeat(12, minmax(5%, 1fr));
+        grid-template-rows: 7rem;
 
         &--icon {
             height: 2rem;
@@ -59,15 +54,6 @@
             &--text {
                 font-size: .5rem;
             }
-        }
-        
-        &--den {
-            grid-column: 1/2;
-
-            height: 2rem;
-            width: 2rem;
-
-            display: flex;
         }
 
         &--pack {
@@ -79,7 +65,7 @@
         }
 
         &--collective {
-            grid-column: 3/4;
+            grid-column: 1/2;
 
             height: 2rem;
             width: 2rem;
@@ -98,9 +84,49 @@
 
             height: 2rem;
             width: 2rem;
-
         }
 
+        &--den {
+            grid-column: 11/12;
+
+            height: 100%;
+            width: 100%;
+            cursor: pointer;
+            z-index: 1;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            justify-self: end;
+
+            &:hover .dropdown__list {
+                @include transform((translate(0,0)));
+            }
+
+            &--dropdown {
+                position: absolute;
+                z-index: 1;
+                top: 70px;
+                overflow: hidden;
+                pointer-events: none;
+                
+                .dropdown__list{
+                    list-style: none;
+                    pointer-events: all;
+                    @include transform(translate(0, -100%));
+                    @include transition(all 0.5s 0.1s);
+                    padding: 10px 15px;
+                    border: 1px solid $junto-primary;
+                    border-bottom-left-radius: 5px;
+                    border-bottom-right-radius: 5px;
+    
+                    &--item{
+                        cursor: pointer;
+                        margin-top:0.5rem;
+                    }
+                }
+            }
+        }
     }
 
     &__bottom {
