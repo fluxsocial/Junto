@@ -1,0 +1,40 @@
+.nav-dropdown-container {
+    cursor: pointer;
+    z-index: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    justify-self: end;
+
+    height: 100%;
+    width: 100%;
+
+    &:hover .dropdown__list {
+        @include transform((translate(0,0)) !important);
+    }
+
+    .dropdown {
+        position: absolute;
+        z-index: 1;
+        top: 70px;
+        overflow: hidden;
+        pointer-events: none;
+        
+        .dropdown__list{
+            list-style: none;
+            text-align: center;
+            pointer-events: all;
+            @include transform(translate(0, -100%));
+            @include transition(all 0.5s 0.1s);
+            padding: 20px 35px;
+            border: 1px solid $junto-primary;
+            border-bottom-left-radius: 5px;
+            border-bottom-right-radius: 5px;
+
+            &--item{
+                cursor: pointer;
+                margin-top:1rem;
+            }
+        }
+    }
+}

@@ -17,36 +17,14 @@
             ></use>
           </svg>
         </router-link>
-        <!-- <router-link to="/collective" class="navigation__top--collective">
-          <svg class="navigation__top--icon">
-            <use
-              xlink:href="../../../src/assets/img/sprite.svg#icon-circle"
-            ></use>
-          </svg>
-        </router-link> -->
 
         <router-link to="/" class="navigation__top--logo">
           <slot name="navigationLogo"></slot>
         </router-link>
 
-        <div class="navigation__top--den" >
-          <svg class="navigation__top--icon" >
-            <use xlink:href="../../../src/assets/img/sprite.svg#icon-account"></use>
-          </svg>
-          <div class="navigation__top--den--dropdown" >
-            <ul class="dropdown__list">
-              <router-link tag="li" v-for="item in accountItems" :key="item.text" class="dropdown__list--item" :to="item.url">
-                  {{ item.text }}
-              </router-link>
-            </ul>
-          </div>
-        </div>
+        <Dropdown name="den-nav-dropdown" :Items="accountItems" class="navigation__top--den" Icon="icon-account" />
 
-        <router-link to="/user/notifications" class="navigation__top--notifs">
-          <svg class="navigation__top--icon">
-            <use xlink:href="../../../src/assets/img/sprite.svg#icon-moon"></use>
-          </svg>
-        </router-link>
+        <Dropdown name="notifs-nav-dropdown" :Items="notifItems" class="navigation__top--notifs" Icon="icon-moon" />
 
       </div>
       <slot name="navigationBorder"></slot>
@@ -56,6 +34,8 @@
 </template>
 
 <script>
+import Dropdown from '../Dropdown/Dropdown';
+
 export default {
   data() {
     return {
@@ -77,8 +57,24 @@ export default {
           url: '/user/logout'
         }
       ],
-      notifItems: [],
+      notifItems: [
+        {
+          text: "notif 1",
+          url: "/user/notifications"
+        },
+        {
+          text: "notif 2", 
+          url: "/user/notifications"
+        },
+        {
+          text: "notif 3",
+          url: "/user/notifications"
+        }
+      ],
     };
+  },
+  components: {
+    Dropdown
   }
 };
 </script>
