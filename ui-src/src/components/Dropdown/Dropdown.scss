@@ -27,7 +27,6 @@
             @include transform(translate(0, -100%));
             @include transition(all 0.5s 0.1s);
             padding: 20px 35px;
-            border: 1px solid $junto-primary;
             border-bottom-left-radius: 5px;
             border-bottom-right-radius: 5px;
 

@@ -1,6 +1,6 @@
 <template>
   <section class="pack">
-    <junto-nav>
+    <junto-nav class="navigation--pack">
       <img
         slot="navigationLogo"
         class="navigation__top--logo"
@@ -12,7 +12,7 @@
 
       <div
         slot="navigationBorder"
-        class="navigation__border navigation__border--pack"
+        class="navigation__border"
       ></div>
     </junto-nav>
 

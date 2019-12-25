@@ -22,9 +22,9 @@
           <slot name="navigationLogo"></slot>
         </router-link>
 
-        <Dropdown name="den-nav-dropdown" :Items="accountItems" class="navigation__top--den" Icon="icon-account" />
+        <Dropdown name="den-nav-dropdown" class="navigation__top--den" :Items="accountItems" Icon="icon-account" />
 
-        <Dropdown name="notifs-nav-dropdown" :Items="notifItems" class="navigation__top--notifs" Icon="icon-moon" />
+        <Dropdown name="notifs-nav-dropdown" class="navigation__top--notifs" :Items="notifItems" Icon="icon-moon" />
 
       </div>
       <slot name="navigationBorder"></slot>
@@ -57,7 +57,7 @@ export default {
           url: '/user/logout'
         }
       ],
-      notifItems: [
+      notifItems: [     //write method to get user notifications and push all to this array
         {
           text: "notif 1",
           url: "/user/notifications"

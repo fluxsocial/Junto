@@ -15,24 +15,6 @@
     
     &__border {
         width: 100%;
-
-        &--den {
-            border-top: 2px solid $junto-third;
-
-        }
-
-        &--pack {
-            border-top: 2px solid $junto-secondary;
-
-        }
-
-        &--collective {
-            border-top: 2px solid $junto-primary;
-        }
-
-        &--user {
-            border-top: 2px solid $junto-third;
-        }
     }
 
     &__top {
@@ -117,5 +99,30 @@
             font-size: 1.4rem;
         }
 
+    }
+}
+
+.navigation--collective {
+    .dropdown__list {
+        border: 2px solid $junto-primary;
+    }
+    .navigation__border {
+        border-top: 2px solid $junto-primary;
+    }
+}
+.navigation--pack{
+    .dropdown__list {
+        border: 2px solid $junto-secondary;
+    }
+    .navigation__border {
+        border-top: 2px solid $junto-secondary;
+    }
+}
+.navigation--den{
+    .dropdown__list {
+        border: 2px solid $junto-third;
+    }
+    .navigation__border {
+        border-top: 2px solid $junto-third;
     }
 }

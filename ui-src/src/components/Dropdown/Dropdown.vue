@@ -1,5 +1,5 @@
 <template>
-    <div class="nav-dropdown-container" v-bind:class="Name">
+    <div class="nav-dropdown-container">
         <svg class="navigation__top--icon" >
             <use v-bind:xlink:href='"../../../src/assets/img/sprite.svg#" + Icon'></use>
         </svg>
@@ -17,10 +17,6 @@
 export default {
     name: "Dropdown",
     props: {
-        Name: {
-            type: String,
-            required: true
-        },
         Items: {
             type: Array,
             required: true

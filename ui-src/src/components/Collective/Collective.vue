@@ -1,7 +1,7 @@
 <template>
   <section class="collective">
     <!-- nav -->
-    <junto-nav>
+    <junto-nav class="navigation--collective">
       <img
         slot="navigationLogo"
         class="navigation__top--logo"
@@ -12,7 +12,7 @@
             </div> -->
       <div
         slot="navigationBorder"
-        class="navigation__border navigation__border--collective"
+        class="navigation__border"
       ></div>
     </junto-nav>
 

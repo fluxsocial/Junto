@@ -30,14 +30,6 @@ body {
     flex-direction: column; }
   .navigation__border {
     width: 100%; }
-    .navigation__border--den {
-      border-top: 2px solid #555555; }
-    .navigation__border--pack {
-      border-top: 2px solid #A46BCC; }
-    .navigation__border--collective {
-      border-top: 2px solid #307FAB; }
-    .navigation__border--user {
-      border-top: 2px solid #555555; }
   .navigation__top {
     width: 100%;
     padding: 0 4rem;
@@ -89,6 +81,24 @@ body {
       color: #333;
       font-weight: 500;
       font-size: 1.4rem; }
+
+.navigation--collective .dropdown__list {
+  border: 2px solid #307FAB; }
+
+.navigation--collective .navigation__border {
+  border-top: 2px solid #307FAB; }
+
+.navigation--pack .dropdown__list {
+  border: 2px solid #A46BCC; }
+
+.navigation--pack .navigation__border {
+  border-top: 2px solid #A46BCC; }
+
+.navigation--den .dropdown__list {
+  border: 2px solid #555555; }
+
+.navigation--den .navigation__border {
+  border-top: 2px solid #555555; }
 
 .lotus {
   height: 10rem;
@@ -797,7 +807,6 @@ body {
       -ms-transition: all 0.5s 0.1s;
       transition: all 0.5s 0.1s;
       padding: 20px 35px;
-      border: 1px solid #307FAB;
       border-bottom-left-radius: 5px;
       border-bottom-right-radius: 5px; }
       .nav-dropdown-container .dropdown .dropdown__list--item {
