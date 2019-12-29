@@ -16,7 +16,7 @@
     .dropdown {
         position: absolute;
         z-index: 1;
-        top: 70px;
+        top: 72px;
         overflow: hidden;
         pointer-events: none;
         
@@ -27,8 +27,10 @@
             @include transform(translate(0, -100%));
             @include transition(all 0.5s 0.1s);
             padding: 20px 35px;
+            border-top: none;
             border-bottom-left-radius: 5px;
             border-bottom-right-radius: 5px;
+            background-color: #fff;
 
             &--item{
                 cursor: pointer;

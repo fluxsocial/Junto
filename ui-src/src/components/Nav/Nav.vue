@@ -22,9 +22,9 @@
           <slot name="navigationLogo"></slot>
         </router-link>
 
-        <Dropdown name="den-nav-dropdown" class="navigation__top--den" :Items="accountItems" Icon="icon-account" />
-
         <Dropdown name="notifs-nav-dropdown" class="navigation__top--notifs" :Items="notifItems" Icon="icon-moon" />
+
+        <Dropdown name="den-nav-dropdown" class="navigation__top--den" :Items="accountItems" Icon="icon-account" />
 
       </div>
       <slot name="navigationBorder"></slot>

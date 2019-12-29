@@ -39,11 +39,12 @@
         }
 
         &--pack {
-            grid-column: 2/3;
+            grid-column: 2/4;
 
             height: 2rem;
             width: 2rem;
             transform: rotate(180deg);
+            justify-self: center;
         }
 
         &--collective {
@@ -51,6 +52,7 @@
 
             height: 2rem;
             width: 2rem;
+            justify-self: center;
 
         }
 
@@ -61,11 +63,11 @@
         }
 
         &--notifs {
-            grid-column: 12/13;
+            grid-column: 10/12 ;
         }
 
         &--den {
-            grid-column: 11/12;
+            grid-column: 12/13;
         }
     }
 
