@@ -17,11 +17,20 @@
 
 <script>
 import Nav from "./../Nav/Nav.vue";
+import getUserProfile from "./UserHttp.js";
 
 export default {
   name: "User",
   components: {
     JuntoNav: Nav
+  },
+  methods: {
+    userProfile(){
+        getUserProfile(this);
+    }
+  },
+  mounted() {
+    this.userProfile();
   }
 };
 </script>
