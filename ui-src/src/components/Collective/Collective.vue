@@ -10,10 +10,7 @@
       <!-- <div slot="navigationBottom" class="navigation__bottom navigation__bottom--collective">
                 <p class="navigation__bottom--space">JUNTO</p>
             </div> -->
-      <div
-        slot="navigationBorder"
-        class="navigation__border"
-      ></div>
+      <div slot="navigationBorder" class="navigation__border"></div>
     </junto-nav>
 
     <junto-sidebar-collective></junto-sidebar-collective>

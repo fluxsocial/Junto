@@ -22,10 +22,19 @@
           <slot name="navigationLogo"></slot>
         </router-link>
 
-        <Dropdown name="notifs-nav-dropdown" class="navigation__top--notifs" :Items="notifItems" Icon="icon-moon" />
+        <Dropdown
+          name="notifs-nav-dropdown"
+          class="navigation__top--notifs"
+          :items="notifItems"
+          icon="icon-moon"
+        />
 
-        <Dropdown name="den-nav-dropdown" class="navigation__top--den" :Items="accountItems" Icon="icon-account" />
-
+        <Dropdown
+          name="den-nav-dropdown"
+          class="navigation__top--den"
+          :items="accountItems"
+          icon="icon-account"
+        />
       </div>
       <slot name="navigationBorder"></slot>
       <slot name="navigationBottom"></slot>
@@ -34,47 +43,48 @@
 </template>
 
 <script>
-import Dropdown from '../Dropdown/Dropdown';
+import Dropdown from "../Dropdown/Dropdown";
 
 export default {
+  components: {
+    Dropdown
+  },
   data() {
     return {
       accountItems: [
         {
-          text: 'Profile',
-          url: '/user'
+          text: "Profile",
+          url: "/user"
         },
         {
-          text: 'Public Den',
-          url: '/user/den/public'
+          text: "Public Den",
+          url: "/user/den/public"
         },
         {
-          text: 'Private Den',
-          url: '/user/den/private'
+          text: "Private Den",
+          url: "/user/den/private"
         },
         {
-          text: 'Log Out',
-          url: '/user/logout'
+          text: "Log Out",
+          url: "/user/logout"
         }
       ],
-      notifItems: [     //write method to get user notifications and push all to this array
+      notifItems: [
+        //write method to get user notifications and push all to this array
         {
           text: "notif 1",
           url: "/user/notifications"
         },
         {
-          text: "notif 2", 
+          text: "notif 2",
           url: "/user/notifications"
         },
         {
           text: "notif 3",
           url: "/user/notifications"
         }
-      ],
+      ]
     };
-  },
-  components: {
-    Dropdown
   }
 };
 </script>

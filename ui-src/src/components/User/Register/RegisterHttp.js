@@ -17,7 +17,7 @@ function registerUser(template, userData) {
     result => {
       if (isSuccess(result) == true) {
         console.log("Success on register: ", result);
-        template.$store.commit('addUserHolochainData', result);
+        template.$store.commit("addUserHolochainData", result);
         console.log("The state is now: ", template.$store.getters.getState);
         template.$router.push("/");
       } else {

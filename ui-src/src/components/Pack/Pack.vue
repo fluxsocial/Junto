@@ -10,10 +10,7 @@
                 <p class="navigation__bottom--space">PACK</p>
             </div> -->
 
-      <div
-        slot="navigationBorder"
-        class="navigation__border"
-      ></div>
+      <div slot="navigationBorder" class="navigation__border"></div>
     </junto-nav>
 
     <junto-sidebar-pack></junto-sidebar-pack>

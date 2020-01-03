@@ -6,10 +6,7 @@
         class="navigation__top--logo"
         src="./../../assets/img/junto-web__logo--grey.png"
       />
-      <div
-        slot="navigationBorder"
-        class="navigation__border"
-      ></div>
+      <div slot="navigationBorder" class="navigation__border"></div>
     </JuntoNav>
     <router-view />
   </section>
@@ -24,13 +21,13 @@ export default {
   components: {
     JuntoNav: Nav
   },
-  methods: {
-    userProfile(){
-        getUserProfile(this);
-    }
-  },
   mounted() {
     this.userProfile();
+  },
+  methods: {
+    userProfile() {
+      getUserProfile(this);
+    }
   }
 };
 </script>
