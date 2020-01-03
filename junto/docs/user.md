@@ -11,14 +11,16 @@ Arguments: { user_data: {username: "username", first_name: "first_name", last_na
 
 ###### Response: 
 ```
-Success: {Ok: {
-    private_den: {address: address, entry: {"parent":"parent object (user address)", "name": "den_name", "privacy": "Private", "channel_type": "Den"}},
-    shared_den: {address: address, entry: {"parent":"parent object (user address)", "name": "den_name", "privacy": "Shared", "channel_type": "Den"}},
-    public_den: {address: address, entry:  {"parent":"parent object (user address)", "name": "den_name", "privacy": "Public", "channel_type": "Den"}},
-    pack: {address: address, entry: {"name": "pack name", "owner": "user address", "privacy": "Shared"}},
-    profile:  {address: address, entry:{ parent: 'parent object (user address)', first_name: 'first_name', last_name: 'last_name', bio: 'bio', profile_picture: 'profile_picture',verified: true/false }},
-    username: {address: address, entry: { username: 'username' }},
-    user_perspective: {address: address, entry: {parent: 'parent object (user address)',"name": 'perspective_name', 'privacy':'Private', 'channel_type': 'Perspective'}}
+Success: 
+{
+    Ok: {
+        private_den: {address: address, entry: {"parent":"parent object (user address)", "name": "den_name", "privacy": "Private", "channel_type": "Den"}},
+        shared_den: {address: address, entry: {"parent":"parent object (user address)", "name": "den_name", "privacy": "Shared", "channel_type": "Den"}},
+        public_den: {address: address, entry:  {"parent":"parent object (user address)", "name": "den_name", "privacy": "Public", "channel_type": "Den"}},
+        pack: {address: address, entry: {"name": "pack name", "owner": "user address", "privacy": "Shared"}},
+        profile:  {address: address, entry:{ parent: 'parent object (user address)', first_name: 'first_name', last_name: 'last_name', bio: 'bio', profile_picture: 'profile_picture',verified: true/false }},
+        username: {address: address, entry: { username: 'username' }},
+        user_perspective: {address: address, entry: {parent: 'parent object (user address)',"name": 'perspective_name', 'privacy':'Private', 'channel_type': 'Perspective'}}
     }
 }
 Error: {Err:  {Error Type: 'Error Message'} }
@@ -73,5 +75,29 @@ Arguments: {}
 ###### Response: 
 ```
 Success: { Ok: { 'address': 'address-of-username', 'entry': { 'username': 'username' } } }
+Error: {Err:  {Error Type: 'Error Message'} }
+```
+
+**Get User Data**
+###### Request: 
+```
+Endpoint: /get_user_data_by_agent_address
+Arguments:
+```
+
+###### Response: 
+```
+Success: 
+{
+    Ok: {
+        private_den: {address: address, entry: {"parent":"parent object (user address)", "name": "den_name", "privacy": "Private", "channel_type": "Den"}},
+        shared_den: {address: address, entry: {"parent":"parent object (user address)", "name": "den_name", "privacy": "Shared", "channel_type": "Den"}},
+        public_den: {address: address, entry:  {"parent":"parent object (user address)", "name": "den_name", "privacy": "Public", "channel_type": "Den"}},
+        pack: {address: address, entry: {"name": "pack name", "owner": "user address", "privacy": "Shared"}},
+        profile:  {address: address, entry:{ parent: 'parent object (user address)', first_name: 'first_name', last_name: 'last_name', bio: 'bio', profile_picture: 'profile_picture',verified: true/false }},
+        username: {address: address, entry: { username: 'username' }},
+        user_perspective: {address: address, entry: {parent: 'parent object (user address)',"name": 'perspective_name', 'privacy':'Private', 'channel_type': 'Perspective'}}
+    }
+}
 Error: {Err:  {Error Type: 'Error Message'} }
 ```
