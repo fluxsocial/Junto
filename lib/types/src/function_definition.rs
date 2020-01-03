@@ -58,7 +58,7 @@ pub struct UserDens{
 
 #[derive(Serialize, Deserialize, Debug, DefaultJson)]
 pub struct JuntoUser{
-    pub private_den: EntryAndAddress<app_definition::Collection>,
+    pub private_den: Option<EntryAndAddress<app_definition::Collection>>,
     pub shared_den: EntryAndAddress<app_definition::Collection>,
     pub public_den: EntryAndAddress<app_definition::Collection>,
     pub pack: EntryAndAddress<app_definition::Group>,

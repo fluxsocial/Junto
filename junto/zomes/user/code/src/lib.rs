@@ -68,6 +68,11 @@ define_zome! {
             outputs: |result: ZomeApiResult<types::function_definition::JuntoUser>|,
             handler: user::get_user_data_by_agent_address
         }
+        get_user_data_from_username_address: {
+            inputs: |username_address: Address|,
+            outputs: |result: ZomeApiResult<types::function_definition::JuntoUser>|,
+            handler: user::get_user_data_from_username_address
+        }
     ]
 
     traits: {
@@ -77,7 +82,8 @@ define_zome! {
             get_user_profile_from_address,
             get_user_profile_by_agent_address,
             get_user_username_by_agent_address,
-            get_user_data_by_agent_address
+            get_user_data_by_agent_address,
+            get_user_data_from_username_address
         ]
     }
 }

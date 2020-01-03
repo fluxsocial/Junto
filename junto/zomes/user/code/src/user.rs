@@ -61,7 +61,7 @@ pub fn handle_create_user(user_data: CreateUserInformation) -> ZomeApiResult<Jun
     let user_perspective: ZomeApiResult<EntryAndAddress<types::app_definition::Perspective>> = user_perspective.try_into()?;
 
     let junto_user = JuntoUser{profile: EntryAndAddress{entry: user_meta_data.into(), address: address}, username: EntryAndAddress{entry: username_struct.into(), address: username_address},
-                                private_den: dens.private_den, shared_den: dens.shared_den, public_den: dens.public_den, pack: pack, user_perspective: user_perspective?};
+                                private_den: Some(dens.private_den), shared_den: dens.shared_den, public_den: dens.public_den, pack: pack, user_perspective: user_perspective?};
     Ok(junto_user)
 }
 
@@ -92,9 +92,44 @@ pub fn get_user_data_by_agent_address() -> ZomeApiResult<JuntoUser> {
 
     let mut pack = utils::helpers::get_links_and_load_type::<app_definition::Group>(&username.address, LinkMatch::Exactly("group"), LinkMatch::Exactly("pack"))?;
     let mut user_perspective = utils::helpers::get_links_and_load_type::<app_definition::Perspective>(&username.address, LinkMatch::Exactly("perspective"), LinkMatch::Exactly(""))?; 
-    //In return type we are just using perspective at index 0 - this will get hairy when more perspectives are created
+    //In return type we are just using perspective at index 0 - this will get hairy when more perspectives are created - unless the default perspective is returned always as the first element
     //but for now it works
-    Ok(JuntoUser{profile: profile.remove(0), username: username, private_den: private_den.unwrap(), shared_den: shared_den.unwrap(), public_den: public_den.unwrap(), pack: pack.remove(0), user_perspective: user_perspective.remove(0)})
+    Ok(JuntoUser{profile: profile.remove(0), username: username, private_den: Some(private_den.unwrap()), shared_den: shared_den.unwrap(), public_den: public_den.unwrap(), pack: pack.remove(0), user_perspective: user_perspective.remove(0)})
+}
+
+pub fn get_user_data_from_username_address(username_address: Address) -> ZomeApiResult<JuntoUser> {
+    let username = EntryAndAddress {
+        entry: hdk::utils::get_as_type::<app_definition::UserName>(username_address.clone())?,
+        address: username_address.clone()
+    };
+    let mut profile = utils::helpers::get_links_and_load_type::<app_definition::User>(&username_address, LinkMatch::Exactly("profile"), LinkMatch::Exactly(""))?;
+
+    let den_links = utils::helpers::get_links_and_load_type::<app_definition::Collection>(&username_address, LinkMatch::Exactly("collection"), LinkMatch::Exactly("den"))?;
+    let mut private_den = None;
+    let mut shared_den = None;
+    let mut public_den = None;
+    for den in den_links{
+        if den.entry.privacy == app_definition::Privacy::Private{
+            if get_user_username_by_agent_address()?.address == username_address {
+                private_den = Some(den);
+            };
+        } else if den.entry.privacy == app_definition::Privacy::Shared{
+            shared_den = Some(den);
+        } else if den.entry.privacy == app_definition::Privacy::Public{
+            public_den = Some(den);
+        };
+    };
+    if shared_den.is_none() == true{
+        return Err(ZomeApiError::from("User has no shared den".to_string()))
+    } else if public_den.is_none() == true{
+        return Err(ZomeApiError::from("User has no public den".to_string()))
+    };
+
+    let mut pack = utils::helpers::get_links_and_load_type::<app_definition::Group>(&username_address, LinkMatch::Exactly("group"), LinkMatch::Exactly("pack"))?;
+    let mut user_perspective = utils::helpers::get_links_and_load_type::<app_definition::Perspective>(&username_address, LinkMatch::Exactly("perspective"), LinkMatch::Exactly(""))?; 
+    //In return type we are just using perspective at index 0 - this will get hairy when more perspectives are created - unless the default perspective is returned always as the first element
+    //but for now it works
+    Ok(JuntoUser{profile: profile.remove(0), username: username, private_den: private_den, shared_den: shared_den.unwrap(), public_den: public_den.unwrap(), pack: pack.remove(0), user_perspective: user_perspective.remove(0)})
 }
 
 //Get methods 

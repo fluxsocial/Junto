@@ -18,10 +18,10 @@ const mainConfig = Config.gen(
             }
         },
         // use a sim2h network
-        network: {
-            type: 'sim2h',
-            sim2h_url: 'wss://sim2h.holochain.org:9000',
-        },
+        // network: {
+        //     type: 'sim2h',
+        //     sim2h_url: 'wss://sim2h.holochain.org:9000',
+        // },
     }
 );
   
@@ -55,7 +55,12 @@ orchestrator.registerScenario('Can register a profile and retrieve', async (s, t
     const get_user_data_by_agent_address = await user1.call('junto', 'user', 'get_user_data_by_agent_address', {})
     console.log("Get user data", get_user_data_by_agent_address) //should return username
     t.equal(JSON.stringify(get_user_data_by_agent_address), JSON.stringify(user1_res));
-    console.log("Completed get username by agent address\n\n\n")
+    console.log("Completed get user data by agent address\n\n\n")
+
+    const get_user_data_from_username_address = await user1.call('junto', 'user', 'get_user_data_from_username_address', {username_address: user1_res.Ok.username.address})
+    console.log("Get user data", get_user_data_from_username_address) //should return username
+    t.equal(JSON.stringify(get_user_data_from_username_address), JSON.stringify(user1_res));
+    console.log("Completed get user data by username address\n\n\n")
 });
 
 const report = orchestrator.run()
