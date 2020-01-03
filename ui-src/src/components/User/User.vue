@@ -22,10 +22,10 @@ export default {
     JuntoNav: Nav
   },
   mounted() {
-    this.userProfile();
+    this.userProfileOnInit();
   },
   methods: {
-    userProfile() {
+    userProfileOnInit() {
       getUserProfile(this);
     }
   }

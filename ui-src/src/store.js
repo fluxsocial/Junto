@@ -91,12 +91,6 @@ export const store = new Vuex.Store({
       state.profile = data.Ok.profile;
       state.username = data.Ok.username;
       state.user_perspective = data.Ok.user_perspective;
-    },
-    addProfileHolochainData(state, data) {
-      state.profile = data.Ok;
-    },
-    addUsernameHolochainData(state, data) {
-      state.username = data.Ok;
     }
   },
   actions: {
