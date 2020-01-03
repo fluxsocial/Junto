@@ -82,7 +82,9 @@ export const store = new Vuex.Store({
     //sync
     addUserHolochainData(state, data) {
       state.address = data.Ok.username.address;
-      state.private_den = data.Ok.private_den;
+      if (data.Ok.private_den != null) {
+        state.private_den = data.Ok.private_den;
+      };
       state.public_den = data.Ok.public_den;
       state.shared_den = data.Ok.shared_den;
       state.pack = data.Ok.pack;
