@@ -25,15 +25,15 @@
         <Dropdown
           name="notifs-nav-dropdown"
           class="navigation__top--notifs"
-          :items="notifItems"
-          icon="icon-moon"
+          :Items="notifItems"
+          Icon="icon-moon"
         />
 
         <Dropdown
           name="den-nav-dropdown"
           class="navigation__top--den"
-          :items="accountItems"
-          icon="icon-account"
+          :Items="accountItems"
+          Icon="icon-account"
         />
       </div>
       <slot name="navigationBorder"></slot>
