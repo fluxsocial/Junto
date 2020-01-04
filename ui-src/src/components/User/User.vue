@@ -22,7 +22,7 @@
 
 <script>
 import Nav from "./../Nav/Nav.vue";
-import getUserProfile from "./UserHttp.js";
+import userHttpMethods from "./UserHttp.js";
 
 export default {
   name: "User",
@@ -56,14 +56,15 @@ export default {
   },
   methods: {
     userProfileOnInit() {
+      let target_user_profile;
       if (this._props.address == "self" && this.$store.getters.getUsername == undefined){ //Check that we dont already have self data in store
         console.log("we do not have self data getting by agent address");
-        target_user_profile = getUserProfileByAgentAddress(this);
+        target_user_profile = userHttpMethods.getUserProfileByAgentAddress(this);
         this.username = target_user_profile.username;
         this.profile = target_user_profile.profile;
       } else if (this._props.address != "self") { //Looking for data on some target user
         console.log("getting profile of some target user");
-        target_user_profile = getUserProfileByUsernameAddress(this, this._props.address);
+        target_user_profile = userHttpMethods.getUserProfileByUsernameAddress(this, this._props.address);
         this.username = target_user_profile.username;
         this.profile = target_user_profile.profile;
       } else { //The user data is already in the store

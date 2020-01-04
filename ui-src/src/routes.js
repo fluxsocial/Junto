@@ -28,7 +28,7 @@ const checkSourceChain = async (to, from, next) => {
           console.log("User is already registered here is their metadata: ", result);
           next(next);
         } else {
-          next("/user/register");
+          next("/register");
         }
       }
     );
@@ -46,14 +46,6 @@ export const routes = [
     props: true,
     children: [
       {
-        path: "register",
-        component: Register
-      },
-      {
-        path: "account",
-        component: Account
-      },
-      {
         path: "den",
         component: Den,
         children: [
@@ -68,6 +60,10 @@ export const routes = [
         ]
       }
     ]
+  },
+  {
+    path: "/register",
+    component: Register
   },
   { path: "/pack", component: Pack, beforeEnter: checkSourceChain },
   { path: "/collective", component: Collective, beforeEnter: checkSourceChain },

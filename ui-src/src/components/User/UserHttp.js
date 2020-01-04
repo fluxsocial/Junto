@@ -20,7 +20,7 @@ function getUserProfileByAgentAddress(template) {
                     duration: 5000
                 });
                 setTimeout(function() {
-                    template.$router.push("/user/register");
+                    template.$router.push("/register");
                 }, 5000);
             }
         }
