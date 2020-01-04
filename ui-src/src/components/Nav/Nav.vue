@@ -58,15 +58,11 @@ export default {
         },
         {
           text: "Public Den",
-          url: "/user/den/public"
+          url: "/user/self/den/public"
         },
         {
           text: "Private Den",
-          url: "/user/den/private"
-        },
-        {
-          text: "Log Out",
-          url: "/user/logout"
+          url: "/user/self/den/private"
         }
       ],
       notifItems: [
