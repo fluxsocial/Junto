@@ -54,7 +54,7 @@ export default {
       accountItems: [
         {
           text: "Profile",
-          url: "/user"
+          url: "/user/self"
         },
         {
           text: "Public Den",

@@ -82,7 +82,7 @@ Error: {Err:  {Error Type: 'Error Message'} }
 ###### Request: 
 ```
 Endpoint: /get_user_data_by_agent_address
-Arguments:
+Arguments: {username_address: address}
 ```
 
 ###### Response: 

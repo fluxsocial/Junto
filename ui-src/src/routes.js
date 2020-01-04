@@ -40,9 +40,10 @@ const checkSourceChain = async (to, from, next) => {
 export const routes = [
   { path: "/", component: Collective, beforeEnter: checkSourceChain },
   {
-    path: "/user",
+    path: "/user/:address",
     component: User,
     beforeEnter: checkSourceChain,
+    props: true,
     children: [
       {
         path: "register",
