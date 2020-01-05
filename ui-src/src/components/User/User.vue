@@ -15,7 +15,6 @@
     {{ profile.entry.last_name }}
     {{ profile.entry.bio }}
     {{ profile.entry.profile_picture }}
-    {{ profile.entry.verified }}
   </div>
   </section>
 </template>
