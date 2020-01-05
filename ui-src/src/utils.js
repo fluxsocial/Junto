@@ -21,21 +21,6 @@ export const makeHolochainCall = function makeHolochainCall(
   });
 };
 
-export const makeHolochainCallAndReturn = function makeHolochainCallAndReturn(
-  connection,
-  zome,
-  func,
-  params,
-) {
-  return connection.then(({ callZome }) => {
-    return callZome(
-      Settings.InstanceId,
-      zome,
-      func
-    )(params);
-  });
-};
-
 export const isSuccess = function isSuccess(data) {
   if ("Ok" in data) {
     return true;

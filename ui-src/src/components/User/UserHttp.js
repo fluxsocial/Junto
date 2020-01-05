@@ -29,11 +29,12 @@ function getUserProfileByAgentAddress(template) {
 }
 
 function getUserProfileByUsernameAddress(template, target_address) {
-    makeHolochainCallAndReturn(
+    return makeHolochainCall(
         template.$store.getters.getHolochainConnection,
         "user",
         "get_user_data_by_agent_address",
-        {username_address: target_address}).then(result => {
+        {username_address: target_address},
+        result => {
             if (isSuccess(result) == true) {
                 console.log("great success on getting user profile: ", result);
                 return result;
@@ -50,7 +51,7 @@ function getUserProfileByUsernameAddress(template, target_address) {
                     template.$router.push("/");
                 }, 5000);
             }
-        });
+        })
 }
 
 export default {getUserProfileByAgentAddress, getUserProfileByUsernameAddress};
