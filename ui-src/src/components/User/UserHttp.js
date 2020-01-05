@@ -1,4 +1,4 @@
-import { makeHolochainCall, isSuccess, makeHolochainCallAndReturn } from "./../../utils";
+import { isSuccess, makeHolochainCallAndReturn } from "./../../utils";
 
 function getUserProfileByAgentAddress(template) {
     return makeHolochainCallAndReturn(

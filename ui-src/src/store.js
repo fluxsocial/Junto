@@ -91,6 +91,9 @@ export const store = new Vuex.Store({
       state.profile = data.Ok.profile;
       state.username = data.Ok.username;
       state.user_perspective = data.Ok.user_perspective;
+    },
+    addUserPackData(state, data) {
+      state.pack = data.Ok;
     }
   },
   actions: {
