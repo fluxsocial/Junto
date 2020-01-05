@@ -41,6 +41,7 @@ function getUserProfileByUsernameAddress(template, target_address) {
         {username_address: target_address})
     .then(
         result => {
+            result = JSON.parse(result);
             if (isSuccess(result) == true) {
                 console.log("great success on getting user profile: ", result);
                 return result;
