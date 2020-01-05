@@ -3,7 +3,6 @@ import Collective from "./components/Collective/Collective.vue";
 import LotusOpen from "./components/Lotus/LotusOpen/LotusOpen.vue";
 import User from "./components/User/User";
 import Register from "./components/User/Register/Register";
-import Account from "./components/User/Account/Account";
 import Den from "./components/User/Den/Den.vue";
 import PublicDen from "./components/User/Den/Public/PublicDen";
 import PrivateDen from "./components/User/Den/Private/PrivateDen";

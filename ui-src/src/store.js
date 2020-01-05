@@ -13,66 +13,66 @@ const privacy_types = {
 
 export const store = new Vuex.Store({
   state: {
-    address: String,
+    address: null,
     private_den: {
-      address: String,
+      address: null,
       entry: {
-        parent: String,
-        name: String,
-        privacy: String,
-        channel_type: String
+        parent: null,
+        name: null,
+        privacy: null,
+        channel_type: null
       }
     },
     public_den: {
-      address: String,
+      address: null,
       entry: {
-        parent: String,
-        name: String,
-        privacy: String,
-        channel_type: String
+        parent: null,
+        name: null,
+        privacy: null,
+        channel_type: null
       }
     },
     shared_den: {
-      address: String,
+      address: null,
       entry: {
-        parent: String,
-        name: String,
-        privacy: String,
-        channel_type: String
+        parent: null,
+        name: null,
+        privacy: null,
+        channel_type: null
       }
     },
     pack: {
-      address: String,
+      address: null,
       entry: {
-        name: String,
-        owner: String,
-        privacy: String
+        name: null,
+        owner: null,
+        privacy: null
       }
     },
     profile: {
-      address: String,
+      address: null,
       entry: {
-        parent: String,
-        first_name: String,
-        last_name: String,
-        bio: String,
-        profile_picture: String,
-        verified: Boolean
+        parent: null,
+        first_name: null,
+        last_name: null,
+        bio: null,
+        profile_picture: null,
+        verified: null
       }
     },
     username: {
-      address: String,
+      address: null,
       entry: {
-        username: String
+        username: null
       }
     },
     user_perspective: {
-      address: String,
+      address: null,
       entry: {
-        parent: String,
-        name: String,
-        privacy: String,
-        channel_type: String
+        parent: null,
+        name: null,
+        privacy: null,
+        channel_type: null
       }
     },
     nav_bar_location: Number,

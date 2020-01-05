@@ -12,7 +12,28 @@ export const makeHolochainCall = function makeHolochainCall(
       Settings.InstanceId,
       zome,
       func
-    )(params).then(result => callback(JSON.parse(result)));
+    )(params).then(result => {
+      console.log("got result", result);
+      callback(JSON.parse(result))
+    })
+    .catch(err => {
+      console.log("It failed", err);
+    });
+  });
+};
+
+export const makeHolochainCallAndReturn = function makeHolochainCallAndReturn(
+  connection,
+  zome,
+  func,
+  params,
+) {
+  return connection.then(({ callZome }) => {
+    return callZome(
+      Settings.InstanceId,
+      zome,
+      func
+    )(params);
   });
 };
 

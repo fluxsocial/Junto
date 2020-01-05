@@ -33,20 +33,20 @@ export default {
   data: function() {
     return {
       username: {
-        address: String,
+        address: null,
         entry: {
-          username: String
+          username: null
         }
       },
       profile: {
-        address: String,
+        address: null,
         entry: {
-          parent: String,
-          first_name: String,
-          last_name: String,
-          bio: String,
-          profile_picture: String,
-          verified: Boolean
+          parent: null,
+          first_name: null,
+          last_name: null,
+          bio: null,
+          profile_picture: null,
+          verified: null
         }
       },
     }
@@ -56,19 +56,18 @@ export default {
   },
   methods: {
     userProfileOnInit() {
-      let target_user_profile;
-      if (this._props.address == "self" && this.$store.getters.getUsername == undefined){ //Check that we dont already have self data in store
+      if (this._props.address == "self" && this.$store.getters.getUsername.address == null){ //Check that we dont already have self data in store
         console.log("we do not have self data getting by agent address");
-        target_user_profile = userHttpMethods.getUserProfileByAgentAddress(this);
-        this.username = target_user_profile.username;
-        this.profile = target_user_profile.profile;
+        userHttpMethods.getUserProfileByAgentAddress(this);
+        this.username = this.$store.getters.getUsername;
+        this.profile = this.$store.getters.getProfile;
       } else if (this._props.address != "self") { //Looking for data on some target user
         console.log("getting profile of some target user");
-        target_user_profile = userHttpMethods.getUserProfileByUsernameAddress(this, this._props.address);
-        this.username = target_user_profile.username;
-        this.profile = target_user_profile.profile;
+        let profile = userHttpMethods.getUserProfileByUsernameAddress(this, this._props.address);
+        this.username = profile.username;
+        this.profile = profile.profile;
       } else { //The user data is already in the store
-        console.log("we already have the profile data in store");
+        console.log("we already have the profile data in store", this.$store.getters.getUsername, this.$store.getters.getProfile);
         this.username = this.$store.getters.getUsername;
         this.profile = this.$store.getters.getProfile;
       };
