@@ -13,7 +13,6 @@ export const makeHolochainCall = function makeHolochainCall(
       zome,
       func
     )(params).then(result => {
-      console.log("got result", result);
       callback(JSON.parse(result))
     })
     .catch(err => {
