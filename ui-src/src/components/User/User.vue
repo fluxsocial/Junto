@@ -59,7 +59,6 @@ export default {
       if (this._props.address == "self" && this.$store.getters.getUsername.address == null){ //Check that we dont already have self data in store
         console.log("we do not have self data getting by agent address");
         userHttpMethods.getUserProfileByAgentAddress(this).then(result => { //These two closures do not work
-          console.log("returned data", data);
           this.username = result.Ok.username;
           this.profile = result.Ok.profile;
         });

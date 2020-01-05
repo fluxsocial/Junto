@@ -1,12 +1,14 @@
 import { makeHolochainCall, isSuccess, makeHolochainCallAndReturn } from "./../../utils";
 
 function getUserProfileByAgentAddress(template) {
-    return makeHolochainCall(
+    return makeHolochainCallAndReturn(
         template.$store.getters.getHolochainConnection,
         "user",
         "get_user_data_by_agent_address",
-        {},
+        {})
+    .then(
         result => {
+            result = JSON.parse(result);
             if (isSuccess(result) == true) {
                 console.log("(getUserProfileByAgentAddress) great success on getting user profile: ", result);
                 template.$store.commit("addUserHolochainData", result);
@@ -25,15 +27,19 @@ function getUserProfileByAgentAddress(template) {
                 }, 5000);
             }
         }
-    );
+    )
+    .catch(err => {
+        console.log("It failed", err);
+    });
 }
 
 function getUserProfileByUsernameAddress(template, target_address) {
-    return makeHolochainCall(
+    return makeHolochainCallAndReturn(
         template.$store.getters.getHolochainConnection,
         "user",
         "get_user_data_by_agent_address",
-        {username_address: target_address},
+        {username_address: target_address})
+    .then(
         result => {
             if (isSuccess(result) == true) {
                 console.log("great success on getting user profile: ", result);
@@ -51,7 +57,11 @@ function getUserProfileByUsernameAddress(template, target_address) {
                     template.$router.push("/");
                 }, 5000);
             }
-        })
+        }
+    )
+    .catch(err => {
+        console.log("It failed", err);
+    });
 }
 
 export default {getUserProfileByAgentAddress, getUserProfileByUsernameAddress};
