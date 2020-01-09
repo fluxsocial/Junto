@@ -2,6 +2,8 @@ import Vue from "vue";
 import Vuex from "vuex";
 import { connect } from "@holochain/hc-web-client";
 import { Settings } from "./settings.js";
+import VuexPersistence from "vuex-persist";
+import Cookies from "js-cookie";
 
 Vue.use(Vuex);
 
@@ -11,7 +13,58 @@ const privacy_types = {
   Public: "Public"
 };
 
-export const store = new Vuex.Store({
+const vuexLocalStorage = new VuexPersistence({
+  key: "myLocalStore",
+  storage: localStorage,
+  reducer: state => ({
+    userProfilePicture: state.user.profile.entry.profile_picture,
+    userProfileBio: state.user.profile.entry.bio,
+    base: state.base
+  })
+});
+
+const vuexCookie = new VuexPersistence({
+  key: "cookieStore",
+  restoreState: (key, storage) => Cookies.getJSON(key),
+  saveState: (key, state, storage) =>
+    Cookies.set(key, state, {
+      expires: 3,
+      secure: false
+    }),
+  //Only include user module within cookies -- minus profile(character length exceeds limit)
+  reducer: state => ({
+    userAddress: state.user.address,
+    userPrivateDen: state.user.private_den,
+    userPublicDen: state.user.public_den,
+    userSharedDen: state.user.shared_den,
+    userPack: state.user.pack,
+    userUsername: state.user.username,
+    userUserPerspective: state.user.user_perspective,
+    userProfile: {
+      address: state.user.profile.address,
+      entry: {
+        first_name: state.user.profile.entry.first_name,
+        last_name: state.user.profile.entry.last_name,
+        verified: state.user.profile.entry.verified
+      }
+      
+    }
+  })
+  // filter: (mutation) => mutation.type == "addUserHolochainData"
+});
+
+const baseModule = {
+  state: {
+    nav_bar_location: Number,
+    holochain_connection: connect({ url: Settings.Uri }) //Here connections is happening via settings - in the future when migration to holoscape occurs this will be blank and it can infer the url from holoscape
+  },
+  getters: {
+    getState: state => state,
+    getHolochainConnection: state => state.holochain_connection
+  }
+};
+
+const userModule = {
   state: {
     address: null,
     private_den: {
@@ -74,9 +127,7 @@ export const store = new Vuex.Store({
         privacy: null,
         channel_type: null
       }
-    },
-    nav_bar_location: Number,
-    holochain_connection: connect({ url: Settings.Uri }) //Here connections is happening via settings - in the future when migration to holoscape occurs this will be blank and it can infer the url from holoscape
+    }
   },
   mutations: {
     //sync
@@ -84,7 +135,7 @@ export const store = new Vuex.Store({
       state.address = data.Ok.username.address;
       if (data.Ok.private_den != null) {
         state.private_den = data.Ok.private_den;
-      };
+      }
       state.public_den = data.Ok.public_den;
       state.shared_den = data.Ok.shared_den;
       state.pack = data.Ok.pack;
@@ -108,7 +159,13 @@ export const store = new Vuex.Store({
     getProfile: state => state.profile,
     getUsername: state => state.username,
     getUserPerspective: state => state.user_perspective,
-    getState: state => state,
-    getHolochainConnection: state => state.holochain_connection
   }
+};
+
+export const store = new Vuex.Store({
+  modules: {
+    base: baseModule,
+    user: userModule
+  },
+  plugins: [vuexCookie.plugin, vuexLocalStorage.plugin]
 });
