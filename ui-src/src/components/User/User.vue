@@ -8,14 +8,16 @@
       />
       <div slot="navigationBorder" class="navigation__border"></div>
     </JuntoNav>
-    <router-view />
     <div>
       {{ username.entry.username }}
       {{ profile.entry.first_name }}
       {{ profile.entry.last_name }}
       {{ profile.entry.bio }}
-      {{ profile.entry.profile_picture }}
     </div>
+    <div>
+      <img :src="profile.entry.profile_picture" />
+    </div>
+    <router-view />
   </section>
 </template>
 
@@ -54,7 +56,7 @@ export default {
   created() {
     console.log(
       "Within created() lifecycle hook, here's cookies: ",
-      Cookies.getJSON('cookieStore')    //JSON.parse method throws error when cookies is empty
+      Cookies.getJSON("cookieStore") //JSON.parse method throws error when cookies is empty
     );
   },
   mounted() {
@@ -86,7 +88,7 @@ export default {
         //The user data is already in the store or cookies
         console.log("we already have the profile data in store or cookies");
         if (this.$store.getters.getUsername.address === null) {
-					//Get majority of user profile from cookie storage
+          //Get majority of user profile from cookie storage
           const cookieStore = Cookies.getJSON("cookieStore");
           const getUsernameCookie = cookieStore.userUsername;
           const getProfileCookie = cookieStore.userProfile;
@@ -95,9 +97,11 @@ export default {
 
           //Get profile_picture and bio from window.localStorage
           if (localStorage.getItem("myLocalStore") !== null) {
-            const browserStorage = JSON.parse(localStorage.getItem("myLocalStore"));
+            const browserStorage = JSON.parse(
+              localStorage.getItem("myLocalStore")
+            );
             this.profile.entry.profile_picture =
-						browserStorage.userProfilePicture;
+              browserStorage.userProfilePicture;
             this.profile.entry.bio = browserStorage.userProfileBio;
           }
         } else {

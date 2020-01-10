@@ -6,14 +6,20 @@
       <div class="sidebar__pack">
         <p class="sidebar__pack--active">&nbsp;</p>
         <img
-          src="./../../../assets/img/junto-web__eric.png" 
+          src="./../../../assets/img/junto-web__eric.png"
           alt=""
           class="sidebar__pack--profile"
-        /> <!--These should be icons and not images - there are no images for packs in the holochain app currently-->
+        />
+        <!--These should be icons and not images - there are no images for packs in the holochain app currently-->
         <p class="sidebar__pack--name">{{ user_pack.entry.name }}</p>
       </div>
-      
-      <div class="sidebar__pack" v-for="item of joined_packs"> {{ item.entry.name }}>
+
+      <div
+        v-for="item of joined_packs"
+        :key="item.entry.name"
+        class="sidebar__pack"
+      >
+        {{ item.entry.name }}>
         <img
           src="./../../../assets/img/junto-web__eric.png"
           alt=""
@@ -43,7 +49,7 @@ export default {
         }
       },
       joined_packs: []
-    }
+    };
   },
   mounted() {
     this.getPacks();
@@ -55,22 +61,24 @@ export default {
         this.current_users_username_address = result.Ok.username.address;
       } else {
         this.current_users_username_address = this.$store.getters.getUsername.address;
-      };
+      }
     },
 
     async getPacks() {
       await this.hasUsernameAddress();
       //Gets own pack of current user
       if (this.$store.getters.getPack.address == null) {
-        packHttpMethods.getUsersPack(this, this.current_users_username_address).then(result => {
-          this.user_pack = result.Ok;
-        });
+        packHttpMethods
+          .getUsersPack(this, this.current_users_username_address)
+          .then(result => {
+            this.user_pack = result.Ok;
+          });
       } else {
         this.user_pack = this.$store.getters.getPack;
-      };
+      }
 
       //Here get the packs the user has joined
-    },
+    }
   }
 };
 </script>

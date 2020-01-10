@@ -31,7 +31,7 @@ const vuexCookie = new VuexPersistence({
       expires: 3,
       secure: false
     }),
-  //Only include user module within cookies -- minus profile(character length exceeds limit)
+  //Only include user module within cookies -- minus profile_picture and bio(character length exceeds limit)
   reducer: state => ({
     userAddress: state.user.address,
     userPrivateDen: state.user.private_den,
@@ -47,7 +47,6 @@ const vuexCookie = new VuexPersistence({
         last_name: state.user.profile.entry.last_name,
         verified: state.user.profile.entry.verified
       }
-      
     }
   })
   // filter: (mutation) => mutation.type == "addUserHolochainData"
@@ -158,7 +157,7 @@ const userModule = {
     getPack: state => state.pack,
     getProfile: state => state.profile,
     getUsername: state => state.username,
-    getUserPerspective: state => state.user_perspective,
+    getUserPerspective: state => state.user_perspective
   }
 };
 
