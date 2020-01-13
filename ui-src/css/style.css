@@ -242,6 +242,74 @@ body {
       color: #555;
       font-weight: 600; }
 
+.lotusHeader {
+  height: 6rem;
+  width: 100%;
+  background-color: white;
+  border-bottom: 1px solid #eee;
+  z-index: 1000; }
+  .lotusHeader__content {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between; }
+  .lotusHeader__expressionType {
+    font-size: 1.7rem;
+    font-weight: 500;
+    color: #555; }
+  .lotusHeader__create {
+    display: flex;
+    align-items: center; }
+    .lotusHeader__create--channels {
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: #555; }
+    .lotusHeader__create--button {
+      background-color: white;
+      color: #555;
+      font-weight: 500;
+      font-size: 1.4rem;
+      padding: .75rem 2rem;
+      border: 2px solid #555;
+      border-radius: 2px;
+      margin-left: 1.5rem;
+      cursor: pointer;
+      transition: all .2s; }
+      .lotusHeader__create--button:hover {
+        background-color: #555;
+        color: white; }
+
+.lotusFooter {
+  height: 10rem;
+  width: 100%;
+  background-color: white;
+  border-top: 1px solid #eee;
+  z-index: 1000; }
+  .lotusFooter__content {
+    height: 100%;
+    width: 100%;
+    padding: 0 4rem;
+    display: flex;
+    align-items: center; }
+  .lotusFooter__lotus {
+    height: 8rem;
+    width: 8rem;
+    margin-right: 2rem;
+    cursor: pointer; }
+  .lotusFooter__expression {
+    height: 3rem;
+    width: 3rem;
+    border-radius: 100px;
+    border: 2px solid #555;
+    margin-right: 2rem;
+    outline: none;
+    cursor: pointer; }
+    .lotusFooter__expression--story {
+      border: 2px solid #307FAB; }
+    .lotusFooter__expression--shortform {
+      border: 2px solid #A46BCC; }
+
 .canvas {
   width: 100%;
   min-height: 100vh;
@@ -402,74 +470,6 @@ body {
       color: #333;
       font-weight: 500; }
 
-.lotusHeader {
-  height: 6rem;
-  width: 100%;
-  background-color: white;
-  border-bottom: 1px solid #eee;
-  z-index: 1000; }
-  .lotusHeader__content {
-    height: 100%;
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between; }
-  .lotusHeader__expressionType {
-    font-size: 1.7rem;
-    font-weight: 500;
-    color: #555; }
-  .lotusHeader__create {
-    display: flex;
-    align-items: center; }
-    .lotusHeader__create--channels {
-      font-size: 1.4rem;
-      font-weight: 500;
-      color: #555; }
-    .lotusHeader__create--button {
-      background-color: white;
-      color: #555;
-      font-weight: 500;
-      font-size: 1.4rem;
-      padding: .75rem 2rem;
-      border: 2px solid #555;
-      border-radius: 2px;
-      margin-left: 1.5rem;
-      cursor: pointer;
-      transition: all .2s; }
-      .lotusHeader__create--button:hover {
-        background-color: #555;
-        color: white; }
-
-.lotusFooter {
-  height: 10rem;
-  width: 100%;
-  background-color: white;
-  border-top: 1px solid #eee;
-  z-index: 1000; }
-  .lotusFooter__content {
-    height: 100%;
-    width: 100%;
-    padding: 0 4rem;
-    display: flex;
-    align-items: center; }
-  .lotusFooter__lotus {
-    height: 8rem;
-    width: 8rem;
-    margin-right: 2rem;
-    cursor: pointer; }
-  .lotusFooter__expression {
-    height: 3rem;
-    width: 3rem;
-    border-radius: 100px;
-    border: 2px solid #555;
-    margin-right: 2rem;
-    outline: none;
-    cursor: pointer; }
-    .lotusFooter__expression--story {
-      border: 2px solid #307FAB; }
-    .lotusFooter__expression--shortform {
-      border: 2px solid #A46BCC; }
-
 .den {
   height: 100vh;
   width: 100vw; }
@@ -541,10 +541,6 @@ body {
       color: #333;
       font-weight: 500;
       margin-top: .5rem; }
-
-.pack {
-  height: 100vh;
-  width: 100vw; }
 
 .register {
   display: flex;
@@ -775,6 +771,99 @@ body {
         height: 220px;
         border-top-left-radius: 0;
         border-bottom-left-radius: 0; } }
+
+.profile {
+  display: flex; }
+  .profile--card-container {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: center;
+    padding: 50px 15px;
+    width: 100%; }
+    .profile--card-container .profile--card {
+      width: 75%;
+      min-height: 400px;
+      display: flex;
+      flex-flow: row wrap;
+      box-shadow: 1px 1px 2px 2px #eee; }
+      .profile--card-container .profile--card-content-left {
+        width: 55%;
+        height: auto;
+        min-height: 100%;
+        position: relative;
+        background-image: url("./../../../src/assets/img/junto-web__sacred.png");
+        background-size: cover;
+        background-repeat: no-repeat;
+        border-top-left-radius: 5px;
+        border-bottom-left-radius: 5px; }
+      .profile--card-container .profile--card-content-right {
+        width: 45%;
+        background: #eee;
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: center;
+        justify-content: space-evenly;
+        padding: 50px 25px; }
+        .profile--card-container .profile--card-content-right .profile--info {
+          display: flex;
+          flex-flow: column nowrap;
+          justify-content: space-evenly;
+          align-items: center;
+          font-size: 14px; }
+          .profile--card-container .profile--card-content-right .profile--info-name {
+            font-size: 24px;
+            font-weight: 900; }
+          .profile--card-container .profile--card-content-right .profile--info-bio {
+            quotes: '\201c' '\201d';
+            font-style: italic; }
+            .profile--card-container .profile--card-content-right .profile--info-bio::before {
+              content: open-quote; }
+            .profile--card-container .profile--card-content-right .profile--info-bio::after {
+              content: close-quote; }
+        .profile--card-container .profile--card-content-right .profile--stats {
+          display: flex;
+          flex-flow: row wrap;
+          justify-content: space-evenly;
+          align-items: center;
+          width: 100%;
+          font-size: 18px; }
+          .profile--card-container .profile--card-content-right .profile--stats-item {
+            display: flex;
+            flex-flow: column nowrap;
+            align-items: center;
+            justify-content: space-evenly; }
+        .profile--card-container .profile--card-content-right .profile--links {
+          display: flex;
+          flex-flow: row wrap;
+          justify-content: space-evenly;
+          align-items: center;
+          width: 100%; }
+          .profile--card-container .profile--card-content-right .profile--links-btn-container {
+            width: 50%;
+            min-width: 150px;
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: center; }
+            .profile--card-container .profile--card-content-right .profile--links-btn-container .btn {
+              border: none;
+              border-radius: 24px;
+              text-align: center;
+              background-color: #307FAB;
+              color: #fff;
+              font-size: 14px;
+              font-weight: 500;
+              padding: 5px 15px;
+              text-decoration: none;
+              box-shadow: 0px 2px 6px -1px rgba(0, 0, 0, 0.13);
+              transition: all .3s ease; }
+              .profile--card-container .profile--card-content-right .profile--links-btn-container .btn:hover {
+                cursor: pointer;
+                transform: translateY(-3px);
+                box-shadow: 0 2px 6px -1px rgba(48, 127, 171, 0.65); }
+
+.pack {
+  height: 100vh;
+  width: 100vw; }
 
 .nav-dropdown-container {
   cursor: pointer;

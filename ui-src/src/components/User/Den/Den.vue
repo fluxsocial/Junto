@@ -5,11 +5,11 @@
     <div class="den__content">
       <div class="den__backdrop">
         <div class="den__backdrop--details">
-          <p class="den__backdrop--name">Eric Yang</p>
-          <p class="den__backdrop--handle">@sunyata</p>
+          <p class="den__backdrop--name">{{ profile.entry.first_name }} {{ profile.entry.last_name}}</p>
+          <p class="den__backdrop--handle">@{{ username.entry.username }}</p>
           <div class="den__backdrop--shortbio">
             <p class="den__backdrop--shortbio--text">
-              "to a mind that is still, the whole universe surrenders"
+              "{{ profile.entry.bio}}"
             </p>
           </div>
         </div>
@@ -29,8 +29,8 @@
         <div class="den__profile">
           <div class="den__profile--picture">
             <img
-              src="./../../../assets/img/junto-web__eric.png"
-              alt=""
+              :src="profile.entry.profile_picture"
+              alt="Profile Picture"
               class="den__profile--picture--photo"
             />
           </div>
@@ -56,6 +56,11 @@ import Lotus from "./../../Lotus/Lotus.vue";
 export default {
   components: {
     juntoLotus: Lotus
+  },
+  props: {
+    //See structure of username & profile props in User.vue data()
+    username: Object,
+    profile: Object
   }
 };
 </script>

@@ -1,0 +1,118 @@
+.profile {
+    display: flex;
+
+    &--card-container {
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: center;
+        padding: 50px 15px;
+        width: 100%;
+
+        .profile--card {
+            width: 75%;
+            min-height: 400px;
+            display: flex;
+            flex-flow: row wrap;
+            box-shadow: 1px 1px 2px 2px #eee;
+
+            &-content-left {
+                width: 55%;
+                height: auto;
+                min-height: 100%;
+                position: relative;
+                background-image: url("./../../../src/assets/img/junto-web__sacred.png");
+                background-size: cover;
+                background-repeat: no-repeat;
+                border-top-left-radius: 5px;
+                border-bottom-left-radius: 5px;
+            }
+
+            &-content-right {
+                width: 45%;
+                background: $junto-grey-2;
+                display: flex;
+                flex-flow: column nowrap;
+                align-items: center;
+                justify-content: space-evenly;
+                padding: 50px 25px;
+
+                .profile--info {
+                    display: flex;
+                    flex-flow: column nowrap;
+                    justify-content: space-evenly;
+                    align-items: center;
+                    font-size: 14px;
+
+                    &-name {
+                        font-size: 24px;
+                        font-weight: 900;
+                    }
+
+                    &-bio {
+                        quotes: '\201c' '\201d';
+                        font-style: italic;
+
+                        &::before {
+                            content: open-quote;
+                        }
+                        &::after {
+                            content: close-quote;
+                        }
+                    }
+                }
+
+                .profile--stats {
+                    display: flex;
+                    flex-flow: row wrap;
+                    justify-content: space-evenly;
+                    align-items: center;
+                    width: 100%;
+                    font-size: 18px;
+
+                    &-item {
+                        display: flex;
+                        flex-flow: column nowrap;
+                        align-items: center;
+                        justify-content: space-evenly;
+                    }
+                }
+
+                .profile--links {
+                    display: flex;
+                    flex-flow: row wrap;
+                    justify-content: space-evenly;
+                    align-items: center;
+                    width: 100%;
+
+                    &-btn-container {
+                        width: 50%;
+                        min-width: 150px;
+                        display: flex;
+                        flex-flow: row wrap;
+                        justify-content: center;
+
+                        .btn {
+                            border: none;
+                            border-radius: 24px;
+                            text-align: center;
+                            background-color: $junto-primary;
+                            color: #fff;
+                            font-size: 14px;
+                            font-weight: 500;
+                            padding: 5px 15px;
+                            text-decoration: none;
+                            box-shadow: 0px 2px 6px -1px rgba(0, 0, 0, 0.13);
+                            transition: all .3s ease;
+
+                            &:hover {
+                                cursor: pointer;
+                                transform:  translateY(-3px);
+                                box-shadow:  0 2px 6px -1px rgba($junto-primary, .65);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

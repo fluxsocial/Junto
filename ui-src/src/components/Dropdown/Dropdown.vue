@@ -1,12 +1,12 @@
 <template>
   <div class="nav-dropdown-container">
     <svg class="navigation__top--icon">
-      <use :xlink:href="'../../../src/assets/img/sprite.svg#' + Icon"></use>
+      <use :xlink:href="'../../../src/assets/img/sprite.svg#' + icon"></use>
     </svg>
     <div class="dropdown">
       <ul class="dropdown__list">
         <router-link
-          v-for="item in Items"
+          v-for="item in items"
           :key="item.text"
           tag="li"
           class="dropdown__list--item"
@@ -23,11 +23,11 @@
 export default {
   name: "Dropdown",
   props: {
-    Items: {
+    items: {
       type: Array,
       required: true
     },
-    Icon: {
+    icon: {
       type: String,
       required: true
     }

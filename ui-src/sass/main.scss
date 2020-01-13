@@ -8,13 +8,20 @@
 @import './../src/components/Lotus/LotusExpressions/LotusStory/LotusStory';
 @import './../src/components/Lotus/LotusExpressions/LotusShortform/LotusShortform';
 @import './../src/components/Lotus/LotusExpressions/LotusBullet/LotusBullet';
-@import './../src/components/Canvas/Canvas';
-@import './../src/components/Sidebar/SidebarCollective/SidebarCollective';
-@import './../src/components/Sidebar/SidebarPack/SidebarPack';
 @import './../src/components/Lotus/LotusHeader/LotusHeader';
 @import './../src/components/Lotus/LotusFooter/LotusFooter';
 
+@import './../src/components/Canvas/Canvas';
+
+@import './../src/components/Sidebar/SidebarCollective/SidebarCollective';
+@import './../src/components/Sidebar/SidebarPack/SidebarPack';
+
 @import './../src/components/User/Den/Den';
-@import './../src/components/Pack/Pack';
+@import './../src/components/User/Den/Private/PrivateDen';
+@import './../src/components/User/Den/Public/PublicDen';
 @import './../src/components/User/Register/Register';
+@import './../src/components/User/Profile/Profile';
+
+@import './../src/components/Pack/Pack';
+
 @import './../src/components/Dropdown/Dropdown';

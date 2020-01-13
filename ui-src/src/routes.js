@@ -1,11 +1,12 @@
 import Pack from "./components/Pack/Pack.vue";
 import Collective from "./components/Collective/Collective.vue";
 import LotusOpen from "./components/Lotus/LotusOpen/LotusOpen.vue";
-import User from "./components/User/User";
-import Register from "./components/User/Register/Register";
+import User from "./components/User/User.vue";
+import Register from "./components/User/Register/Register.vue";
 import Den from "./components/User/Den/Den.vue";
-import PublicDen from "./components/User/Den/Public/PublicDen";
-import PrivateDen from "./components/User/Den/Private/PrivateDen";
+import PublicDen from "./components/User/Den/Public/PublicDen.vue";
+import PrivateDen from "./components/User/Den/Private/PrivateDen.vue";
+import Profile from "./components/User/Profile/Profile.vue";
 import NotFound from "./components/NotFound/404.vue";
 
 import { makeHolochainCall, isSuccess } from "./utils.js";

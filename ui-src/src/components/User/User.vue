@@ -8,16 +8,11 @@
       />
       <div slot="navigationBorder" class="navigation__border"></div>
     </JuntoNav>
+    
     <div>
-      {{ username.entry.username }}
-      {{ profile.entry.first_name }}
-      {{ profile.entry.last_name }}
-      {{ profile.entry.bio }}
+      <Profile :username="username" :profile="profile" :address="this._props.address" />
     </div>
-    <div>
-      <img :src="profile.entry.profile_picture" />
-    </div>
-    <router-view />
+    <router-view :username="username" :profile="profile" />
   </section>
 </template>
 
@@ -25,11 +20,13 @@
 import Nav from "./../Nav/Nav.vue";
 import userHttpMethods from "./UserHttp.js";
 import Cookies from "js-cookie";
+import Profile from "./Profile/Profile.vue";
 
 export default {
   name: "User",
   components: {
-    JuntoNav: Nav
+    JuntoNav: Nav,
+    Profile: Profile
   },
   props: ["address"],
   data() {
@@ -64,10 +61,12 @@ export default {
   },
   methods: {
     userProfileOnInit() {
+      const cookieStore = Cookies.getJSON("cookieStore");
+
       if (
         this._props.address == "self" &&
         this.$store.getters.getUsername.address == null &&
-        Cookies.get("cookieStore") == undefined
+        cookieStore ==  undefined
       ) {
         //Check that we dont already have self data in store
         console.log("we do not have self data getting by agent address");
@@ -89,7 +88,6 @@ export default {
         console.log("we already have the profile data in store or cookies");
         if (this.$store.getters.getUsername.address === null) {
           //Get majority of user profile from cookie storage
-          const cookieStore = Cookies.getJSON("cookieStore");
           const getUsernameCookie = cookieStore.userUsername;
           const getProfileCookie = cookieStore.userProfile;
           this.username = getUsernameCookie;
