@@ -787,23 +787,44 @@ body {
       flex-flow: row wrap;
       box-shadow: 1px 1px 2px 2px #eee; }
       .profile--card-container .profile--card-content-left {
-        width: 55%;
+        width: 45%;
         height: auto;
         min-height: 100%;
         position: relative;
-        background-image: url("./../../../src/assets/img/junto-web__sacred.png");
-        background-size: cover;
-        background-repeat: no-repeat;
         border-top-left-radius: 5px;
-        border-bottom-left-radius: 5px; }
+        border-bottom-left-radius: 5px;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: center;
+        align-items: center; }
+        .profile--card-container .profile--card-content-left .profile-picture {
+          border: 4px solid #333;
+          border-radius: 50%;
+          width: 300px;
+          height: 300px;
+          object-fit: contain;
+          background-color: #333; }
+          .profile--card-container .profile--card-content-left .profile-picture:hover {
+            cursor: pointer;
+            border: 4px solid #307FAB; }
       .profile--card-container .profile--card-content-right {
-        width: 45%;
+        width: 55%;
         background: #eee;
         display: flex;
         flex-flow: column nowrap;
         align-items: center;
         justify-content: space-evenly;
         padding: 50px 25px; }
+        .profile--card-container .profile--card-content-right .profile--edit {
+          display: flex;
+          justify-content: flex-end;
+          width: 100%;
+          margin-top: -15%; }
+          .profile--card-container .profile--card-content-right .profile--edit .edit-icon {
+            max-width: 30px;
+            max-height: 30px; }
+            .profile--card-container .profile--card-content-right .profile--edit .edit-icon:hover {
+              cursor: pointer; }
         .profile--card-container .profile--card-content-right .profile--info {
           display: flex;
           flex-flow: column nowrap;
