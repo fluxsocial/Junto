@@ -3,15 +3,18 @@
         <div class="profile--card-container">
             <div class="profile--card">
                 <div class="profile--card-content-left">
-                    <vue-avatar 
-                        style="width: 100%; height: 100%; display: none;"
-                        :rotation="rotation"
-                        :scale="scale"
-                        :ref="profile.entry.profile_picture"
-                        @vue-avatar-editor:image-ready="onImageReady"
-                    >
-                    </vue-avatar>
-                    <img :src="profile.entry.profile_picture" class="profile-picture" />
+                    <div class="avatar-editor-container" style="width: 100%; height: 100%; display: none;" ref="avatarEditorContainer">
+                        <vue-avatar 
+                            :rotation="rotation"
+                            :scale="scale"
+                            :borderRadius="borderRadius"
+                            ref="avatarEditor"
+                            @vue-avatar-editor:image-ready="onImageReady"
+                            class="avatar-editor"
+                        />
+                        <button v-on:click="saveProfilePicture()">Save</button>
+                    </div>
+                    <img :src="profile.entry.profile_picture" class="profile-picture" ref="profilePicture" v-on:click="editProfilePicture()" />
                 </div>
                 <div class="profile--card-content-right">
                     <div class="profile--edit">
@@ -75,7 +78,8 @@ export default {
     data() {
         return {
             rotation: 0,
-            scale: 1
+            scale: 1,
+            borderRadius: 150
         }
     },
     methods: {
@@ -84,6 +88,27 @@ export default {
         },
         editProfile() {
             console.log("Editing profile info");
+        },
+        editProfilePicture() {
+            console.log("Editing profile picture");
+            const avatarEditorContainer = this.$refs.avatarEditorContainer;
+            const avatarEditor = this.$refs.avatarEditor;
+            const profilePictureEl = this.$refs.profilePicture;
+            avatarEditorContainer.style.display = "block";
+            profilePictureEl.style.display = "none";
+            avatarEditor.clicked();
+
+            console.log(avatarEditor);
+        },
+        saveProfilePicture() {
+            console.log("saving profile picture");
+            let img = this.$refs.avatarEditor.getImageScaled();
+            const profilePictureEl = this.$refs.profilePicture;
+            profilePictureEl.src = img.toDataURL();
+            profilePictureEl.style.display = "block";
+            
+            const avatarEditorContainer = this.$refs.avatarEditorContainer;
+            avatarEditorContainer.style.display = "none";
         }
     }
 }

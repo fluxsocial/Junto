@@ -53,16 +53,19 @@
                 align-items: center;
                 justify-content: space-evenly;
                 padding: 50px 25px;
+                position: relative;
 
                 .profile--edit {
                     display: flex;
                     justify-content: flex-end;
                     width: 100%;
-                    margin-top: -15%;
+                    position: absolute;
+                    top: 15px;
+                    right: 15px;
 
                     .edit-icon {
-                        max-width: 30px;
-                        max-height: 30px;
+                        max-width: 20px;
+                        max-height: 20px;
 
                         &:hover {
                             cursor: pointer;

@@ -814,15 +814,18 @@ body {
         flex-flow: column nowrap;
         align-items: center;
         justify-content: space-evenly;
-        padding: 50px 25px; }
+        padding: 50px 25px;
+        position: relative; }
         .profile--card-container .profile--card-content-right .profile--edit {
           display: flex;
           justify-content: flex-end;
           width: 100%;
-          margin-top: -15%; }
+          position: absolute;
+          top: 15px;
+          right: 15px; }
           .profile--card-container .profile--card-content-right .profile--edit .edit-icon {
-            max-width: 30px;
-            max-height: 30px; }
+            max-width: 20px;
+            max-height: 20px; }
             .profile--card-container .profile--card-content-right .profile--edit .edit-icon:hover {
               cursor: pointer; }
         .profile--card-container .profile--card-content-right .profile--info {
