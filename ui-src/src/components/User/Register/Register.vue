@@ -76,11 +76,7 @@
             <label for="bio">Write something for your bio:</label>
           </div>
         </div>
-        <div class="register__submit register__form__child">
-          <button class="btn register__submit__btn" @click="registerHttp()">
-            Join Junto
-          </button>
-        </div>
+        <Button :method="registerHttp" text="Join Junto" activeClass="register__submit register__form__child" />
       </form>
     </div>
   </section>
@@ -88,10 +84,13 @@
 
 <script>
 import registerUser from "./RegisterHttp.js";
+import Button from "../../Button/Button";
 
 export default {
   name: "Register",
-  components: {},
+  components: {
+    Button
+  },
   data() {
     return {
       userData: {

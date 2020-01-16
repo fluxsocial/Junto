@@ -73,33 +73,7 @@
         flex-flow: row nowrap;
         justify-content: flex-end;
         
-        &__btn {
-            -webkit-appearance:  none; 
-            width:  auto;
-            min-width:  100px;
-            border-radius:  24px; 
-            text-align:  center; 
-            padding:  15px 40px;
-            margin-top:  5px; 
-            background-color:  saturate($junto-primary, 30%); 
-            color:  #fff; 
-            font-size:  14px;
-            margin-left:  auto; 
-            font-weight:  500; 
-            box-shadow:  0px 2px 6px -1px rgba(0,0,0,.13); 
-            border:  none;
-            transition:  all .3s ease; 
-            outline: 0; 
-    
-            &:hover {
-                cursor: pointer;
-                transform:  translateY(-3px);
-                box-shadow:  0 2px 6px -1px rgba($junto-primary, .65);
-                &:active {
-                transform:  scale(.99);
-                }
-            }
-        }
+        
     }
     
 

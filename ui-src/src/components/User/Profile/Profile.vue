@@ -12,7 +12,7 @@
                             @vue-avatar-editor:image-ready="onImageReady"
                             class="avatar-editor"
                         />
-                        <button v-on:click="saveProfilePicture()">Save</button>
+                        <Button :method="saveProfilePicture" text="Save" activeClass="test-button-here" />
                     </div>
                     <img :src="profile.entry.profile_picture" class="profile-picture" ref="profilePicture" v-on:click="editProfilePicture()" />
                 </div>
@@ -44,16 +44,8 @@
                         </div>
                     </div>
                     <div class="profile--links">
-                        <div class="profile--links-btn-container">
-                            <router-link class="btn profile--links-public-btn" :to="address + `/den/public`">
-                                Public Den
-                            </router-link>
-                        </div>
-                        <div class="profile--links-btn-container">
-                            <router-link class="btn profile--links-private-btn" :to="address + `/den/private`">
-                                Private Den
-                            </router-link>
-                        </div>
+                        <Button :method="routeTo" text="Public Den" activeClass="profile--links-btn-container" url="publicDen" />
+                        <Button :method="routeTo" text="Private Den" activeClass="profile--links-btn-container" url="privateDen" />
                     </div>
                 </div>
             </div>
@@ -63,6 +55,7 @@
 
 <script>
 import profileHttpMethods from './ProfileHttp';
+import Button from '../../Button/Button';
 import { VueAvatar } from 'vue-avatar-editor-improved';
 
 export default {
@@ -73,7 +66,8 @@ export default {
         address: String
     },
     components: {
-        VueAvatar
+        VueAvatar,
+        Button
     },
     data() {
         return {
@@ -91,14 +85,12 @@ export default {
         },
         editProfilePicture() {
             console.log("Editing profile picture");
-            const avatarEditorContainer = this.$refs.avatarEditorContainer;
+            const avatarEditorContainer = this.$refs.avatarEditorContainer;      
             const avatarEditor = this.$refs.avatarEditor;
             const profilePictureEl = this.$refs.profilePicture;
-            avatarEditorContainer.style.display = "block";
+            avatarEditorContainer.style.display = "flex";
             profilePictureEl.style.display = "none";
             avatarEditor.clicked();
-
-            console.log(avatarEditor);
         },
         saveProfilePicture() {
             console.log("saving profile picture");
@@ -109,6 +101,10 @@ export default {
             
             const avatarEditorContainer = this.$refs.avatarEditorContainer;
             avatarEditorContainer.style.display = "none";
+        },
+        routeTo(toUrl) {
+            console.log("routing to... ", toUrl);
+            this.$router.push({name: toUrl});
         }
     }
 }
