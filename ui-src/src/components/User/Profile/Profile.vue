@@ -39,8 +39,10 @@
                             <span>2</span>
                         </div>
                         <div class="profile--stats-item stats-packs">
-                            <h6>Packs</h6>
-                            <span>3</span>
+                            <h6>Pack</h6>
+                            <span>
+                                <router-link :to="{name: 'pack'}">{{this.packName}}</router-link>
+                            </span>
                         </div>
                     </div>
                     <div class="profile--links">
@@ -57,6 +59,7 @@
 import profileHttpMethods from './ProfileHttp';
 import Button from '../../Button/Button';
 import { VueAvatar } from 'vue-avatar-editor-improved';
+import Cookies from "js-cookie";
 
 export default {
     name: "Profile", 
@@ -73,7 +76,8 @@ export default {
         return {
             rotation: 0,
             scale: 1,
-            borderRadius: 150
+            borderRadius: 150,
+            packName: String
         }
     },
     methods: {
@@ -105,7 +109,14 @@ export default {
         routeTo(toUrl) {
             console.log("routing to... ", toUrl);
             this.$router.push({name: toUrl});
+        },
+        renderPackData() {
+            this.packName = Cookies.getJSON("cookieStore").userPack.entry.name;
         }
+    },
+    mounted() {
+        this.renderPackData();
+        console.log("renderingComponentData now: ", this.packName);
     }
 }
 </script>

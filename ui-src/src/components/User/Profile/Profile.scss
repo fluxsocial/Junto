@@ -10,6 +10,7 @@
 
         .profile--card {
             width: 75%;
+            max-width: 850px;
             min-height: 400px;
             display: flex;
             flex-flow: row wrap;
@@ -118,6 +119,7 @@
                         flex-flow: column nowrap;
                         align-items: center;
                         justify-content: space-evenly;
+                        min-width: 90px;
                     }
                 }
 
