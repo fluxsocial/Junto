@@ -13,8 +13,8 @@ itertools = "0.8"
 regex = "*"
 multihash = "0.8.0"
 rust-base58 = "=0.0.4"
-hdk = "=0.0.38-alpha14"
-holochain_wasm_utils = "=0.0.38-alpha14"
+hdk = "=0.0.42-alpha5"
+holochain_wasm_utils = "=0.0.42-alpha5"
 strum_macros = "0.15.0"
 types = { path = "../../../../lib/types" }
 utils = { path = "../../../../lib/utils"}

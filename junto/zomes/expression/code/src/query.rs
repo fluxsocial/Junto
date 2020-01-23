@@ -192,7 +192,7 @@ pub fn attributes_to_index_string(attributes: Vec<String>) -> ZomeApiResult<Vec<
             times.push(attribute.clone());
         };
     };
-    channels.sort_by(|a, b| b.cmp(&a));;
+    channels.sort_by(|a, b| b.cmp(&a));
     if user.len() == 0 {user.push(".+?".to_string())}; //push "any" regex matcher to string
     if r#type.len() == 0 {r#type.push(".+?".to_string())};
     if (user.len() > 1) | (r#type.len() > 1) | (times.len() > 4) {return Err(ZomeApiError::from(String::from("Invalid query string")))};
