@@ -47,7 +47,12 @@ const vuexCookie = new VuexPersistence({
         last_name: state.user.profile.entry.last_name,
         verified: state.user.profile.entry.verified
       }
-    }
+    },
+    configDnaName: state.config.dna_name,
+    configDnaAddress: state.config.dna_address,
+    configAgentId: state.config.agent_id,
+    configAgentAddress: state.config.agent_address,
+    configCapRequest: state.config.cap_request
   })
   // filter: (mutation) => mutation.type == "addUserHolochainData"
 });
@@ -161,10 +166,44 @@ const userModule = {
   }
 };
 
+const configModule = {
+  state:{
+    dna_name: null,
+    dna_address: null,
+    agent_id: {
+      nick: null,
+      pub_sign_key: null
+    },
+    agent_address: null,
+    cap_request: {
+      cap_token: null,
+      provenance: null,
+    }
+  },
+  mutations: {
+    getConfigData(state, data) {
+      state.dna_name = data.Ok.dna_name,
+      state.dna_address = data.Ok.dna_address,
+      state.agent_id = data.Ok.agent_id,
+      state.agent_address = data.Ok.agent_address,
+      state.cap_request = data.Ok.cap_request
+    }
+  },
+  actions: {},
+  getters: {
+    getDnaName: state => state.dna_name,
+    getDnaAddress: state => state.dna_address,
+    getAgentId: state => state.agent_id,
+    getAgentAddress: state => state.agent_address,
+    getCapRequest: state => state.cap_request
+  }
+}
+
 export const store = new Vuex.Store({
   modules: {
     base: baseModule,
-    user: userModule
+    user: userModule,
+    config: configModule
   },
   plugins: [vuexCookie.plugin, vuexLocalStorage.plugin]
 });

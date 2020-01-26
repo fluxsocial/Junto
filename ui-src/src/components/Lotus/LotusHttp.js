@@ -39,6 +39,35 @@ function createExpression(template, expression_data, dna_address, channels) {
     });
 }
 
+function getEnv(template) {
+    return makeHolochainCallAndReturn(
+        template.$store.getters.getHolochainConnection,
+        "config",
+        "get_env",
+        {}
+    )
+        .then(result => {
+            result = JSON.parse(result);
+            if(isSuccess(result) == true) {
+                console.log("get_env endpoint success", result);
+                template.$store.commit("getConfigData", result);
+            } else {
+                console.log("get_env enpoint failed", result);
+                template.$notify({
+                    type: "error",
+                    group: "main", 
+                    title: "Error with get_env endpoint",
+                    text: result.Err,
+                    duration: 3000
+                })
+            }
+        })
+        .catch (err => {
+            console.log("get_env endpoint failed", err);
+        })
+}
+
 export default {
-  createExpression
-};
+    getEnv,
+    createExpression
+}
