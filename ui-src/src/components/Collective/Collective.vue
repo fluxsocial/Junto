@@ -19,15 +19,27 @@
     <junto-canvas>
       <!-- search -->
       <div slot="canvasSearch" class="canvas__search">
-        <input
-          type="text"
-          class="canvas__search--text"
-          placeholder="search channels"
-        />
+        <input type="text" class="canvas__search--text" placeholder="search channels" />
       </div>
 
       <!-- feed -->
-      <div slot="canvasFeed" class="canvas__feed"></div>
+      <div slot="canvasFeed" class="canvas__feed">
+        <div v-for="post in collectivePosts" :key="post.timestamp">
+          <div v-if="post.expression.entry.expression_type == 'ShortForm'">
+            <expression-top
+              :users_first_name="post.author_profile.entry.first_name"
+              :users_last_name="post.author_profile.entry.last_name"
+              :username="post.author_username.entry.username"
+            />
+            <short-form :shortFormData="{text: post.expression.entry.expression.ShortForm.body}" />
+            <expression-bottom :channels="post.channels" />
+          </div>
+          <div v-if="post.expression.entry.expression_type == 'LongForm'">
+            <long-form data />
+          </div>
+          <!-- <expression-view ="passPost(post)" ref="exp" /> -->
+        </div>
+      </div>
     </junto-canvas>
 
     <!-- create -->
@@ -45,7 +57,10 @@ import Nav from "./../Nav/Nav.vue";
 import Canvas from "./../Canvas/Canvas.vue";
 import SidebarCollective from "./../Sidebar/SidebarCollective/SidebarCollective.vue";
 import expressionViewerHttpMethods from "./../ExpressionViewer/ExpressionViewerHttp";
-import ExpressionView from "../ExpressionViewer/ExpressionView";
+import LongForm from "./../ExpressionViewer/LongForm/StoryPreview";
+import ShortForm from "./../ExpressionViewer/Shortform/Shortform";
+import ExpressionTop from "./../ExpressionViewer/ExpressionTop/ExpressionTop";
+import ExpressionBottom from "./../ExpressionViewer/ExpressionBottom/ExpressionBottom";
 
 export default {
   name: "Collective",
@@ -54,7 +69,10 @@ export default {
     juntoLotus: Lotus,
     juntoCanvas: Canvas,
     juntoSidebarCollective: SidebarCollective,
-    expressionView: ExpressionView
+    shortForm: ShortForm,
+    longForm: LongForm,
+    expressionTop: ExpressionTop,
+    expressionBottom: ExpressionBottom
   },
   data() {
     return {
@@ -94,7 +112,7 @@ export default {
         .then(result => {
           for (let i = 0; i < result.Ok.length; i++) {
             this.collectivePosts.push(result.Ok[i]);
-            console.log(this.collectivePosts);
+            console.log("Inside makeRandomCollectiveQuery", this.collectivePosts);
           }
         });
     }

@@ -30,6 +30,7 @@ function getExpression(
       result = JSON.parse(result);
       if (isSuccess(result) == true) {
         console.log("Great Success getting expressions", result);
+        return result;
       } else {
         console.log("Error getting expressions: ", result);
         template.$notify({

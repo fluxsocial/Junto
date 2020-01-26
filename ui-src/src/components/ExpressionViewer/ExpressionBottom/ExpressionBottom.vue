@@ -18,7 +18,7 @@
 export default {
     name: "ExpressionBottom",
     props: {
-        channels: []
+        channels: Array
     }
 }
 </script>>

@@ -7,6 +7,9 @@ $junto-third: #555555;
 $junto-grey: #333;
 $junto-grey-2: #eee;
 
+$shortform-background-1: #505055;
+$shortform-background-2: #c1c1c1;
+
 @mixin respond($breakpoint) {
     @if $breakpoint == phone {
         @media (max-width: 37.5em) {@content}; //600px
