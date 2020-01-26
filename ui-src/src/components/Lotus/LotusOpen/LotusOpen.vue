@@ -16,10 +16,8 @@
 
       <junto-lotus-story v-if="storyOpen"></junto-lotus-story>
       <junto-lotus-shortform v-if="shortformOpen"></junto-lotus-shortform>
-      <junto-lotus-bullet v-if="bulletOpen"></junto-lotus-bullet>
       <junto-lotus-photo v-if="photoOpen"></junto-lotus-photo>
       <junto-lotus-photo v-if="eventsOpen"></junto-lotus-photo>
-      <junto-lotus-photo v-if="musicOpen"></junto-lotus-photo>
     </div>
     <junto-lotus-footer>
       <svg
@@ -45,13 +43,6 @@
         @click="openShortform"
       ></button>
       <button
-        slot="lotusBullet"
-        class="lotusFooter__expression"
-        @click="openBullet"
-      >
-        &nbsp;
-      </button>
-      <button
         slot="lotusPhoto"
         class="lotusFooter__expression"
         @click="openPhoto"
@@ -65,13 +56,6 @@
       >
         &nbsp;
       </button>
-      <button
-        slot="lotusMusic"
-        class="lotusFooter__expression"
-        @click="openMusic"
-      >
-        &nbsp;
-      </button>
     </junto-lotus-footer>
   </div>
 </template>
@@ -82,10 +66,8 @@ import LotusHeader from "./../LotusHeader/LotusHeader.vue";
 import LotusFooter from "./../LotusFooter/LotusFooter.vue";
 import LotusStory from "./../LotusExpressions/LotusStory/LotusStory.vue";
 import LotusShortform from "./../LotusExpressions/LotusShortform/LotusShortform.vue";
-import LotusBullet from "./../LotusExpressions/LotusBullet/LotusBullet.vue";
 import LotusPhoto from "./../LotusExpressions/LotusPhoto/LotusPhoto.vue";
 import LotusEvents from "./../LotusExpressions/LotusEvents/LotusEvents.vue";
-import LotusMusic from "./../LotusExpressions/LotusMusic/LotusMusic.vue";
 
 export default {
   components: {
@@ -93,23 +75,29 @@ export default {
     juntoLotusFooter: LotusFooter,
     juntoLotusStory: LotusStory,
     juntoLotusShortform: LotusShortform,
-    juntoLotusBullet: LotusBullet,
     juntoLotusPhoto: LotusPhoto
   },
   data() {
     return {
       storyOpen: true,
       shortformOpen: false,
-      bulletOpen: false,
       photoOpen: false,
       eventsOpen: false,
-      musicOpen: false,
       expressionType: "STORY"
     };
   },
 
   methods: {
     createExpression() {
+      if (this.storyOpen == true) {
+
+      } else if (this.shortformOpen == true) {
+
+      } else if (this.photoOpen == true) {
+
+      } else if (this.eventsOpen == true) {
+
+      };
       console.log("I created an expression !");
     },
 
@@ -120,20 +108,16 @@ export default {
     openStory() {
       this.storyOpen = true;
       this.shortformOpen = false;
-      this.bulletOpen = false;
       this.photoOpen = false;
       this.eventsOpen = false;
-      this.musicOpen = false;
       this.expressionType = "STORY";
     },
 
     openShortform() {
       this.storyOpen = false;
       this.shortformOpen = true;
-      this.bulletOpen = false;
       this.photoOpen = false;
       this.eventsOpen = false;
-      this.musicOpen = false;
       this.expressionType = "SHORTFORM";
     },
 
@@ -143,34 +127,28 @@ export default {
       this.bulletOpen = true;
       this.photoOpen = false;
       this.eventsOpen = false;
-      this.musicOpen = false;
       this.expressionType = "BULLET";
     },
 
     openPhoto() {
       this.storyOpen = false;
       this.shortformOpen = false;
-      this.bulletOpen = false;
       this.photoOpen = true;
       this.eventsOpen = false;
-      this.musicOpen = false;
       this.expressionType = "PHOTO";
     },
 
     openEvents() {
       this.storyOpen = false;
       this.shortformOpen = false;
-      this.bulletOpen = false;
       this.photoOpen = false;
       this.eventsOpen = true;
-      this.musicOpen = false;
       this.expressionType = "EVENTS";
     },
 
     openMusic() {
       this.storyOpen = false;
       this.shortformOpen = false;
-      this.bulletOpen = false;
       this.photoOpen = false;
       this.eventsOpen = false;
       this.musicOpen = true;

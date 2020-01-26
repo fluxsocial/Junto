@@ -51,6 +51,7 @@
         cols="30"
         rows="10"
         class="lotusShortform__canvas--text"
+        v-model="text"
       ></textarea>
     </div>
   </div>
@@ -68,7 +69,8 @@ export default {
         { active: false },
         { active: false },
         { active: false }
-      ]
+      ],
+      text: ''
     };
   },
 
