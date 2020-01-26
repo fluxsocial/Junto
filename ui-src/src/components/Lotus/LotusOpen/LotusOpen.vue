@@ -139,16 +139,6 @@ export default {
       this.eventsOpen = false;
       this.expressionType = "SHORTFORM";
     },
-
-    openBullet() {
-      this.storyOpen = false;
-      this.shortformOpen = false;
-      this.bulletOpen = true;
-      this.photoOpen = false;
-      this.eventsOpen = false;
-      this.expressionType = "BULLET";
-    },
-
     openPhoto() {
       this.storyOpen = false;
       this.shortformOpen = false;
@@ -163,15 +153,6 @@ export default {
       this.photoOpen = false;
       this.eventsOpen = true;
       this.expressionType = "EVENTS";
-    },
-
-    openMusic() {
-      this.storyOpen = false;
-      this.shortformOpen = false;
-      this.photoOpen = false;
-      this.eventsOpen = false;
-      this.musicOpen = true;
-      this.expressionType = "MUSIC";
     }
   }
 };
