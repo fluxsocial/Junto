@@ -16,8 +16,6 @@ export default {
     longFormData: {
       title: String,
       body: String,
-      users_name: String,
-      username: String
     }
   }
 };

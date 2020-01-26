@@ -13,8 +13,6 @@ export default {
   name: "Shortform",
   props: {
     shortFormData: {
-      users_name: String,
-      username: String,
       text: String
     }
   }
