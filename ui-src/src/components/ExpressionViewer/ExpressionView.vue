@@ -37,10 +37,21 @@ export default {
 
   methods: {
     renderExpression(data) {
-      if (data.type == "ShortForm") {
+      if (data.expression.entry.expression_type == "ShortForm") {
         this.isShortForm = true;
-      } else if (data.type == "LongForm") {
+        this.shortFormData = {
+          text: data.expression.entry.expression.text,
+          users_name: data.author_profile.entry.first_name + " " + data.author_profile.entry.last_name,
+          username: data.author_username.entry.username
+        };
+      } else if (data.expression.entry.expression_type == "LongForm") {
         this.isLongForm = true;
+        this.shortFormData = {
+          title: data.expression.entry.expression.title,
+          body: data.expression.entry.expression.body,
+          users_name: data.author_profile.entry.first_name + " " + data.author_profile.entry.last_name,
+          username: data.author_username.entry.username
+        };
       }
     }
   }
