@@ -19,12 +19,15 @@
     <junto-canvas>
       <!-- search -->
       <div slot="canvasSearch" class="canvas__search">
-        <input type="text" class="canvas__search--text" placeholder="search channels" />
+        <input
+          type="text"
+          class="canvas__search--text"
+          placeholder="search channels"
+        />
       </div>
 
       <!-- feed -->
-      <div slot="canvasFeed" class="canvas__feed">
-      </div>
+      <div slot="canvasFeed" class="canvas__feed"></div>
     </junto-canvas>
 
     <!-- create -->
@@ -45,7 +48,7 @@ import expressionViewerHttpMethods from "./../ExpressionViewer/ExpressionViewerH
 import ExpressionView from "../ExpressionViewer/ExpressionView";
 
 export default {
-  name: "collective",
+  name: "Collective",
   components: {
     juntoNav: Nav,
     juntoLotus: Lotus,
@@ -56,7 +59,7 @@ export default {
   data() {
     return {
       collectivePosts: []
-    }
+    };
   },
   mounted() {
     this.makeRandomCollectiveQuery();
@@ -64,32 +67,36 @@ export default {
   methods: {
     sha256(message) {
       // encode as UTF-8
-      const msgBuffer = new TextEncoder('utf-8').encode(message);                    
+      const msgBuffer = new TextEncoder("utf-8").encode(message);
       // hash the message
-      const hashBuffer = crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashBuffer = crypto.subtle.digest("SHA-256", msgBuffer);
       // convert ArrayBuffer to Array
       const hashArray = Array.from(new Uint8Array(hashBuffer));
-      // convert bytes to hex string                  
-      const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
+      // convert bytes to hex string
+      const hashHex = hashArray
+        .map(b => ("00" + b.toString(16)).slice(-2))
+        .join("");
       return hashHex;
     },
     makeRandomCollectiveQuery() {
-      expressionViewerHttpMethods.getExpression(
-        this, 
-        "random",
-        [],
-        "FilterNew",
-        "ExpressionPost",
-        "And",
-        0,
-        this.sha256(Date.now()),
-        false
-      ).then(result => {
-        for(let i = 0; i < result.Ok.length; i++) {
-          this.collectivePosts.push(result.Ok[i]);
-          console.log(this.collectivePosts);
-        }
-      })
+      expressionViewerHttpMethods
+        .getExpression(
+          this,
+          "random",
+          [],
+          "FilterNew",
+          "ExpressionPost",
+          "And",
+          0,
+          this.sha256(Date.now()),
+          false
+        )
+        .then(result => {
+          for (let i = 0; i < result.Ok.length; i++) {
+            this.collectivePosts.push(result.Ok[i]);
+            console.log(this.collectivePosts);
+          }
+        });
     }
   }
 };
