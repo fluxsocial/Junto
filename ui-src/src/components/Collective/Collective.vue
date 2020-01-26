@@ -9,7 +9,7 @@
       />
       <!-- <div slot="navigationBottom" class="navigation__bottom navigation__bottom--collective">
                 <p class="navigation__bottom--space">JUNTO</p>
-            </div> -->
+      </div>-->
       <div slot="navigationBorder" class="navigation__border"></div>
     </junto-nav>
 
@@ -19,24 +19,17 @@
     <junto-canvas>
       <!-- search -->
       <div slot="canvasSearch" class="canvas__search">
-        <input
-          type="text"
-          class="canvas__search--text"
-          placeholder="search channels"
-        />
+        <input type="text" class="canvas__search--text" placeholder="search channels" />
       </div>
 
       <!-- feed -->
       <div slot="canvasFeed" class="canvas__feed">
-
         <!-- story expression -->
         <div class="canvas__expression canvas__photo">
           <!-- expression top -->
           <div class="canvas__expression--top">
             <div class="canvas__expression--profile">
-              <button class="canvas__expression--profile--picture">
-                &nbsp;
-              </button>
+              <button class="canvas__expression--profile--picture">&nbsp;</button>
 
               <div class="canvas__expression--profile--details">
                 <p class="canvas__expression--profile--name">Eric Yang</p>
@@ -48,11 +41,7 @@
 
           <!-- expression story -->
 
-          <img
-            src="./../../assets/img/junto-web__sacred.png"
-            alt=""
-            class="canvas__photo--photo"
-          />
+          <img src="./../../assets/img/junto-web__sacred.png" alt class="canvas__photo--photo" />
           <p class="canvas__photo--caption">Livin</p>
 
           <!-- expression bottom -->
@@ -74,9 +63,7 @@
           <!-- expression top -->
           <div class="canvas__expression--top">
             <div class="canvas__expression--profile">
-              <button class="canvas__expression--profile--picture">
-                &nbsp;
-              </button>
+              <button class="canvas__expression--profile--picture">&nbsp;</button>
 
               <div class="canvas__expression--profile--details">
                 <p class="canvas__expression--profile--name">Eric Yang</p>
@@ -108,17 +95,13 @@
             </div>
           </div>
         </div>
-
       </div>
-
     </junto-canvas>
 
     <!-- create -->
     <junto-lotus>
       <svg slot="lotusIcon" class="lotus__icon lotus__icon--collective">
-        <use
-          xlink:href="../../../src/assets/img/sprite.svg#icon-lotusicon"
-        ></use>
+        <use xlink:href="../../../src/assets/img/sprite.svg#icon-lotusicon" />
       </svg>
     </junto-lotus>
   </section>
@@ -132,11 +115,51 @@ import SidebarCollective from "./../Sidebar/SidebarCollective/SidebarCollective.
 import expressionViewerHttpMethods from "./../ExpressionViewer/ExpressionViewerHttp";
 
 export default {
+  name: "collective",
   components: {
     juntoNav: Nav,
     juntoLotus: Lotus,
     juntoCanvas: Canvas,
     juntoSidebarCollective: SidebarCollective
+  },
+  data() {
+    return {
+      collectivePosts: []
+    }
+  },
+  mounted() {
+    this.makeRandomCollectiveQuery();
+  },
+  methods: {
+    sha256(message) {
+      // encode as UTF-8
+      const msgBuffer = new TextEncoder('utf-8').encode(message);                    
+      // hash the message
+      const hashBuffer = crypto.subtle.digest('SHA-256', msgBuffer);
+      // convert ArrayBuffer to Array
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      // convert bytes to hex string                  
+      const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
+      return hashHex;
+    },
+    makeRandomCollectiveQuery() {
+      expressionViewerHttpMethods.getExpression(
+        this, 
+        "random",
+        [],
+        "FilterNew",
+        "ExpressionPost",
+        "And",
+        0,
+        this.sha256(Date.now()),
+        false
+      ).then(result => {
+        for(let i = 0; i < result.Ok.length; i++) {
+          this.collectivePosts.push(result.Ok[i]);
+          console.log(this.collectivePosts);
+        }
+      })
+    }
   }
 };
 </script>

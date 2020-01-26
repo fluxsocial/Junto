@@ -8,7 +8,8 @@ function getExpression(
   targetType,
   queryType,
   dos,
-  seed
+  seed,
+  resonations
 ) {
   return makeHolochainCallAndReturn(
     template.$store.getters.getHolochainConnection,
@@ -21,7 +22,8 @@ function getExpression(
       target_type: targetType,
       query_type: queryType,
       dos: dos,
-      seed: seed
+      seed: seed,
+      resonations: resonations
     }
   )
     .then(result => {
