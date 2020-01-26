@@ -17,7 +17,6 @@ use hdk::{
     }
 };
 
-
 define_zome! {
     entries: [
         types::config_definition::config_definition(),
