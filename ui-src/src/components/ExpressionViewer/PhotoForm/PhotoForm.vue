@@ -1,20 +1,23 @@
 <template>
-    <!-- shortform expression -->
-    <div class="canvas__expression canvas__story">
+    <!-- story expression -->
+    <div class="canvas__expression canvas__photo">
         <!-- expression top -->
         <div class="canvas__expression--top">
         <div class="canvas__expression--profile">
             <button class="canvas__expression--profile--picture">&nbsp;</button>
 
             <div class="canvas__expression--profile--details">
-            <p class="canvas__expression--profile--name">{{ users_name }}</p>
-            <p class="canvas__expression--profile--handle">{{ username }}</p>
+            <p class="canvas__expression--profile--name">Eric Yang</p>
+            <p class="canvas__expression--profile--handle">@sunyata</p>
             </div>
         </div>
+        <p class="canvas__expression--edit">edit</p>
         </div>
 
-        <!-- expression shortform -->
-        <p class="canvas__story--title">{{ text }}</p>
+        <!-- expression story -->
+
+        <img src="./../../assets/img/junto-web__sacred.png" alt class="canvas__photo--photo" />
+        <p class="canvas__photo--caption">Livin</p>
 
         <!-- expression bottom -->
         <div class="canvas__expression--bottom">
@@ -30,20 +33,3 @@
         </div>
     </div>
 </template>
-
-<script>
-import expressionViewerHttpMethods from "./../ExpressionViewerHttp";
-
-export default {
-  name: "Shortform",
-  data() {
-    return {
-    };
-  },
-  methods: {
-    renderShortForm() {
-
-    }
-  }
-};
-</script>
