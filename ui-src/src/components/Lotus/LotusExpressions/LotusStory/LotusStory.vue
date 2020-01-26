@@ -1,11 +1,11 @@
 <template>
   <div class="lotusStory">
     <input
+      v-model="title"
       type="text"
       class="lotusStory__title"
       placeholder="Title (optional)"
       maxlength="255"
-      v-model="title"
     />
     <div class="lotusStory__editor">
       <froala v-model="innerHtml" :tag="'textarea'" :config="config"></froala>

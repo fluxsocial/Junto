@@ -69,6 +69,7 @@ import LotusShortform from "./../LotusExpressions/LotusShortform/LotusShortform.
 import LotusPhoto from "./../LotusExpressions/LotusPhoto/LotusPhoto.vue";
 import LotusEvents from "./../LotusExpressions/LotusEvents/LotusEvents.vue";
 import LotusHttp from "../LotusHttp.js";
+import LotusShortformVue from "./../LotusExpressions/LotusShortform/LotusShortform.vue";
 
 export default {
   components: {
@@ -103,7 +104,8 @@ export default {
           expression_type: "LongForm"
         };
         console.log("Creating long form expression with", expression_data);
-        console.log("Sent expression to holochain with result",
+        console.log(
+          "Sent expression to holochain with result",
           LotusHttp.createExpression(
             this,
             expression_data,
@@ -111,7 +113,6 @@ export default {
             []
           )
         );
-
       } else if (this.shortformOpen == true) {
         let child = this.$children[2]; //This might not be the right way to do this
         let expression_data = {
@@ -134,7 +135,6 @@ export default {
             []
           )
         );
-
       } else if (this.photoOpen == true) {
       } else if (this.eventsOpen == true) {
       }

@@ -87,7 +87,7 @@
 </template>
 
 <script>
-import registerUser from "./RegisterHttp.js";
+import RegisterHttp from "./RegisterHttp.js";
 import Button from "../../Button/Button";
 
 export default {
@@ -109,7 +109,11 @@ export default {
   },
   methods: {
     registerHttp(event) {
-      registerUser(this, this.userData);
+      RegisterHttp.registerUser(this, this.userData);
+      RegisterHttp.getCurrentBitPrefix(this).then(result => {
+        console.log("Got current bit prefix", result);
+        RegisterHttp.updateCurrentBitPrefix(this, result.Ok);
+      });
     },
     processFile(event) {
       if (

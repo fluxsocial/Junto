@@ -60,7 +60,7 @@ const vuexCookie = new VuexPersistence({
 const baseModule = {
   state: {
     nav_bar_location: Number,
-    holochain_connection: connect({ url: Settings.Uri }) //Here connections is happening via settings - in the future when migration to holoscape occurs this will be blank and it can infer the url from holoscape
+    holochain_connection: connect({ url: Settings.Uri }) //Here connections is happening via settings - in the future when migration to holoscape occurs this will be blank and it can infer the url from holoscape right?
   },
   getters: {
     getState: state => state,
@@ -167,7 +167,7 @@ const userModule = {
 };
 
 const configModule = {
-  state:{
+  state: {
     dna_name: null,
     dna_address: null,
     agent_id: {
@@ -177,16 +177,16 @@ const configModule = {
     agent_address: null,
     cap_request: {
       cap_token: null,
-      provenance: null,
+      provenance: null
     }
   },
   mutations: {
     getConfigData(state, data) {
-      state.dna_name = data.Ok.dna_name,
-      state.dna_address = data.Ok.dna_address,
-      state.agent_id = data.Ok.agent_id,
-      state.agent_address = data.Ok.agent_address,
-      state.cap_request = data.Ok.cap_request
+      (state.dna_name = data.Ok.dna_name),
+        (state.dna_address = data.Ok.dna_address),
+        (state.agent_id = data.Ok.agent_id),
+        (state.agent_address = data.Ok.agent_address),
+        (state.cap_request = data.Ok.cap_request);
     }
   },
   actions: {},
@@ -197,7 +197,7 @@ const configModule = {
     getAgentAddress: state => state.agent_address,
     getCapRequest: state => state.cap_request
   }
-}
+};
 
 export const store = new Vuex.Store({
   modules: {

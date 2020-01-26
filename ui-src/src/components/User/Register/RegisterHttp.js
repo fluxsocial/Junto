@@ -1,4 +1,8 @@
-import { makeHolochainCall, isSuccess } from "../../../utils.js";
+import {
+  makeHolochainCall,
+  isSuccess,
+  makeHolochainCallAndReturn
+} from "../../../utils.js";
 
 function registerUser(template, userData) {
   makeHolochainCall(
@@ -34,4 +38,76 @@ function registerUser(template, userData) {
   );
 }
 
-export default registerUser;
+function getCurrentBitPrefix(template) {
+  return makeHolochainCallAndReturn(
+    template.$store.getters.getHolochainConnection,
+    "config",
+    "get_current_bit_prefix",
+    {}
+  )
+    .then(result => {
+      result = JSON.parse(result);
+      if (isSuccess(result) == true) {
+        console.log(
+          "(getCurrentBitPrefix) great success on getting current bit prefix: ",
+          result
+        );
+        return result;
+      } else {
+        console.log(
+          "(getCurrentBitPrefix) Error on getting current bit prefix: ",
+          result
+        );
+        template.$notify({
+          type: "error",
+          group: "main",
+          title: "There was an error retrieving current bit prefix. Error is: ",
+          text: result.Err.Internal,
+          duration: 5000
+        });
+      }
+    })
+    .catch(err => {
+      console.log("It failed", err);
+    });
+}
+
+function updateCurrentBitPrefix(template, bitPrefix) {
+  return makeHolochainCallAndReturn(
+    template.$store.getters.getHolochainConnection,
+    "config",
+    "update_bit_prefix",
+    { bit_prefix: bitPrefix }
+  )
+    .then(result => {
+      result = JSON.parse(result);
+      if (isSuccess(result) == true) {
+        console.log(
+          "(updateCurrentBitPrefix) great success on update bit prefix: ",
+          result
+        );
+        return result;
+      } else {
+        console.log(
+          "(updateCurrentBitPrefix) Error on update bit prefix: ",
+          result
+        );
+        template.$notify({
+          type: "error",
+          group: "main",
+          title: "There was an updating bit prefix. Error is: ",
+          text: result.Err.Internal,
+          duration: 5000
+        });
+      }
+    })
+    .catch(err => {
+      console.log("It failed", err);
+    });
+}
+
+export default {
+  registerUser,
+  getCurrentBitPrefix,
+  updateCurrentBitPrefix
+};

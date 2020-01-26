@@ -17,8 +17,8 @@ export default {
     initEnv() {
       console.log("this here: ", this);
       lotusHttpMethods.getEnv(this);
-      this.$router.push({name: "lotus"});
+      this.$router.push({ name: "lotus" });
     }
   }
-}
+};
 </script>
