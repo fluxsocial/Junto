@@ -91,9 +91,29 @@ export default {
 
   methods: {
     createExpression() {
-      let child = this.$children[2]; //This might not be the right way to do this
       if (this.storyOpen == true) {
+        let child = this.$children[1]; //This might not be the right way to do this
+        let expression_data = {
+          expression: {
+            LongForm: {
+              title: child.title,
+              body: child.innerHtml
+            }
+          },
+          expression_type: "LongForm"
+        };
+        console.log("Creating long form expression with", expression_data);
+        console.log("Sent expression to holochain with result",
+          LotusHttp.createExpression(
+            this,
+            expression_data,
+            this.$store.getters.getDnaAddress,
+            []
+          )
+        );
+
       } else if (this.shortformOpen == true) {
+        let child = this.$children[2]; //This might not be the right way to do this
         let expression_data = {
           expression: {
             ShortForm: {
@@ -114,6 +134,7 @@ export default {
             []
           )
         );
+
       } else if (this.photoOpen == true) {
       } else if (this.eventsOpen == true) {
       }

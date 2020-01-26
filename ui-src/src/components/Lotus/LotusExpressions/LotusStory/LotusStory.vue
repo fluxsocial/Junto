@@ -5,9 +5,10 @@
       class="lotusStory__title"
       placeholder="Title (optional)"
       maxlength="255"
+      v-model="title"
     />
     <div class="lotusStory__editor">
-      <froala :tag="'textarea'" :config="config"></froala>
+      <froala v-model="innerHtml" :tag="'textarea'" :config="config"></froala>
     </div>
   </div>
 </template>
@@ -16,6 +17,8 @@
 export default {
   data() {
     return {
+      innerHtml: "",
+      title: "",
       config: {
         charCounterCount: false,
         width: "100%",
@@ -45,21 +48,21 @@ export default {
         // autofocus: true,
         tableEditButtons: [""],
         placeholderText: "",
-        imageDefaultWidth: "100%",
-        imageEditButtons: [],
-        imageResize: false,
+        //imageDefaultWidth: "100%",
+        //imageEditButtons: [],
+        //imageResize: false,
         pastePlain: true,
-        videoEditButtons: [],
-        videoResize: false,
-        videoInsertButtons: [],
-        videoAllowedTypes: [],
-        videoMove: false,
-        videoUpload: false,
+        //videoEditButtons: [],
+        //videoResize: false,
+        //videoInsertButtons: [],
+        //videoAllowedTypes: [],
+        //videoMove: false,
+        //videoUpload: false,
         linkAlwaysBlank: true,
         linkEditButtons: [],
         linkText: false,
         linkInsertButtons: [],
-        quickInsertButtons: ["image", "video", "hr"],
+        quickInsertButtons: ["hr"],
         toolbarVisibleWithoutSelection: false,
         toolbarInline: true
         // fontFamily: {
