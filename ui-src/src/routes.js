@@ -41,7 +41,12 @@ const checkSourceChain = async (to, from, next) => {
 };
 
 export const routes = [
-  { path: "/", component: Collective, beforeEnter: checkSourceChain, name: "home" },
+  {
+    path: "/",
+    component: Collective,
+    beforeEnter: checkSourceChain,
+    name: "home"
+  },
   {
     path: "/user/:address",
     component: User,
@@ -70,8 +75,23 @@ export const routes = [
     path: "/register",
     component: Register
   },
-  { path: "/pack", component: Pack, beforeEnter: checkSourceChain, name:"pack" },
-  { path: "/collective", component: Collective, beforeEnter: checkSourceChain, name: "collective" },
-  { path: "/lotus", component: LotusOpen, beforeEnter: checkSourceChain, name: "lotus" },
+  {
+    path: "/pack",
+    component: Pack,
+    beforeEnter: checkSourceChain,
+    name: "pack"
+  },
+  {
+    path: "/collective",
+    component: Collective,
+    beforeEnter: checkSourceChain,
+    name: "collective"
+  },
+  {
+    path: "/lotus",
+    component: LotusOpen,
+    beforeEnter: checkSourceChain,
+    name: "lotus"
+  },
   { path: "*", component: NotFound, name: "notFound" }
 ];

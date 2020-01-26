@@ -76,7 +76,11 @@
             <label for="bio">Write something for your bio:</label>
           </div>
         </div>
-        <Button :method="registerHttp" text="Join Junto" activeClass="register__submit register__form__child" />
+        <Button
+          :method="registerHttp"
+          text="Join Junto"
+          active-class="register__submit register__form__child"
+        />
       </form>
     </div>
   </section>

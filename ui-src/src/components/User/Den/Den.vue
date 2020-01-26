@@ -5,11 +5,13 @@
     <div class="den__content">
       <div class="den__backdrop">
         <div class="den__backdrop--details">
-          <p class="den__backdrop--name">{{ profile.entry.first_name }} {{ profile.entry.last_name}}</p>
+          <p class="den__backdrop--name">
+            {{ profile.entry.first_name }} {{ profile.entry.last_name }}
+          </p>
           <p class="den__backdrop--handle">@{{ username.entry.username }}</p>
           <div class="den__backdrop--shortbio">
             <p class="den__backdrop--shortbio--text">
-              "{{ profile.entry.bio}}"
+              "{{ profile.entry.bio }}"
             </p>
           </div>
         </div>

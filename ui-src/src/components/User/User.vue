@@ -8,9 +8,13 @@
       />
       <div slot="navigationBorder" class="navigation__border"></div>
     </JuntoNav>
-    
+
     <div>
-      <Profile :username="username" :profile="profile" :address="this._props.address" />
+      <Profile
+        :username="username"
+        :profile="profile"
+        :address="this._props.address"
+      />
     </div>
     <router-view :username="username" :profile="profile" />
   </section>
@@ -66,7 +70,7 @@ export default {
       if (
         this._props.address == "self" &&
         this.$store.getters.getUsername.address == null &&
-        cookieStore ==  undefined
+        cookieStore == undefined
       ) {
         //Check that we dont already have self data in store
         console.log("we do not have self data getting by agent address");

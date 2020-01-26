@@ -47,11 +47,11 @@
     <div class="lotusShortform__canvas">
       <textarea
         id=""
+        v-model="text"
         name=""
         cols="30"
         rows="10"
         class="lotusShortform__canvas--text"
-        v-model="text"
       ></textarea>
     </div>
   </div>
@@ -70,7 +70,7 @@ export default {
         { active: false },
         { active: false }
       ],
-      text: ''
+      text: ""
     };
   },
 
@@ -122,6 +122,16 @@ export default {
       });
 
       this.backgrounds[5].active = true;
+    },
+
+    whichBackground() {
+      let index = 0;
+      for (let i = 0; i < this.backgrounds.length; i++) {
+        if (this.backgrounds[i].active == true) {
+          index = i;
+        }
+      }
+      return index;
     }
   }
 };

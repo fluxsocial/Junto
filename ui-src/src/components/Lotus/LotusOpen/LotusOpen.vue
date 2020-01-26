@@ -68,6 +68,7 @@ import LotusStory from "./../LotusExpressions/LotusStory/LotusStory.vue";
 import LotusShortform from "./../LotusExpressions/LotusShortform/LotusShortform.vue";
 import LotusPhoto from "./../LotusExpressions/LotusPhoto/LotusPhoto.vue";
 import LotusEvents from "./../LotusExpressions/LotusEvents/LotusEvents.vue";
+import LotusHttp from "../LotusHttp.js";
 
 export default {
   components: {
@@ -83,21 +84,39 @@ export default {
       shortformOpen: false,
       photoOpen: false,
       eventsOpen: false,
-      expressionType: "STORY"
+      expressionType: "STORY",
+      shortFormChild: undefined
     };
   },
 
   methods: {
     createExpression() {
+      let child = this.$children[2]; //This might not be the right way to do this
       if (this.storyOpen == true) {
-
       } else if (this.shortformOpen == true) {
-
+        let expression_data = {
+          expression: {
+            ShortForm: {
+              background: child.whichBackground().toString(),
+              body: child.text
+            }
+          },
+          expression_type: "ShortForm"
+        }; //Length of the text should be validated
+        console.log("Creating short form expression with", expression_data);
+        //Should not pass this but instead just the store object itself
+        console.log(
+          "Sent expression to holochain with result",
+          LotusHttp.createExpression(
+            this,
+            expression_data,
+            this.$store.getters.getDnaAddress,
+            []
+          )
+        );
       } else if (this.photoOpen == true) {
-
       } else if (this.eventsOpen == true) {
-
-      };
+      }
       console.log("I created an expression !");
     },
 
