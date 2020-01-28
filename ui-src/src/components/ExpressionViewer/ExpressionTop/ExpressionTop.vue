@@ -29,8 +29,10 @@ export default {
   },
   methods: {
     routeToProfile() {
+      console.log("props user_address: ", this.user_address);
+      console.log("cookie user_address: ", Cookies.getJSON("cookieStore"));
       if(this.user_address == Cookies.getJSON("cookieStore").userUsername.address) {
-        this.$router.push({name: 'user', query: {address: "self"}});
+        this.$router.push('/user/self');
       } else {
         this.$router.push({path: 'user', query: {address: this.user_address}});
       }
