@@ -5,8 +5,7 @@
 
     display: grid;
     grid-template-columns: repeat(9, minmax(10rem, 1fr)) repeat(3, 1fr);
-
-    transform: translateY(7rem);
+    grid-template-rows: 10rem auto;
 
     &__search {
         padding-left: 2rem;
@@ -70,18 +69,22 @@
                 border: 1px solid #333;
                 border-radius: 100px;
                 margin-right: 1rem;
+                cursor: pointer;
             }
 
             &--details {
                 display: flex;
                 flex-direction: column;
 
+                &:hover {
+                    cursor: pointer;
+                    text-decoration: underline;
+                }
             }
 
             &--name {
                 font-size: 1.4rem;
                 font-weight: 500;
-
             }
 
             &--handle {

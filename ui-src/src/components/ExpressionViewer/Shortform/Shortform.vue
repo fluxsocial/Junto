@@ -7,8 +7,6 @@
 </template>
 
 <script>
-import expressionViewerHttpMethods from "./../ExpressionViewerHttp";
-
 export default {
   name: "Shortform",
   props: {

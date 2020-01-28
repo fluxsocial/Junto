@@ -274,7 +274,7 @@ body {
   min-height: 100vh;
   display: grid;
   grid-template-columns: repeat(9, minmax(10rem, 1fr)) repeat(3, 1fr);
-  transform: translateY(7rem); }
+  grid-template-rows: 10rem auto; }
   .canvas__search {
     padding-left: 2rem;
     height: 6rem;
@@ -321,10 +321,14 @@ body {
         width: 4rem;
         border: 1px solid #333;
         border-radius: 100px;
-        margin-right: 1rem; }
+        margin-right: 1rem;
+        cursor: pointer; }
       .canvas__expression--profile--details {
         display: flex;
         flex-direction: column; }
+        .canvas__expression--profile--details:hover {
+          cursor: pointer;
+          text-decoration: underline; }
       .canvas__expression--profile--name {
         font-size: 1.4rem;
         font-weight: 500; }
@@ -355,6 +359,15 @@ body {
   .canvas__photo--caption {
     font-size: 1.4rem;
     color: #333; }
+
+.canvas__story--title {
+  font-size: 2rem;
+  font-weight: 500;
+  color: #333; }
+
+.canvas__story--body {
+  font-size: 1.4rem;
+  color: #333; }
 
 .sidebar {
   position: fixed;
@@ -879,3 +892,7 @@ body {
     box-shadow: 0 2px 6px -1px rgba(48, 127, 171, 0.65); }
     .btn:hover:active {
       transform: scale(0.99); }
+
+.expression-list {
+  width: 90%;
+  margin-bottom: 3rem; }

@@ -50,6 +50,7 @@ export const routes = [
   {
     path: "/user/:address",
     component: User,
+    name: "user",
     beforeEnter: checkSourceChain,
     props: true,
     children: [

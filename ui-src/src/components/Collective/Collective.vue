@@ -24,18 +24,26 @@
 
       <!-- feed -->
       <div slot="canvasFeed" class="canvas__feed">
-        <div v-for="post in collectivePosts" :key="post.timestamp">
+        <div class="expression-list" v-for="post in collectivePosts" :key="post.timestamp">
           <div v-if="post.expression.entry.expression_type == 'ShortForm'">
             <expression-top
               :users_first_name="post.author_profile.entry.first_name"
               :users_last_name="post.author_profile.entry.last_name"
               :username="post.author_username.entry.username"
+              :user_address="post.author_username.address"
             />
             <short-form :shortFormData="{text: post.expression.entry.expression.ShortForm.body}" />
             <expression-bottom :channels="post.channels" />
           </div>
           <div v-if="post.expression.entry.expression_type == 'LongForm'">
-            <long-form data />
+             <expression-top
+              :users_first_name="post.author_profile.entry.first_name"
+              :users_last_name="post.author_profile.entry.last_name"
+              :username="post.author_username.entry.username"
+              :user_address="post.author_username.address"
+            />
+            <long-form :longFormData="{title: post.expression.entry.expression.LongForm.title, body: post.expression.entry.expression.LongForm.body}" />
+            <expression-bottom :channels="post.channels" />
           </div>
           <!-- <expression-view ="passPost(post)" ref="exp" /> -->
         </div>
