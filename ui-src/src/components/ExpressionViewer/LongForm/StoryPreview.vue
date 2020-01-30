@@ -13,7 +13,7 @@ export default {
   props: {
     longFormData: {
       title: String,
-      body: String,
+      body: String
     }
   }
 };

@@ -5,6 +5,14 @@
         <p slot="expressionType" class="lotusHeader__expressionType">
           {{ expressionType }}
         </p>
+        <input
+          slot="lotusChannels"
+          type="text"
+          placeholder="Add Channels"
+          class="lotusHeader__create--channels"
+          v-on:keyup.enter="addChannel"
+          v-model="channel"
+        />
         <button
           slot="lotusCreate"
           class="lotusHeader__create--button"
@@ -26,9 +34,7 @@
         :class="{ storyActive: storyOpen, shortformActive: shortformOpen }"
         @click="closeLotus"
       >
-        <use
-          xlink:href="../../../src/assets/img/sprite.svg#icon-lotusicon"
-        ></use>
+        <use xlink:href="../../../src/assets/img/sprite.svg#icon-lotusicon" />
       </svg>
       <button
         slot="lotusStory"
@@ -86,11 +92,17 @@ export default {
       photoOpen: false,
       eventsOpen: false,
       expressionType: "STORY",
-      shortFormChild: undefined
+      shortFormChild: undefined,
+      channel: null,
+      channels: []
     };
   },
 
   methods: {
+    addChannel() {
+      this.channels.push(this.channel);
+      console.log("adding channels", this.channels);
+    },
     createExpression() {
       if (this.storyOpen == true) {
         let child = this.$children[1]; //This might not be the right way to do this
@@ -110,7 +122,7 @@ export default {
             this,
             expression_data,
             this.$store.getters.getDnaAddress,
-            []
+            this.channels
           )
         );
       } else if (this.shortformOpen == true) {

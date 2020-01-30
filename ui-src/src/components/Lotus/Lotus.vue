@@ -16,7 +16,6 @@ export default {
   name: "Lotus",
   methods: {
     initEnv() {
-      console.log("this here is the cooookies, enjoy: ", Cookies.getJSON("cookieStore"));
       lotusHttpMethods.getEnv(this);
       this.$router.push({ name: "lotus" });
     }

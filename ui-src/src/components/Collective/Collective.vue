@@ -19,12 +19,20 @@
     <junto-canvas>
       <!-- search -->
       <div slot="canvasSearch" class="canvas__search">
-        <input type="text" class="canvas__search--text" placeholder="search channels" />
+        <input
+          type="text"
+          class="canvas__search--text"
+          placeholder="search channels"
+        />
       </div>
 
       <!-- feed -->
       <div slot="canvasFeed" class="canvas__feed">
-        <div class="expression-list" v-for="post in collectivePosts" :key="post.timestamp">
+        <div
+          v-for="post in collectivePosts"
+          :key="post.timestamp"
+          class="expression-list"
+        >
           <div v-if="post.expression.entry.expression_type == 'ShortForm'">
             <expression-top
               :users_first_name="post.author_profile.entry.first_name"
@@ -32,17 +40,26 @@
               :username="post.author_username.entry.username"
               :user_address="post.author_username.address"
             />
-            <short-form :shortFormData="{text: post.expression.entry.expression.ShortForm.body}" />
+            <short-form
+              :short-form-data="{
+                text: post.expression.entry.expression.ShortForm.body
+              }"
+            />
             <expression-bottom :channels="post.channels" />
           </div>
           <div v-if="post.expression.entry.expression_type == 'LongForm'">
-             <expression-top
+            <expression-top
               :users_first_name="post.author_profile.entry.first_name"
               :users_last_name="post.author_profile.entry.last_name"
               :username="post.author_username.entry.username"
               :user_address="post.author_username.address"
             />
-            <long-form :longFormData="{title: post.expression.entry.expression.LongForm.title, body: post.expression.entry.expression.LongForm.body}" />
+            <long-form
+              :long-form-data="{
+                title: post.expression.entry.expression.LongForm.title,
+                body: post.expression.entry.expression.LongForm.body
+              }"
+            />
             <expression-bottom :channels="post.channels" />
           </div>
           <!-- <expression-view ="passPost(post)" ref="exp" /> -->
@@ -120,7 +137,10 @@ export default {
         .then(result => {
           for (let i = 0; i < result.Ok.length; i++) {
             this.collectivePosts.push(result.Ok[i]);
-            console.log("Inside makeRandomCollectiveQuery", this.collectivePosts);
+            console.log(
+              "Inside makeRandomCollectiveQuery",
+              this.collectivePosts
+            );
           }
         });
     }

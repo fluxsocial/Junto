@@ -223,7 +223,8 @@ body {
     .lotusHeader__create--channels {
       font-size: 1.4rem;
       font-weight: 500;
-      color: #555; }
+      color: #555;
+      cursor: pointer; }
     .lotusHeader__create--button {
       background-color: white;
       color: #555;
