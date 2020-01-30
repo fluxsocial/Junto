@@ -6,7 +6,7 @@
       <div class="sidebar__pack">
         <p class="sidebar__pack--active">&nbsp;</p>
         <img
-          src="./../../../assets/img/junto-web__eric.png"
+          :src="profile.entry.profile_picture"
           alt=""
           class="sidebar__pack--profile"
         />
@@ -34,12 +34,29 @@
 <script>
 import packHttpMethods from "../../Pack/PackHttp";
 import userHttpMethods from "../../User/UserHttp";
+import Cookies from "js-cookie";
 
 export default {
   name: "SidebarPack",
   data: function() {
     return {
-      current_users_username_address: null,
+      username: {
+        address: null,
+        entry: {
+          username: null
+        }
+      },
+      profile: {
+        address: null,
+        entry: {
+          parent: null,
+          first_name: null,
+          last_name: null,
+          bio: null,
+          profile_picture: null,
+          verified: null
+        }
+      },
       user_pack: {
         address: null,
         entry: {
@@ -48,7 +65,8 @@ export default {
           privacy: null
         }
       },
-      joined_packs: []
+      joined_packs: [],
+      cookieStore: Cookies.getJSON("cookieStore")
     };
   },
   mounted() {
@@ -56,11 +74,20 @@ export default {
   },
   methods: {
     async hasUsernameAddress() {
-      if (this.$store.getters.getUsername.address == null) {
+      if (this.$store.getters.getUsername.address == null && this.cookieStore == undefined) {
         let result = await userHttpMethods.getUserProfileByAgentAddress(this);
-        this.current_users_username_address = result.Ok.username.address;
+        this.username = result.Ok.username;
+        this.profile = result.Ok.profile;
+
+      } else if (this.cookieStore != undefined) {
+        const getUsernameCookie = this.cookieStore.userUsername;
+        const getProfileCookie = this.cookieStore.userProfile;
+        this.username = getUsernameCookie;
+        this.profile = getProfileCookie;
+
       } else {
-        this.current_users_username_address = this.$store.getters.getUsername.address;
+        this.username = this.$store.getters.getUsername;
+        this.profile = this.$store.getters.getProfile;
       }
     },
 
@@ -69,7 +96,7 @@ export default {
       //Gets own pack of current user
       if (this.$store.getters.getPack.address == null) {
         packHttpMethods
-          .getUsersPack(this, this.current_users_username_address)
+          .getUsersPack(this, this.username.address)
           .then(result => {
             this.user_pack = result.Ok;
           });
