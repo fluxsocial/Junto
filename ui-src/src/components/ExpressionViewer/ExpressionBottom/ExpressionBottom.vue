@@ -3,11 +3,11 @@
   <div class="canvas__expression--bottom">
     <div class="canvas__expression--channels">
       <!-- channels would be looped and rendered here -->
-      <div v-for="channel in channels" :key="channel">
-        <button class="canvas__expression--channel">{{channel.entry.value}}</button>
-      </div>
-      <button class="canvas__expression--channel">design</button>
-      <button class="canvas__expression--channel">philosophy</button>
+      <button
+        v-for="channel in channels"
+        :key="channel.entry.value"
+        class="canvas__expression--channel"
+      >{{channel.entry.value}}</button>
     </div>
 
     <div class="canvas__expression--responses">
