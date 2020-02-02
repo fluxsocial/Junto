@@ -11,8 +11,7 @@
     </div>
 
     <div class="canvas__expression--responses">
-      <button class="canvas__expression--resonate">&nbsp;</button>
-      <button class="canvas__expression--comment">&nbsp;</button>
+      <button class="canvas__expression--comment">Comment</button>
     </div>
   </div>
 </template>

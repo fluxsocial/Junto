@@ -3,6 +3,7 @@
     <div class="lotusHeader__content">
       <slot name="expressionType"></slot>
       <div class="lotusHeader__create">
+        <slot name="lotusChannelsPills"></slot>
         <slot name="lotusChannels"></slot>
         <slot name="lotusCreate"></slot>
       </div>

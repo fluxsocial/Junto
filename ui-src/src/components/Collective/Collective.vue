@@ -30,7 +30,7 @@
       <div slot="canvasFeed" class="canvas__feed">
         <div
           v-for="post in collectivePosts"
-          :key="post.timestamp"
+          :key="post.__ob__.dep.id"
           class="expression-list"
         >
           <div v-if="post.expression.entry.expression_type == 'ShortForm'">
@@ -62,7 +62,6 @@
             />
             <expression-bottom :channels="post.channels" />
           </div>
-          <!-- <expression-view ="passPost(post)" ref="exp" /> -->
         </div>
       </div>
     </junto-canvas>

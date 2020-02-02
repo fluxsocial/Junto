@@ -5,6 +5,14 @@
         <p slot="expressionType" class="lotusHeader__expressionType">
           {{ expressionType }}
         </p>
+        <div slot="lotusChannelsPills" class="lotusHeader__create--channels_pills">
+          <ul class="channel_pills">
+            <li v-for="channel in channels" :key="channel" class="channel_pills_item">
+              {{channel}}
+              <span class="remove-channel" @click="removeChannel">X</span>
+            </li>
+          </ul>
+        </div>
         <input
           slot="lotusChannels"
           type="text"
@@ -100,8 +108,22 @@ export default {
 
   methods: {
     addChannel() {
-      this.channels.push(this.channel);
+      if (this.channels.length >= 4) {
+        this.$notify({
+          type: "error",
+          group: "main",
+          title: "Too many channels tagged",
+          text: "You have reached the limit on channels tagged for this expression",
+          duration: 5000
+        });
+      } else {
+        this.channels.push(this.channel);
+        this.channel = "";
+      }
       console.log("adding channels", this.channels);
+    },
+    removeChannel() {
+      console.log("remove this channel from list");
     },
     createExpression() {
       if (this.storyOpen == true) {
@@ -144,7 +166,7 @@ export default {
             this,
             expression_data,
             this.$store.getters.getDnaAddress,
-            []
+            this.channels
           )
         );
       } else if (this.photoOpen == true) {

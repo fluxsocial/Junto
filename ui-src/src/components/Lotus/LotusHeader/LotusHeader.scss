@@ -20,6 +20,40 @@
         color: #555;
     }
 
+    &__create--channels_pills{
+
+        .channel_pills {
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: flex-end;
+            padding-left: 2rem;
+            padding-right: 2rem;
+            list-style: none;
+
+            &_item {
+                background-color: $junto-primary;
+                color: #fff;
+                border-radius: 25px;
+                padding: 7px 15px;
+                display: flex;
+                flex-flow: row nowrap;
+                justify-content: space-between;
+
+                .remove-channel {
+                    cursor: pointer;
+                }
+            }
+        }
+    }
+
+    &__create--channels{
+        border: none;
+
+        &:focus{
+            border-bottom: 1px solid $junto-primary;
+        }
+    }
+
     &__create {
         display: flex;
         align-items: center;

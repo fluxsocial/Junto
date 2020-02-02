@@ -217,6 +217,27 @@ body {
     font-size: 1.7rem;
     font-weight: 500;
     color: #555; }
+  .lotusHeader__create--channels_pills .channel_pills {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+    padding-left: 2rem;
+    padding-right: 2rem;
+    list-style: none; }
+    .lotusHeader__create--channels_pills .channel_pills_item {
+      background-color: #307FAB;
+      color: #fff;
+      border-radius: 25px;
+      padding: 7px 15px;
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-between; }
+      .lotusHeader__create--channels_pills .channel_pills_item .remove-channel {
+        cursor: pointer; }
+  .lotusHeader__create--channels {
+    border: none; }
+    .lotusHeader__create--channels:focus {
+      border-bottom: 1px solid #307FAB; }
   .lotusHeader__create {
     display: flex;
     align-items: center; }
@@ -896,4 +917,6 @@ body {
 
 .expression-list {
   width: 90%;
-  margin-bottom: 3rem; }
+  padding-bottom: 2rem;
+  margin-bottom: 3rem;
+  border-bottom: 1px solid #eee; }
