@@ -33,8 +33,7 @@ export default {
         this.$router.push("/user/self");
       } else {
         this.$router.push({
-          path: "user",
-          query: { address: this.user_address }
+          path: "user/" + this.user_address,
         });
       }
     }
