@@ -138,15 +138,15 @@ export default {
           expression_type: "LongForm"
         };
         console.log("Creating long form expression with", expression_data);
-        console.log(
-          "Sent expression to holochain with result",
-          LotusHttp.createExpression(
-            this,
-            expression_data,
-            this.$store.getters.getDnaAddress,
-            this.channels
-          )
-        );
+        LotusHttp.createExpression(
+          this,
+          expression_data,
+          this.$store.getters.getDnaAddress,
+          this.channels
+        ).then(result => {
+          console.log("Added expression to holochain with result", result);
+          this.$router.push('/');
+        });
       } else if (this.shortformOpen == true) {
         let child = this.$children[2]; //This might not be the right way to do this
         let expression_data = {
@@ -160,19 +160,19 @@ export default {
         }; //Length of the text should be validated
         console.log("Creating short form expression with", expression_data);
         //Should not pass this but instead just the store object itself
-        console.log(
-          "Sent expression to holochain with result",
-          LotusHttp.createExpression(
-            this,
-            expression_data,
-            this.$store.getters.getDnaAddress,
-            this.channels
-          )
-        );
+        LotusHttp.createExpression(
+          this,
+          expression_data,
+          this.$store.getters.getDnaAddress,
+          this.channels
+        ).then(result => {
+          console.log("Added expression to holochain with result", result);
+          this.$router.push('/');
+        });
       } else if (this.photoOpen == true) {
       } else if (this.eventsOpen == true) {
       }
-      console.log("I created an expression !");
+      console.log("Awaiting holochain response");
     },
 
     closeLotus() {
