@@ -22,6 +22,7 @@
               type="text"
               class="form-control"
               placeholder="First Name"
+              required="true"
             />
             <label for="firstName">First Name:</label>
           </div>
@@ -32,6 +33,7 @@
               type="text"
               class="form-control"
               placeholder="Last Name"
+              required="true"
             />
             <label for="lastName">Last Name:</label>
           </div>
@@ -42,6 +44,7 @@
               type="text"
               class="form-control"
               placeholder="Username"
+              required="true"
             />
             <label for="username">Username:</label>
           </div>
@@ -109,27 +112,52 @@ export default {
   data() {
     return {
       userData: {
-        username: "",
-        first_name: "",
-        last_name: "",
-        profile_picture: "",
-        bio: ""
+        username: null,
+        first_name: null,
+        last_name: null,
+        profile_picture: null,
+        bio: null
       },
       previewImg: null,
-      loading: false
+      loading: false,
+      errors: []
     };
   },
   methods: {
-    registerHttp(event) {
-      console.log("button clicked");
-      if (this.loading == false) {
-        this.loading = true;
+    registerHttp() {
+      this.errors = [];
+      if (!this.userData.username) {
+        this.errors.push('Username is required');
       }
-      RegisterHttp.registerUser(this, this.userData);
-      RegisterHttp.getCurrentBitPrefix(this).then(result => {
-        console.log("Got current bit prefix", result);
-        RegisterHttp.updateCurrentBitPrefix(this, result.Ok);
-      });
+      if (!this.userData.first_name) {
+        this.errors.push('First Name is required');
+      }
+      if (!this.userData.last_name) {
+        this.errors.push('Last Name is required');
+      }
+      if (this.errors.length > 0) {
+        for (let i = 0; i < this.errors.length; i++) {
+          this.$notify({
+            type: "error",
+            group: "main",
+            title: "Missing required field",
+            text: this.errors[i],
+            duration: 10000
+          });
+        }
+      }
+      else {
+        if (this.loading == false) {
+          this.loading = true;
+        }
+        RegisterHttp.registerUser(this, this.userData).catch(err => {
+          !this.loading;
+        });
+        RegisterHttp.getCurrentBitPrefix(this).then(result => {
+          console.log("Got current bit prefix", result);
+          RegisterHttp.updateCurrentBitPrefix(this, result.Ok);
+        });
+      }
     },
     processFile(event) {
       if (
