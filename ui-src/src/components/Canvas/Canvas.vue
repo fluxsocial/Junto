@@ -6,6 +6,8 @@
     <slot name="canvasSearch"></slot>
 
     <div class="canvas__main">
+      <slot name="loadingExpressions"></slot>
+      <slot name="error"></slot>
       <slot name="canvasFeed"></slot>
     </div>
   </div>

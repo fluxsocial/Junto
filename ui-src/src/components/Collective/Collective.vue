@@ -26,6 +26,19 @@
         />
       </div>
 
+      <!-- Loading Expressions Notif-->
+      <div slot="loadingExpressions" class="loading-spinner-container" v-if="this.loadingExpressions">
+        <div class="loading-spinner">
+          <p>Hold tight, we're getting some expressions for you...</p>
+          <svg
+            class="spinner"
+            style="background: rgba(0, 0, 0, 0) none repeat scroll 0% 0%; display: block; shape-rendering: auto; width: 5rem; height:5rem;"
+          >
+            <use xlink:href="../../../src/assets/img/sprite.svg#loading"></use>
+          </svg>
+        </div>
+      </div>
+
       <!-- feed -->
       <div slot="canvasFeed" class="canvas__feed">
         <div
@@ -35,7 +48,7 @@
         >
           <!-- FOR THE STENCIL EXPRESSIONS COMPONENT -->
           <!-- <ReactExpressionsComponentStencil expression-type="post.expression.entry.expression_type" expression-data="post"></ReactExpressionsComponentStencil> -->
-          
+
           <div v-if="post.expression.entry.expression_type == 'ShortForm'">
             <expression-top
               :users_first_name="post.author_profile.entry.first_name"
@@ -107,7 +120,8 @@ export default {
   },
   data() {
     return {
-      collectivePosts: []
+      collectivePosts: [],
+      loadingExpressions: true
     };
   },
   mounted() {
@@ -141,6 +155,7 @@ export default {
           false
         )
         .then(result => {
+          this.loadingExpressions = false;
           for (let i = 0; i < result.Ok.length; i++) {
             this.collectivePosts.push(result.Ok[i]);
             console.log(

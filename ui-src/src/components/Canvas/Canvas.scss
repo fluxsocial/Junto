@@ -10,10 +10,10 @@
     &__search {
         padding-left: 2rem;
         height: 6rem;
-        grid-column: 4/10;
+        grid-column: 5/10;
         grid-row: 1/2;
         justify-self: center;
-        width: 75%;
+        width: 100%;
         border-bottom: 1px solid #eee;
         cursor: pointer;
 
@@ -32,11 +32,32 @@
         }
     }
     &__main {
-        grid-column: 4/10;
+        grid-column: 5/10;
         justify-self: center;
         width: 100%;
         min-width: 50rem;
+
+        .loading-spinner-container {
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: center;
+            width: 100%;
+
+            .loading-spinner {
+                display: flex;
+                flex-flow: column nowrap;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+
+                p {
+                    text-align: center;
+                    font-size: 1.35rem;
+                    margin: 2rem;
+                }
             }
+        }
+    }
 
     &__feed {
         display: flex;

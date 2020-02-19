@@ -300,10 +300,10 @@ body {
   .canvas__search {
     padding-left: 2rem;
     height: 6rem;
-    grid-column: 4/10;
+    grid-column: 5/10;
     grid-row: 1/2;
     justify-self: center;
-    width: 75%;
+    width: 100%;
     border-bottom: 1px solid #eee;
     cursor: pointer; }
     .canvas__search--text {
@@ -317,10 +317,25 @@ body {
       .canvas__search--text::placeholder {
         color: #333; }
   .canvas__main {
-    grid-column: 4/10;
+    grid-column: 5/10;
     justify-self: center;
     width: 100%;
     min-width: 50rem; }
+    .canvas__main .loading-spinner-container {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: center;
+      width: 100%; }
+      .canvas__main .loading-spinner-container .loading-spinner {
+        display: flex;
+        flex-flow: column nowrap;
+        justify-content: center;
+        align-items: center;
+        width: 100%; }
+        .canvas__main .loading-spinner-container .loading-spinner p {
+          text-align: center;
+          font-size: 1.35rem;
+          margin: 2rem; }
   .canvas__feed {
     display: flex;
     flex-direction: column;
