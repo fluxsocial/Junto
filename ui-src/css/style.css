@@ -614,6 +614,16 @@ body {
     display: flex;
     flex-flow: row nowrap;
     justify-content: flex-end; }
+  .register .loading-spinner-container {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: flex-end;
+    width: 100%; }
+    .register .loading-spinner-container .loading-spinner {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      max-width: 150px; }
   .register__form .form-group {
     position: relative;
     margin-bottom: 10px;

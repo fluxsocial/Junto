@@ -80,7 +80,18 @@
           :method="registerHttp"
           text="Join Junto"
           active-class="register__submit register__form__child"
+          v-if="!this.loading"
         />
+        <div class="loading-spinner-container" v-if="this.loading">
+          <div class="loading-spinner">
+            <svg
+              class="spinner"
+              style="background: rgba(0, 0, 0, 0) none repeat scroll 0% 0%; display: block; shape-rendering: auto; width: 5rem; height:5rem;"
+            >
+              <use xlink:href="../../../src/assets/img/sprite.svg#loading"></use>
+            </svg>
+          </div>
+        </div>
       </form>
     </div>
   </section>
@@ -104,11 +115,16 @@ export default {
         profile_picture: "",
         bio: ""
       },
-      previewImg: null
+      previewImg: null,
+      loading: false
     };
   },
   methods: {
     registerHttp(event) {
+      console.log("button clicked");
+      if (this.loading == false) {
+        this.loading = true;
+      }
       RegisterHttp.registerUser(this, this.userData);
       RegisterHttp.getCurrentBitPrefix(this).then(result => {
         console.log("Got current bit prefix", result);

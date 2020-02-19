@@ -47,6 +47,13 @@
 		L27.473,390.597L0.3,512.69z"/>
 </symbol>
 
+<symbol id="loading" viewBox="0 0 100 100">
+<title>Loading</title>
+<path d="M10 50A40 40 0 0 0 90 50A40 43.8 0 0 1 10 50" fill="#307fab" stroke="none">
+  <animateTransform attributeName="transform" type="rotate" dur="1.01010101010101s" repeatCount="indefinite" keyTimes="0;1" values="0 50 51.9;360 50 51.9"></animateTransform>
+</path>
+</symbol>
+
 </defs>
 </svg>
  

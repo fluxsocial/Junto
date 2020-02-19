@@ -33,6 +33,9 @@
           :key="post.__ob__.dep.id"
           class="expression-list"
         >
+          <!-- FOR THE STENCIL EXPRESSIONS COMPONENT -->
+          <!-- <ReactExpressionsComponentStencil expression-type="post.expression.entry.expression_type" expression-data="post"></ReactExpressionsComponentStencil> -->
+          
           <div v-if="post.expression.entry.expression_type == 'ShortForm'">
             <expression-top
               :users_first_name="post.author_profile.entry.first_name"
@@ -62,6 +65,10 @@
             />
             <expression-bottom :channels="post.channels" />
           </div>
+
+
+
+
         </div>
       </div>
     </junto-canvas>
