@@ -335,7 +335,16 @@ body {
         .canvas__main .loading-spinner-container .loading-spinner p {
           text-align: center;
           font-size: 1.35rem;
-          margin: 2rem; }
+          margin: 2rem;
+          display: flex; }
+          .canvas__main .loading-spinner-container .loading-spinner p .no-expressions-icon {
+            display: flex;
+            flex-flow: column nowrap;
+            justify-content: center;
+            max-width: 3rem; }
+            .canvas__main .loading-spinner-container .loading-spinner p .no-expressions-icon-svg {
+              width: 3rem;
+              height: 2rem; }
   .canvas__feed {
     display: flex;
     flex-direction: column;

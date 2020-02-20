@@ -54,6 +54,19 @@
                     text-align: center;
                     font-size: 1.35rem;
                     margin: 2rem;
+                    display: flex;
+
+                    .no-expressions-icon {
+                        display: flex;
+                        flex-flow: column nowrap;
+                        justify-content: center;
+                        max-width: 3rem;
+
+                        &-svg {
+                            width: 3rem;
+                            height: 2rem;
+                        }
+                    }
                 }
             }
         }

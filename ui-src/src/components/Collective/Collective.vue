@@ -27,15 +27,24 @@
       </div>
 
       <!-- Loading Expressions Notif-->
-      <div slot="loadingExpressions" class="loading-spinner-container" v-if="this.loadingExpressions">
+      <div slot="loadingExpressions" class="loading-spinner-container">
         <div class="loading-spinner">
-          <p>Hold tight, we're getting some expressions for you...</p>
+          <p v-if="this.loadingExpressions">Hold tight, we're getting some expressions for you...</p>
+          <p v-if="this.noExpressions">There are no expressions to show 
+            <span class="no-expressions-icon">  
+              <svg class="no-expressions-icon-svg">
+                <use xlink:href="../../../src/assets/img/sprite.svg#icon-sad"></use>
+              </svg>
+            </span> 
+          </p>
           <svg
+            v-if="this.loadingExpressions"
             class="spinner"
             style="background: rgba(0, 0, 0, 0) none repeat scroll 0% 0%; display: block; shape-rendering: auto; width: 5rem; height:5rem;"
           >
             <use xlink:href="../../../src/assets/img/sprite.svg#loading"></use>
           </svg>
+          <Button v-if="this.noExpressions" text="Refresh" :method="refreshExpressions" active-class="no-expressions-refresh"></Button>
         </div>
       </div>
 
@@ -105,6 +114,7 @@ import LongForm from "./../ExpressionViewer/LongForm/StoryPreview";
 import ShortForm from "./../ExpressionViewer/Shortform/Shortform";
 import ExpressionTop from "./../ExpressionViewer/ExpressionTop/ExpressionTop";
 import ExpressionBottom from "./../ExpressionViewer/ExpressionBottom/ExpressionBottom";
+import Button from "../Button/Button";
 
 export default {
   name: "Collective",
@@ -116,12 +126,14 @@ export default {
     shortForm: ShortForm,
     longForm: LongForm,
     expressionTop: ExpressionTop,
-    expressionBottom: ExpressionBottom
+    expressionBottom: ExpressionBottom,
+    Button: Button
   },
   data() {
     return {
       collectivePosts: [],
-      loadingExpressions: true
+      loadingExpressions: true,
+      noExpressions: false
     };
   },
   mounted() {
@@ -156,14 +168,26 @@ export default {
         )
         .then(result => {
           this.loadingExpressions = false;
-          for (let i = 0; i < result.Ok.length; i++) {
-            this.collectivePosts.push(result.Ok[i]);
-            console.log(
-              "Inside makeRandomCollectiveQuery",
-              this.collectivePosts
-            );
+          if (result.Ok.length == 0) {
+            console.log("there's no expressions to render");
+            this.noExpressions = true;
+          } else {
+            for (let i = 0; i < result.Ok.length; i++) {
+              this.collectivePosts.push(result.Ok[i]);
+              console.log(
+                "Inside makeRandomCollectiveQuery",
+                this.collectivePosts
+              );
+            }
           }
+          
         });
+    },
+    refreshExpressions() {
+      console.log("button clicked");
+      this.makeRandomCollectiveQuery();
+      this.loadingExpressions = true;
+      this.noExpressions = false;
     }
   }
 };

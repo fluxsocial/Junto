@@ -7,7 +7,7 @@
 
     <div class="canvas__main">
       <slot name="loadingExpressions"></slot>
-      <slot name="error"></slot>
+      <slot name="noExpressions"></slot>
       <slot name="canvasFeed"></slot>
     </div>
   </div>
