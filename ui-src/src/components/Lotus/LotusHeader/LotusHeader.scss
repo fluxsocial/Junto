@@ -64,27 +64,5 @@
             color: #555;
             cursor: pointer;
         }
-
-        &--button {
-            background-color: white;
-            color: #555;
-            font-weight: 500;
-            font-size: 1.4rem;
-            padding: .75rem 2rem;
-            border: 2px solid #555;
-            border-radius: 2px;
-
-            margin-left: 1.5rem;
-            cursor: pointer;
-            transition: all .2s;
-
-            &:hover {
-                background-color: #555;
-                color: white;
-                
-            }
-        }
-
-
     }
 }

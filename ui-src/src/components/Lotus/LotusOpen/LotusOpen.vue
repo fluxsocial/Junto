@@ -21,13 +21,22 @@
           v-on:keyup.enter="addChannel"
           v-model="channel"
         />
-        <button
+        <Button
           slot="lotusCreate"
-          class="lotusHeader__create--button"
-          @click="createExpression"
+          active-class="lotusHeader__create--button"
+          :method="createExpression"
+          text="Create"
+          v-if="!this.creating"
         >
-          create
-        </button>
+        </Button>
+        <div slot="loadingPostExpression" class="loading-spinner" v-if="this.creating">
+          <svg
+            class="spinner"
+            style="background: rgba(0, 0, 0, 0) none repeat scroll 0% 0%; display: block; shape-rendering: auto; width: 5rem; height:5rem;"
+          >
+            <use xlink:href="../../../../src/assets/img/sprite.svg#loading"></use>
+          </svg>
+        </div>
       </junto-lotus-header>
 
       <junto-lotus-story v-if="storyOpen"></junto-lotus-story>
@@ -84,6 +93,7 @@ import LotusPhoto from "./../LotusExpressions/LotusPhoto/LotusPhoto.vue";
 import LotusEvents from "./../LotusExpressions/LotusEvents/LotusEvents.vue";
 import LotusHttp from "../LotusHttp.js";
 import LotusShortformVue from "./../LotusExpressions/LotusShortform/LotusShortform.vue";
+import Button from "../../Button/Button";
 
 export default {
   components: {
@@ -91,7 +101,8 @@ export default {
     juntoLotusFooter: LotusFooter,
     juntoLotusStory: LotusStory,
     juntoLotusShortform: LotusShortform,
-    juntoLotusPhoto: LotusPhoto
+    juntoLotusPhoto: LotusPhoto,
+    Button: Button
   },
   data() {
     return {
@@ -102,7 +113,9 @@ export default {
       expressionType: "STORY",
       shortFormChild: undefined,
       channel: null,
-      channels: []
+      channels: [],
+      postingError: [],
+      creating: false
     };
   },
 
@@ -128,49 +141,69 @@ export default {
     createExpression() {
       if (this.storyOpen == true) {
         let child = this.$children[1]; //This might not be the right way to do this
-        let expression_data = {
-          expression: {
-            LongForm: {
-              title: child.title,
-              body: child.innerHtml
-            }
-          },
-          expression_type: "LongForm"
-        };
-        console.log("Creating long form expression with", expression_data);
-        LotusHttp.createExpression(
-          this,
-          expression_data,
-          this.$store.getters.getDnaAddress,
-          this.channels
-        ).then(result => {
-          console.log("Added expression to holochain with result", result);
-          this.$router.push('/');
-        });
+        if (!child.title && !child.innerHtml){
+          if (!child.title) this.postingError.push("Title required for longform expression");
+          if (!child.innerHtml) this.postingError.push("Body required for longform expression");
+        } else {
+          this.creating = true;
+          let expression_data = {
+            expression: {
+              LongForm: {
+                title: child.title,
+                body: child.innerHtml
+              }
+            },
+            expression_type: "LongForm"
+          };
+          console.log("Creating long form expression with", expression_data);
+          LotusHttp.createExpression(
+            this,
+            expression_data,
+            this.$store.getters.getDnaAddress,
+            this.channels
+          ).then(result => {
+            console.log("Added expression to holochain with result", result);
+            this.$router.push('/');
+          });
+        }
       } else if (this.shortformOpen == true) {
         let child = this.$children[2]; //This might not be the right way to do this
-        let expression_data = {
-          expression: {
-            ShortForm: {
-              background: child.whichBackground().toString(),
-              body: child.text
-            }
-          },
-          expression_type: "ShortForm"
-        }; //Length of the text should be validated
-        console.log("Creating short form expression with", expression_data);
-        //Should not pass this but instead just the store object itself
-        LotusHttp.createExpression(
-          this,
-          expression_data,
-          this.$store.getters.getDnaAddress,
-          this.channels
-        ).then(result => {
-          console.log("Added expression to holochain with result", result);
-          this.$router.push('/');
-        });
+        if (!child.text){
+          this.postingError.push("Body required for shortform expression");
+        } else {
+          this.creating = true;
+          let expression_data = {
+            expression: {
+              ShortForm: {
+                background: child.whichBackground().toString(),
+                body: child.text
+              }
+            },
+            expression_type: "ShortForm"
+          }; //Length of the text should be validated
+          console.log("Creating short form expression with", expression_data);
+          //Should not pass this but instead just the store object itself
+          LotusHttp.createExpression(
+            this,
+            expression_data,
+            this.$store.getters.getDnaAddress,
+            this.channels
+          ).then(result => {
+            console.log("Added expression to holochain with result", result);
+            this.$router.push('/');
+          });
+        }
       } else if (this.photoOpen == true) {
       } else if (this.eventsOpen == true) {
+      }
+      for (let i = 0; i < this.postingError.length; i++) {
+        this.$notify({
+          type: "error",
+          group: "main",
+          title: "Error posting expression",
+          text: this.postingError[i],
+          duration: 5000
+        });
       }
       console.log("Awaiting holochain response");
     },

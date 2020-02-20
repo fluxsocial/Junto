@@ -6,6 +6,7 @@
         <slot name="lotusChannelsPills"></slot>
         <slot name="lotusChannels"></slot>
         <slot name="lotusCreate"></slot>
+        <slot name="loadingPostExpression"></slot>
       </div>
     </div>
   </div>

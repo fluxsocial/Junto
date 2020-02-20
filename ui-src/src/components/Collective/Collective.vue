@@ -26,7 +26,7 @@
         />
       </div>
 
-      <!-- Loading Expressions Notif-->
+      <!-- Loading Expressions Notif with No Expressions Warning -->
       <div slot="loadingExpressions" class="loading-spinner-container">
         <div class="loading-spinner">
           <p v-if="this.loadingExpressions">Hold tight, we're getting some expressions for you...</p>
@@ -184,10 +184,9 @@ export default {
         });
     },
     refreshExpressions() {
-      console.log("button clicked");
-      this.makeRandomCollectiveQuery();
-      this.loadingExpressions = true;
       this.noExpressions = false;
+      this.loadingExpressions = true;
+      this.makeRandomCollectiveQuery();
     }
   }
 };
