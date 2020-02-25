@@ -80,18 +80,20 @@
           </div>
         </div>
         <Button
+          v-if="!this.loading"
           :method="registerHttp"
           text="Join Junto"
           active-class="register__submit register__form__child"
-          v-if="!this.loading"
         />
-        <div class="loading-spinner-container" v-if="this.loading">
+        <div v-if="this.loading" class="loading-spinner-container">
           <div class="loading-spinner">
             <svg
               class="spinner"
               style="background: rgba(0, 0, 0, 0) none repeat scroll 0% 0%; display: block; shape-rendering: auto; width: 5rem; height:5rem;"
             >
-              <use xlink:href="../../../src/assets/img/sprite.svg#loading"></use>
+              <use
+                xlink:href="../../../src/assets/img/sprite.svg#loading"
+              ></use>
             </svg>
           </div>
         </div>
@@ -127,13 +129,13 @@ export default {
     registerHttp() {
       this.errors = [];
       if (!this.userData.username) {
-        this.errors.push('Username is required');
+        this.errors.push("Username is required");
       }
       if (!this.userData.first_name) {
-        this.errors.push('First Name is required');
+        this.errors.push("First Name is required");
       }
       if (!this.userData.last_name) {
-        this.errors.push('Last Name is required');
+        this.errors.push("Last Name is required");
       }
       if (this.errors.length > 0) {
         for (let i = 0; i < this.errors.length; i++) {
@@ -145,8 +147,7 @@ export default {
             duration: 10000
           });
         }
-      }
-      else {
+      } else {
         if (this.loading == false) {
           this.loading = true;
         }

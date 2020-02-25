@@ -28,8 +28,7 @@
       <!-- feed -->
       <div slot="canvasFeed" class="canvas__feed">
         <!-- story expression -->
-        <div class="canvas__expression canvas__story">
-        </div>
+        <div class="canvas__expression canvas__story"></div>
       </div>
     </junto-canvas>
 

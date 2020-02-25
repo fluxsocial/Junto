@@ -29,13 +29,18 @@
       <!-- Loading Expressions Notif with No Expressions Warning -->
       <div slot="loadingExpressions" class="loading-spinner-container">
         <div class="loading-spinner">
-          <p v-if="this.loadingExpressions">Hold tight, we're getting some expressions for you...</p>
-          <p v-if="this.noExpressions">There are no expressions to show 
-            <span class="no-expressions-icon">  
+          <p v-if="this.loadingExpressions">
+            Hold tight, we're getting some expressions for you...
+          </p>
+          <p v-if="this.noExpressions">
+            There are no expressions to show
+            <span class="no-expressions-icon">
               <svg class="no-expressions-icon-svg">
-                <use xlink:href="../../../src/assets/img/sprite.svg#icon-sad"></use>
+                <use
+                  xlink:href="../../../src/assets/img/sprite.svg#icon-sad"
+                ></use>
               </svg>
-            </span> 
+            </span>
           </p>
           <svg
             v-if="this.loadingExpressions"
@@ -44,7 +49,12 @@
           >
             <use xlink:href="../../../src/assets/img/sprite.svg#loading"></use>
           </svg>
-          <Button v-if="this.noExpressions" text="Refresh" :method="refreshExpressions" active-class="no-expressions-refresh"></Button>
+          <Button
+            v-if="this.noExpressions"
+            text="Refresh"
+            :method="refreshExpressions"
+            active-class="no-expressions-refresh"
+          ></Button>
         </div>
       </div>
 
@@ -87,10 +97,6 @@
             />
             <expression-bottom :channels="post.channels" />
           </div>
-
-
-
-
         </div>
       </div>
     </junto-canvas>
@@ -180,7 +186,6 @@ export default {
               );
             }
           }
-          
         });
     },
     refreshExpressions() {

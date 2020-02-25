@@ -5,36 +5,49 @@
         <p slot="expressionType" class="lotusHeader__expressionType">
           {{ expressionType }}
         </p>
-        <div slot="lotusChannelsPills" class="lotusHeader__create--channels_pills">
+        <div
+          slot="lotusChannelsPills"
+          class="lotusHeader__create--channels_pills"
+        >
           <ul class="channel_pills">
-            <li v-for="channel in channels" :key="channel" class="channel_pills_item">
-              {{channel}}
+            <li
+              v-for="channel in channels"
+              :key="channel"
+              class="channel_pills_item"
+            >
+              {{ channel }}
               <span class="remove-channel" @click="removeChannel">X</span>
             </li>
           </ul>
         </div>
         <input
           slot="lotusChannels"
+          v-model="channel"
           type="text"
           placeholder="Add Channels"
           class="lotusHeader__create--channels"
-          v-on:keyup.enter="addChannel"
-          v-model="channel"
+          @keyup.enter="addChannel"
         />
         <Button
+          v-if="!this.creating"
           slot="lotusCreate"
           active-class="lotusHeader__create--button"
           :method="createExpression"
           text="Create"
-          v-if="!this.creating"
         >
         </Button>
-        <div slot="loadingPostExpression" class="loading-spinner" v-if="this.creating">
+        <div
+          v-if="this.creating"
+          slot="loadingPostExpression"
+          class="loading-spinner"
+        >
           <svg
             class="spinner"
             style="background: rgba(0, 0, 0, 0) none repeat scroll 0% 0%; display: block; shape-rendering: auto; width: 5rem; height:5rem;"
           >
-            <use xlink:href="../../../../src/assets/img/sprite.svg#loading"></use>
+            <use
+              xlink:href="../../../../src/assets/img/sprite.svg#loading"
+            ></use>
           </svg>
         </div>
       </junto-lotus-header>
@@ -53,32 +66,32 @@
       >
         <use xlink:href="../../../src/assets/img/sprite.svg#icon-lotusicon" />
       </svg>
-      <button
+      <Button
         slot="lotusStory"
         class="lotusFooter__expression"
         :class="{ 'lotusFooter__expression--story': storyOpen }"
         @click="openStory"
-      ></button>
-      <button
+      ></Button>
+      <Button
         slot="lotusShortform"
         class="lotusFooter__expression"
         :class="{ 'lotusFooter__expression--shortform': shortformOpen }"
         @click="openShortform"
-      ></button>
-      <button
+      ></Button>
+      <Button
         slot="lotusPhoto"
         class="lotusFooter__expression"
         @click="openPhoto"
       >
         &nbsp;
-      </button>
-      <button
+      </Button>
+      <Button
         slot="lotusEvents"
         class="lotusFooter__expression"
         @click="openEvents"
       >
         &nbsp;
-      </button>
+      </Button>
     </junto-lotus-footer>
   </div>
 </template>
@@ -126,7 +139,8 @@ export default {
           type: "error",
           group: "main",
           title: "Too many channels tagged",
-          text: "You have reached the limit on channels tagged for this expression",
+          text:
+            "You have reached the limit on channels tagged for this expression",
           duration: 5000
         });
       } else {
@@ -141,9 +155,11 @@ export default {
     createExpression() {
       if (this.storyOpen == true) {
         let child = this.$children[1]; //This might not be the right way to do this
-        if (!child.title && !child.innerHtml){
-          if (!child.title) this.postingError.push("Title required for longform expression");
-          if (!child.innerHtml) this.postingError.push("Body required for longform expression");
+        if (!child.title && !child.innerHtml) {
+          if (!child.title)
+            this.postingError.push("Title required for longform expression");
+          if (!child.innerHtml)
+            this.postingError.push("Body required for longform expression");
         } else {
           this.creating = true;
           let expression_data = {
@@ -163,12 +179,12 @@ export default {
             this.channels
           ).then(result => {
             console.log("Added expression to holochain with result", result);
-            this.$router.push('/');
+            this.$router.push("/");
           });
         }
       } else if (this.shortformOpen == true) {
         let child = this.$children[2]; //This might not be the right way to do this
-        if (!child.text){
+        if (!child.text) {
           this.postingError.push("Body required for shortform expression");
         } else {
           this.creating = true;
@@ -190,7 +206,7 @@ export default {
             this.channels
           ).then(result => {
             console.log("Added expression to holochain with result", result);
-            this.$router.push('/');
+            this.$router.push("/");
           });
         }
       } else if (this.photoOpen == true) {

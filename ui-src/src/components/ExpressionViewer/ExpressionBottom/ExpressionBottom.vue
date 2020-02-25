@@ -7,7 +7,9 @@
         v-for="channel in channels"
         :key="channel.entry.value"
         class="canvas__expression--channel"
-      >{{channel.entry.value}}</button>
+      >
+        {{ channel.entry.value }}
+      </button>
     </div>
 
     <div class="canvas__expression--responses">

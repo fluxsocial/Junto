@@ -74,17 +74,18 @@ export default {
   },
   methods: {
     async hasUsernameAddress() {
-      if (this.$store.getters.getUsername.address == null && this.cookieStore == undefined) {
+      if (
+        this.$store.getters.getUsername.address == null &&
+        this.cookieStore == undefined
+      ) {
         let result = await userHttpMethods.getUserProfileByAgentAddress(this);
         this.username = result.Ok.username;
         this.profile = result.Ok.profile;
-
       } else if (this.cookieStore != undefined) {
         const getUsernameCookie = this.cookieStore.userUsername;
         const getProfileCookie = this.cookieStore.userProfile;
         this.username = getUsernameCookie;
         this.profile = getProfileCookie;
-
       } else {
         this.username = this.$store.getters.getUsername;
         this.profile = this.$store.getters.getProfile;
