@@ -16,7 +16,11 @@
               class="channel_pills_item"
             >
               {{ channel }}
-              <span class="remove-channel" @click="removeChannel">X</span>
+              <span class="remove-channel" @click="removeChannel(channel)">
+                <svg class="remove-icon">
+                  <use xlink:href="../../../../src/assets/img/sprite.svg#icon-cross"></use>
+                </svg>
+              </span>
             </li>
           </ul>
         </div>
@@ -66,32 +70,32 @@
       >
         <use xlink:href="../../../src/assets/img/sprite.svg#icon-lotusicon" />
       </svg>
-      <Button
+      <button
         slot="lotusStory"
         class="lotusFooter__expression"
         :class="{ 'lotusFooter__expression--story': storyOpen }"
         @click="openStory"
-      ></Button>
-      <Button
+      ></button>
+      <button
         slot="lotusShortform"
         class="lotusFooter__expression"
         :class="{ 'lotusFooter__expression--shortform': shortformOpen }"
         @click="openShortform"
-      ></Button>
-      <Button
+      ></button>
+      <button
         slot="lotusPhoto"
         class="lotusFooter__expression"
         @click="openPhoto"
       >
         &nbsp;
-      </Button>
-      <Button
+      </button>
+      <button
         slot="lotusEvents"
         class="lotusFooter__expression"
         @click="openEvents"
       >
         &nbsp;
-      </Button>
+      </button>
     </junto-lotus-footer>
   </div>
 </template>
@@ -147,10 +151,12 @@ export default {
         this.channels.push(this.channel);
         this.channel = "";
       }
-      console.log("adding channels", this.channels);
     },
-    removeChannel() {
-      console.log("remove this channel from list");
+    removeChannel(channelName) {
+      const index = this.channels.indexOf(channelName);
+      if (index > -1) {
+        this.channels.splice(index, 1);
+      }
     },
     createExpression() {
       if (this.storyOpen == true) {

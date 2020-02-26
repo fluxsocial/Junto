@@ -231,9 +231,21 @@ body {
       padding: 7px 15px;
       display: flex;
       flex-flow: row nowrap;
-      justify-content: space-between; }
+      justify-content: space-between;
+      align-items: center;
+      min-width: 90px; }
       .lotusHeader__create--channels_pills .channel_pills_item .remove-channel {
-        cursor: pointer; }
+        cursor: pointer;
+        background-color: #eee;
+        color: #307FAB;
+        border-radius: 50%;
+        width: 10px;
+        height: 10px;
+        display: flex;
+        flex-flow: row nowrap;
+        justify-content: center;
+        align-items: center;
+        font-size: 7px; }
   .lotusHeader__create--channels {
     border: none; }
     .lotusHeader__create--channels:focus {
