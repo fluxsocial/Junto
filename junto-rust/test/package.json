@@ -1,7 +1,0 @@
-{
-  "dependencies": {
-    "json3": "*",
-    "tape": "^4.9.1",
-    "@holochain/diorama": "0.1.1"
-  }
-}

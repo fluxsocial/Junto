@@ -1,0 +1,16 @@
+bridges = []
+
+[[instances]]
+name = "Junto Holochain Test"
+id = "junto-holochain-test"
+dna_hash = "QmTzWUPcj6LKEM6BkNNn3AZ4dZRXZWVW9aDfcje8PGrpyA"
+uri = "file:./junto/dna/junto.dna.json"
+
+[[UIs]]
+name = "Junto Test UI"
+id = "junto-test-ui"
+uri = "file:./ui.zip"
+
+[[UIs.instance_references]]
+ui_handle = "junto-test-ui"
+instance_id = "junto-test"

@@ -3,9 +3,6 @@ use hdk::{
     holochain_core_types::{
         dna::entry_types::Sharing
     },
-    holochain_json_api::{
-        json::JsonString
-    }
 };
 
 use super::app_definition;

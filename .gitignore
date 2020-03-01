@@ -1,8 +1,10 @@
 .DS_Store
 node_modules/
-dist/
+dist
 npm-debug.log
 yarn-error.log
+.cargo
+junto/conductor-config.toml
 
 # Editor directories and files
 .idea
