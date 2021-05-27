@@ -1,6 +1,6 @@
 # JUNTO
 
-(Depreciated, see: https://github.com/juntofoundation/communities for latest holochain application)
+## (*This Repo Is Depreciated*, see: https://github.com/juntofoundation/communities for latest holochain application)
 
 Junto is a new breed of social media founded in the spirit of authenticity. Our goal is to rebalance our relationship with technology through more conscious design patterns, distributed technology and a nonprofit approach. 
 
